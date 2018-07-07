@@ -113,7 +113,6 @@
     <dependency>
       <groupId>javax.measure</groupId>
       <artifactId>unit-api</artifactId>
-      <version>${jsr.version}</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -136,12 +135,33 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>enforce</id>
+            <configuration>
+              <rules>
+                <requireJavaVersion>
+                  <version>10</version>
+                </requireJavaVersion>
+                <dependencyConvergence/>
+              </rules>
+            </configuration>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <debug>false</debug>
           <verbose>false</verbose>
           <compilerArgument>-Xlint:all</compilerArgument>
           <useIncrementalCompilation>false</useIncrementalCompilation> <!-- https://jira.codehaus.org/browse/MCOMPILER-209 -->
+          <release>${maven.compile.targetLevel}</release>
         </configuration>
       </plugin>
       <plugin>
@@ -165,6 +185,7 @@
               <Specification-Version>${jsr.version}</Specification-Version>
               <Specification-Vendor>Java Community Process</Specification-Vendor>
               <Implementation-URL>https://github.com/unitsofmeasurement/seshat</Implementation-URL>
+              <Automatic-Module-Name>tech.uom.seshat</Automatic-Module-Name>
             </manifestEntries>
           </archive>
         </configuration>
@@ -186,7 +207,7 @@
           <breakiterator>true</breakiterator>
           <validateLinks>true</validateLinks>
           <failOnError>true</failOnError>
-          <additionalparam>-html5 -Xdoclint:all</additionalparam>
+          <additionalOptions>-html5 --add-stylesheet "${basedir}/src/main/javadoc/sis.css</additionalOptions>
           <verbose>false</verbose>
         </configuration>
       </plugin>
