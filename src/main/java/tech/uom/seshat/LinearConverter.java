@@ -17,7 +17,6 @@
 package tech.uom.seshat;
 
 import java.util.List;
-import java.util.Arrays;
 import java.util.Collections;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -48,25 +47,6 @@ final class LinearConverter extends AbstractConverter {
      * For cross-version compatibility.
      */
     private static final long serialVersionUID = -3759983642723729926L;
-
-    /**
-     * The SI prefixes in increasing order. The only two-letters prefix – “da” – is encoded using the JCK compatibility
-     * character “㍲”. The Greek letter μ is repeated twice: the U+00B5 character for micro sign (this is the character
-     * that Apache SIS uses in unit symbols) and the U+03BC character for the Greek small letter “mu” (the later is the
-     * character that appears when decomposing JCK compatibility characters with {@link java.text.Normalizer}).
-     * Both characters have same appearance but different values.
-     *
-     * <p>For each prefix at index <var>i</var>, the multiplication factor is given by 10 raised to power {@code POWERS[i]}.</p>
-     */
-    private static final char[] PREFIXES = {'E','G','M','P','T','Y','Z','a','c','d','f','h','k','m','n','p','y','z','µ','μ','㍲'};
-    private static final byte[] POWERS   = {18,  9,  6, 15, 12, 24, 21,-18, -2, -1,-15,  2,  3, -3, -9,-12,-24,-21, -6, -6,  1};
-
-    /**
-     * The converters for SI prefixes, created when first needed.
-     *
-     * @see #forPrefix(char)
-     */
-    private static final LinearConverter[] SI = new LinearConverter[POWERS.length];
 
     /**
      * The identity linear converter.
@@ -114,12 +94,31 @@ final class LinearConverter extends AbstractConverter {
     }
 
     /**
+     * Creates a linear converter from the given scale and offset, which may be {@link BigDecimal} instances.
+     * This is the implementation of public {@link Units#converter(Number, Number)} method.
+     */
+    static LinearConverter create(final Number scale, final Number offset) {
+        final double numerator, divisor;
+        double shift = (offset != null) ? offset.doubleValue() : 0;
+        if (scale instanceof Fraction) {
+            numerator = ((Fraction) scale).numerator;
+            divisor   = ((Fraction) scale).denominator;
+            shift    *= divisor;
+        } else {
+            numerator = (scale != null) ? scale.doubleValue() : 1;
+            divisor   = 1;
+        }
+        final LinearConverter c = create(numerator, shift, divisor);
+        if (scale  instanceof BigDecimal) c.scale10  = (BigDecimal) scale;
+        if (offset instanceof BigDecimal) c.offset10 = (BigDecimal) offset;
+        return c;
+    }
+
+    /**
      * Returns a linear converter for the given scale and offset.
      */
     private static LinearConverter create(final double scale, final double offset, final double divisor) {
-        if (offset == 0) {
-            if (scale == divisor) return IDENTITY;
-        }
+        if (offset == 0 && scale == divisor) return IDENTITY;
         return new LinearConverter(scale, offset, divisor);
     }
 
@@ -127,6 +126,9 @@ final class LinearConverter extends AbstractConverter {
      * Returns a linear converter for the given ratio. The scale factor is specified as a ratio because
      * the unit conversion factors are often defined with a value in base 10.  That value is considered
      * exact by definition, but IEEE 754 has no exact representation of decimal fraction digits.
+     *
+     * <p>It is caller's responsibility to skip this method call when {@code numerator} = {@code denominator}.
+     * This method does not perform this check because it is usually already done (indirectly) by the caller.</p>
      */
     static LinearConverter scale(final double numerator, final double denominator) {
         return new LinearConverter(numerator, 0, denominator);
@@ -136,43 +138,21 @@ final class LinearConverter extends AbstractConverter {
      * Returns a converter for the given shift. The translation is specified as a fraction because the
      * unit conversion terms are often defined with a value in base 10. That value is considered exact
      * by definition, but IEEE 754 has no exact representation of decimal fraction digits.
+     *
+     * <p>It is caller's responsibility to skip this method call when {@code numerator} = 0.
+     * This method does not perform this check because it is usually already done by the caller.</p>
      */
     static LinearConverter offset(final double numerator, final double denominator) {
         return new LinearConverter(denominator, numerator, denominator);
     }
 
     /**
-     * Returns the converter for the given SI prefix, or {@code null} if none.
-     * Those converters are created when first needed and cached for reuse.
-     */
-    static LinearConverter forPrefix(final char prefix) {
-        final int i = Arrays.binarySearch(PREFIXES, prefix);
-        if (i < 0) {
-            return null;
-        }
-        synchronized (SI) {
-            LinearConverter c = SI[i];
-            if (c == null) {
-                final int p = POWERS[i];
-                final double numerator, denominator;
-                if (p >= 0) {
-                    numerator = MathFunctions.pow10(p);
-                    denominator = 1;
-                } else {
-                    numerator = 1;
-                    denominator = MathFunctions.pow10(-p);
-                }
-                c = scale(numerator, denominator);
-                SI[i] = c;
-            }
-            return c;
-        }
-    }
-
-    /**
      * Raises the given converter to the given power. This method assumes that the given converter
      * {@linkplain #isLinear() is linear} (this is not verified) and takes only the scale factor;
      * the offset (if any) is ignored.
+     *
+     * <p>It is caller's responsibility to skip this method call when {@code n} = 1.
+     * This method does not perform this check because it is usually already done (indirectly) by the caller.</p>
      *
      * @param  converter  the converter to raise to the given power.
      * @param  n          the exponent.
@@ -440,8 +420,8 @@ final class LinearConverter extends AbstractConverter {
      * except for rounding errors.
      */
     boolean equivalent(final LinearConverter other) {
-        return MathFunctions.epsilonEquals(scale  * other.divisor, other.scale  * divisor) &&
-               MathFunctions.epsilonEquals(offset * other.divisor, other.offset * divisor);
+        return epsilonEquals(scale  * other.divisor, other.scale  * divisor) &&
+               epsilonEquals(offset * other.divisor, other.offset * divisor);
     }
 
     /**
@@ -457,7 +437,7 @@ final class LinearConverter extends AbstractConverter {
         }
         if (scale != 1) {
             Characters.trimFractionalPart(buffer.append(scale));
-            buffer.append('⋅');
+            buffer.append(AbstractUnit.MULTIPLY);
         }
         buffer.append('x');
         if (offset != 0) {
@@ -465,7 +445,7 @@ final class LinearConverter extends AbstractConverter {
             buffer.append(')');
         }
         if (divisor != 1) {
-            Characters.trimFractionalPart(buffer.append('∕').append(divisor));
+            Characters.trimFractionalPart(buffer.append(AbstractUnit.DIVIDE).append(divisor));
         }
         return buffer.toString();
     }

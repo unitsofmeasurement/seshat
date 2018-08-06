@@ -159,7 +159,16 @@ final class Fraction extends Number implements Comparable<Fraction>, Serializabl
      * @throws ArithmeticException if the result overflows.
      */
     public Fraction negate() {
-        return (numerator == 0) ? this : new Fraction(Math.negateExact(numerator), denominator);
+        int n = numerator;
+        int d = denominator;
+        if (n != 0) {
+            n = Math.negateExact(n);
+        } else if (d != 0) {
+            d = Math.negateExact(d);
+        } else {
+            return this;
+        }
+        return new Fraction(n, d);
     }
 
     /**
@@ -362,6 +371,21 @@ final class Fraction extends Number implements Comparable<Fraction>, Serializabl
     }
 
     /**
+     * Returns the sign of this fraction. The return value is -1 if this fraction is negative;
+     * 0 if the numerator is zero; and 1 if this fraction is positive.
+     *
+     * @return the sign of this fraction.
+     *
+     * @see Integer#signum(int)
+     *
+     * @since 1.0
+     */
+    public int signum() {
+        if (numerator == 0) return 0;
+        return ((numerator ^ denominator) >> (Integer.SIZE - 2)) | 1;
+    }
+
+    /**
      * Compares this fraction with the given one for order.
      *
      * @param  other  the fraction to compare to this fraction for ordering.
@@ -454,5 +478,56 @@ final class Fraction extends Number implements Comparable<Fraction>, Serializabl
             }
         }
         return new StringBuilder().append(numerator).append('⁄').append(denominator).toString();
+    }
+
+    /**
+     * Creates a new fraction from the given text. This constructor is the converse of {@link #toString()} method.
+     * It can parse single numbers like "3", fractions like "2/3", Unicode characters like "⅔" and infinity symbols
+     * "∞" and "−∞". The given text shall not contain spaces.
+     *
+     * @param  s  the text to parse.
+     * @throws NumberFormatException if the given text can not be parsed.
+     */
+    public Fraction(final String s) throws NumberFormatException {
+        final int length = s.length();
+        if (length == 1) {
+            final char c = s.charAt(0);
+            if (c >= 128) {
+                for (int j=0; j<UNICODES.length; j++) {
+                    final char[] unicodes = UNICODES[j];
+                    for (int i=0; i<unicodes.length; i++) {
+                        if (unicodes[i] == c) {
+                            numerator   = j;
+                            denominator = j + i + 1;
+                            return;
+                        }
+                    }
+                }
+                if (c == '∞') {
+                    numerator   = 1;
+                    denominator = 0;
+                    return;
+                }
+            }
+        }
+        if (s.equals("−∞") || s.equals("-∞")) {
+            numerator   = -1;
+            denominator =  0;
+            return;
+        }
+        for (int i=0; i<length; i++) {
+            switch (s.charAt(i)) {
+                case '÷':
+                case '⁄':
+                case '/':
+                case '∕': {
+                    numerator   = Integer.parseInt(s.substring(0,i));       // TODO: revisit with JDK9.
+                    denominator = Integer.parseInt(s.substring(i+1));
+                    return;
+                }
+            }
+        }
+        numerator   = Integer.parseInt(s);
+        denominator = 1;
     }
 }
