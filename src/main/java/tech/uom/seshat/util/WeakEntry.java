@@ -27,7 +27,6 @@ import tech.uom.seshat.math.MathFunctions;
  *
  * @author  Martin Desruisseaux (MPO, IRD, Geomatys)
  * @version 1.0
- * @since   1.0
  *
  * @param <E>  the type of elements in the collection.
  */

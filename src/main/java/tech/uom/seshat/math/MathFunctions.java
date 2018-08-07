@@ -29,7 +29,6 @@ import java.util.Objects;
  * @author  Martin Desruisseaux (MPO, IRD, Geomatys)
  * @author  Johann Sorel (Geomatys)
  * @version 1.0
- * @since   1.0
  */
 public final class MathFunctions {
     /**

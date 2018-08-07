@@ -26,7 +26,6 @@ import tech.uom.seshat.util.WeakHashSet;
  *
  * @author  Martin Desruisseaux (MPO, Geomatys)
  * @version 1.0
- * @since   1.0
  */
 public final class Fraction extends Number implements Comparable<Fraction>, Serializable {
     /**
@@ -377,8 +376,6 @@ public final class Fraction extends Number implements Comparable<Fraction>, Seri
      * @return the sign of this fraction.
      *
      * @see Integer#signum(int)
-     *
-     * @since 1.0
      */
     public int signum() {
         if (numerator == 0) return 0;

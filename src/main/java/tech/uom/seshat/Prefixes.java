@@ -29,7 +29,6 @@ import tech.uom.seshat.math.MathFunctions;
  *
  * @author  Martin Desruisseaux (Geomatys)
  * @version 1.0
- * @since   1.0
  */
 final class Prefixes {
     /**

@@ -48,8 +48,6 @@ import tech.uom.seshat.util.Characters;
  * @version 1.0
  *
  * @param <Q>  the kind of quantity to be measured using this units.
- *
- * @since 1.0
  */
 abstract class AbstractUnit<Q extends Quantity<Q>> implements Unit<Q>, Serializable {
     /**

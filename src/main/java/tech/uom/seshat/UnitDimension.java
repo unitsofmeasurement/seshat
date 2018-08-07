@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.LinkedHashMap;
 import java.io.Serializable;
+import java.io.ObjectStreamException;
 import javax.measure.Dimension;
 import tech.uom.seshat.math.Fraction;
 
@@ -47,9 +48,8 @@ import tech.uom.seshat.math.Fraction;
  *
  * @author  Martin Desruisseaux (Geomatys)
  * @version 1.0
- * @since   1.0
  */
-abstract class UnitDimension implements Dimension, Serializable {
+final class UnitDimension implements Dimension, Serializable {
     /**
      * For cross-version compatibility.
      */
@@ -58,7 +58,7 @@ abstract class UnitDimension implements Dimension, Serializable {
     /**
      * Pseudo-dimension for dimensionless units.
      */
-    static final UnitDimension NONE = null; // TODO
+    static final UnitDimension NONE = new UnitDimension(Collections.emptyMap());
     // No need to store in UnitRegistry since UnitDimension performs special checks for dimensionless instances.
 
     /**
@@ -86,7 +86,7 @@ abstract class UnitDimension implements Dimension, Serializable {
     UnitDimension(final char symbol) {
         this.symbol = symbol;
         components  = Collections.singletonMap(this, new Fraction(1,1).unique());
-        // TODO
+        UnitRegistry.init(components, this);
     }
 
     /**
@@ -118,7 +118,40 @@ abstract class UnitDimension implements Dimension, Serializable {
                 break;
             }
         }
-        throw new UnsupportedOperationException();  // TODO
+        /*
+         * Implementation note: following code duplicates the functionality of Map.computeIfAbsent(…),
+         * but we had to do it because we compute not only the value, but also the 'components' key.
+         */
+        UnitDimension dim = (UnitDimension) UnitRegistry.get(components);
+        if (dim == null) {
+            components.replaceAll((c, power) -> power.unique());
+            dim = new UnitDimension(components);
+            if (!Units.initialized) {
+                UnitRegistry.init(components, dim);
+            } else {
+                final UnitDimension c = (UnitDimension) UnitRegistry.putIfAbsent(components, dim);
+                if (c != null) {
+                    return c;       // UnitDimension created concurrently in another thread.
+                }
+            }
+        }
+        return dim;
+    }
+
+    /**
+     * Invoked on deserialization for returning a unique instance of {@code UnitDimension}.
+     */
+    Object readResolve() throws ObjectStreamException {
+        if (isDimensionless()) {
+            return NONE;
+        }
+        if (Units.initialized) {        // Force Units class initialization.
+            final UnitDimension dim = (UnitDimension) UnitRegistry.putIfAbsent(components, this);
+            if (dim != null) {
+                return dim;
+            }
+        }
+        return this;
     }
 
     /**

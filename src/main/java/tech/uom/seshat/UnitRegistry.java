@@ -23,8 +23,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.io.Serializable;
 import javax.measure.Unit;
+import javax.measure.Quantity;
 import javax.measure.Dimension;
 import javax.measure.spi.SystemOfUnits;
+import tech.uom.seshat.math.Fraction;
+import tech.uom.seshat.util.WeakValueHashMap;
 
 
 /**
@@ -34,9 +37,8 @@ import javax.measure.spi.SystemOfUnits;
  *
  * @author  Martin Desruisseaux (Geomatys)
  * @version 1.0
- * @since   1.0
  */
-abstract class UnitRegistry implements SystemOfUnits, Serializable {  // TODO
+final class UnitRegistry implements SystemOfUnits, Serializable {
     /**
      * For cross-version compatibility.
      */
@@ -88,6 +90,74 @@ abstract class UnitRegistry implements SystemOfUnits, Serializable {  // TODO
     private static final Map<Object,Object> HARD_CODED = new HashMap<>(256);
 
     /**
+     * Units defined by the user. Accesses to this map implies synchronization.
+     * Values are stored by weak references and garbage collected when no longer used.
+     * Key and value types are the same than the one described in {@link #HARD_CODED}.
+     *
+     * <div class="note"><b>Implementation note:</b>
+     * we separate hard-coded values from user-defined values because the amount of hard-coded values is relatively
+     * large, using weak references for them is useless, and most applications will not define any custom values.
+     * This map will typically stay empty.</div>
+     */
+    private static final WeakValueHashMap<Object,Object> USER_DEFINED = new WeakValueHashMap<>(Object.class);
+
+    /**
+     * Adds the given {@code components}, {@code dim} pair in the map of hard-coded values.
+     * This method shall be invoked in a single thread by the {@code Units} class initializer only (indirectly).
+     */
+    static void init(final Map<UnitDimension,Fraction> components, final UnitDimension dim) {
+        assert !Units.initialized : dim.symbol;         // This assertion happens during Units initialization, but it is okay.
+        if (HARD_CODED.put(components, dim) != null) {
+            throw new AssertionError(dim.symbol);       // Shall not map the same dimension twice.
+        }
+    }
+
+    /**
+     * Invoked by {@link Units} static class initializer for registering SI base and derived units.
+     * This method shall be invoked in a single thread by the {@code Units} class initializer only.
+     */
+    static <Q extends Quantity<Q>> SystemUnit<Q> init(final SystemUnit<Q> unit) {
+        assert !Units.initialized : unit;        // This assertion happens during Units initialization, but it is okay.
+        final String symbol = unit.getSymbol();
+        int existed;
+        /* Unconditional */ existed  = (HARD_CODED.put(unit.dimension, unit) == null) ? 0 : 1;
+        /* Unconditional */ existed |= (HARD_CODED.put(unit.quantity,  unit) == null) ? 0 : 2;
+        if (symbol != null) existed |= (HARD_CODED.put(symbol,         unit) == null) ? 0 : 4;
+        if (unit.epsg != 0) existed |= (HARD_CODED.put(unit.epsg,      unit) == null) ? 0 : 8;
+        /*
+         * Key collision on dimension and quantity tolerated for dimensionless units only, with an
+         * an exception for "candela" because "lumen" is candela divided by a dimensionless unit.
+         * Another exception is "Hz" because it come after rad/s, which has the same dimension.
+         */
+        assert filter(existed, unit, symbol) == 0 : unit;
+        return unit;
+    }
+
+    /**
+     * Clears the {@code existed} bits for the cases where we allow dimension or quantity type collisions.
+     * This method is invoked for assertions only.
+     */
+    private static int filter(int existed, final SystemUnit<?> unit, final String s) {
+        if (unit.dimension.isDimensionless()) existed &= ~(1 | 2);      // Accepts dimension and quantity collisions.
+        if ("cd".equals(s) || "Hz".equals(s)) existed &= ~(1    );      // Accepts dimension collisions only;
+        return (s == null) || s.isEmpty() ? 0 : existed;
+    }
+
+    /**
+     * Invoked by {@link Units} static class initializer for registering SI conventional units.
+     * This method shall be invoked in a single thread by the {@code Units} class initializer only.
+     */
+    static <Q extends Quantity<Q>> ConventionalUnit<Q> init(final ConventionalUnit<Q> unit) {
+        assert !Units.initialized : unit;        // This assertion happens during Units initialization, but it is okay.
+        if (HARD_CODED.put(unit.getSymbol(), unit) == null) {
+            if (unit.epsg == 0 || HARD_CODED.put(unit.epsg, unit) == null) {
+                return unit;
+            }
+        }
+        throw new AssertionError(unit);      // Shall not map the same unit twice.
+    }
+
+    /**
      * Adds an alias for the given unit. The given alias shall be either an instance of {@link String}
      * (for a symbol alias) or an instance of {@link Short} (for an EPSG code alias).
      */
@@ -96,6 +166,32 @@ abstract class UnitRegistry implements SystemOfUnits, Serializable {  // TODO
         if (HARD_CODED.put(alias, unit) != null) {
             throw new AssertionError(unit);      // Shall not map the same alias twice.
         }
+    }
+
+    /**
+     * Adds the given {@code key}, {@code value} pair in the map of user-defined values, provided that no value
+     * is currently associated to the given key. This method shall be invoked only after the {@link Units} class
+     * has been fully initialized.
+     */
+    static Object putIfAbsent(final Object key, final Object value) {
+        assert Units.initialized : value;
+        Object previous = HARD_CODED.get(key);
+        if (previous == null) {
+            previous = USER_DEFINED.putIfAbsent(key, value);
+        }
+        return previous;
+    }
+
+    /**
+     * Returns the value associated to the given key, or {@code null} if none.
+     * This method can be invoked at anytime (at {@link Units} class initialization time or not).
+     */
+    static Object get(final Object key) {
+        Object value = HARD_CODED.get(key);     // Treated as immutable, no synchronization needed.
+        if (value == null) {
+            value = USER_DEFINED.get(key);      // Implies a synchronization lock.
+        }
+        return value;
     }
 
     /**
@@ -128,6 +224,14 @@ abstract class UnitRegistry implements SystemOfUnits, Serializable {  // TODO
     @Override
     public String getName() {
         return name;
+    }
+
+    /**
+     * Returns the default unit for the specified quantity, or {@code null} if none.
+     */
+    @Override
+    public <Q extends Quantity<Q>> Unit<Q> getUnit(final Class<Q> type) {
+        return Units.get(type);
     }
 
     /**

@@ -38,8 +38,6 @@ import tech.uom.seshat.util.Characters;
  * @version 1.0
  *
  * @param <Q>  the kind of quantity to be measured using this units.
- *
- * @since 1.0
  */
 final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements QuantityFactory<Q> {
     /**
@@ -56,6 +54,13 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
      * The dimension of this unit of measurement. Can not be null.
      */
     final UnitDimension dimension;
+
+    /**
+     * The factory to use for creating quantities, or {@code null} if none.
+     * This field does not need to be serialized because {@link AbstractUnit#readResolve()}
+     * replaces deserialized instances by corresponding {@link Units} hard-coded instances.
+     */
+    final transient ScalarFactory<Q> factory;
 
     /**
      * Units for the same quantity but with scale factors that are not the SI one.
@@ -77,11 +82,12 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
      * @param  factory    the factory to use for creating quantities, or {@code null} if none.
      */
     SystemUnit(final Class<Q> quantity, final UnitDimension dimension, final String symbol,
-            final byte scope, final short epsg)
+            final byte scope, final short epsg, final ScalarFactory<Q> factory)
     {
         super(symbol, scope, epsg);
         this.quantity  = quantity;
         this.dimension = dimension;
+        this.factory   = factory;
     }
 
     /**
@@ -106,7 +112,7 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
         final boolean deferred = newDimension.isDimensionless() || dimension.isDimensionless() ||
                 (other != null && UnitDimension.isDimensionless(other.getDimension()));
         if (!deferred) {
-            final SystemUnit<?> result = null;  // TODO
+            final SystemUnit<?> result = Units.get(newDimension);
             if (result != null) return result;
         }
         String symbol = null;
@@ -129,7 +135,7 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
          * if any component were unitless.
          */
         if (deferred) {
-            final SystemUnit<?> result = null;  // TODO
+            final SystemUnit<?> result = Units.get(newDimension);
             if (result != null && result.sameSymbol(symbol)) {
                 return result;
             }
@@ -137,7 +143,7 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
         if (newDimension == dimension && sameSymbol(symbol)) {
             return this;
         }
-        return new SystemUnit<>(null, newDimension, symbol, (byte) 0, (short) 0);
+        return new SystemUnit<>(null, newDimension, symbol, (byte) 0, (short) 0, null);
     }
 
     /**
@@ -245,7 +251,7 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
         if (type == quantity) {
             if (getSymbol() == null) {
                 // If this unit has no symbol, opportunistically supply a symbol if we find it.
-                final SystemUnit<T> unit = null; // TODO
+                final SystemUnit<T> unit = Units.get(type);
                 if (unit != null) {
                     return unit;
                 }
@@ -259,9 +265,9 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
          * a new unit with the requested type but no symbol since we do not know yet what the symbol should be
          * for the new quantity.
          */
-        SystemUnit<T> unit = null; // TODO
+        SystemUnit<T> unit = Units.get(type);
         if (unit == null) {
-            // TODO
+            unit = new SystemUnit<>(type, dimension, null, (byte) 0, (short) 0, null);  // Intentionally no symbol.
         }
         if (!dimension.equals(unit.dimension)) {
             throw new ClassCastException();
@@ -372,14 +378,14 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
         if (symbol.equals(getSymbol())) {
             return this;
         }
-        final SystemUnit<Q> alt = new SystemUnit<>(quantity, dimension, symbol, (byte) 0, (short) 0);
+        final SystemUnit<Q> alt = new SystemUnit<>(quantity, dimension, symbol, (byte) 0, (short) 0, factory);
         if (quantity != null) {
             /*
              * Use the cache only if this unit has a non-null quantity type. Do not use the cache even
              * in read-only mode when 'quantity' is null because we would be unable to guarantee that
              * the parameterized type <Q> is correct.
              */
-            final Object existing = null;   // TODO UnitRegistry.putIfAbsent(symbol, alt);
+            final Object existing = UnitRegistry.putIfAbsent(symbol, alt);
             if (existing != null) {
                 if (existing instanceof SystemUnit<?>) {
                     final SystemUnit<?> unit = (SystemUnit<?>) existing;
@@ -394,7 +400,7 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
              * Try to register the new unit for that Quantity. But if another unit is already
              * registered for that Quantity, this is not necessarily an error.
              */
-            // TODO
+            UnitRegistry.putIfAbsent(quantity, alt);
         }
         return alt;
     }
@@ -462,7 +468,7 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
     @Override
     public Unit<?> pow(final int n) {
         switch (n) {
-            case 0: return null; // TODO
+            case 0: return Units.UNITY;
             case 1: return this;
             default: {
                 final char p = (n >= 0 && n <= 9) ? Characters.toSuperScript((char) ('0' + n)) : 0;
@@ -564,6 +570,10 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
     @Override
     public Quantity<Q> create(final Number value, final Unit<Q> unit) {
         final double v = AbstractConverter.doubleValue(value);
-        return null;    // TODO
+        if (factory != null) {
+            return factory.create(v, unit);
+        } else {
+            return ScalarFallback.factory(v, unit, quantity);
+        }
     }
 }

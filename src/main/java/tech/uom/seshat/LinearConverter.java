@@ -41,7 +41,6 @@ import tech.uom.seshat.util.Characters;
  *
  * @author  Martin Desruisseaux (Geomatys)
  * @version 1.0
- * @since   1.0
  */
 final class LinearConverter extends AbstractConverter {
     /**
@@ -257,8 +256,6 @@ final class LinearConverter extends AbstractConverter {
 
     /**
      * Returns the given ratio as a {@link Fraction} if possible, or as a {@link Double} otherwise.
-     * The use of {@link Fraction} allows the {@link org.apache.sis.referencing.operation.matrix}
-     * package to perform more accurate calculations.
      */
     private static Number ratio(final double value, final double divisor) {
         final int numerator = (int) value;

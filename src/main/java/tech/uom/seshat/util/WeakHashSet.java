@@ -48,7 +48,6 @@ import static tech.uom.seshat.util.WeakEntry.*;
  *
  * @author  Martin Desruisseaux (MPO, IRD, Geomatys)
  * @version 1.0
- * @since   1.0
  *
  * @param <E>  the type of elements in the set.
  *
@@ -68,7 +67,7 @@ public final class WeakHashSet<E> extends AbstractSet<E> {
         }
 
         /**
-         * Invoked by {@link org.apache.sis.internal.system.ReferenceQueueConsumer}
+         * Invoked by {@link ReferenceQueueConsumer}
          * for removing the reference from the enclosing collection.
          */
         @Override
