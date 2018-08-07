@@ -18,6 +18,7 @@ package tech.uom.seshat;
 
 import java.io.Serializable;
 import javax.measure.UnitConverter;
+import tech.uom.seshat.math.MathFunctions;
 
 
 /**

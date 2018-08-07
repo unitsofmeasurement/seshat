@@ -24,6 +24,8 @@ import javax.measure.Dimension;
 import javax.measure.UnitConverter;
 import javax.measure.UnconvertibleException;
 import javax.measure.IncommensurableException;
+import tech.uom.seshat.math.Fraction;
+import tech.uom.seshat.util.Characters;
 
 
 /**

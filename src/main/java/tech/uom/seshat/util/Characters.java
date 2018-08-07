@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tech.uom.seshat;
+package tech.uom.seshat.util;
 
 
 /**
@@ -25,7 +25,7 @@ package tech.uom.seshat;
  * @version 1.0
  * @since   1.0
  */
-final class Characters {
+public final class Characters {
     /**
      * Do not allow instantiation of this class.
      */
@@ -174,10 +174,11 @@ final class Characters {
      * Returns {@code true} if the given texts are equal, ignoring case and filtered-out characters.
      * This method is sometime used for comparing identifiers in a lenient way.
      *
-     * @param  s1          the first characters sequence to compare, or {@code null}.
-     * @param  s2          the second characters sequence to compare, or {@code null}.
-     * @param  filter      the subset of characters to compare, or {@code null} for comparing all characters.
+     * @param  s1  the first characters sequence to compare, or {@code null}.
+     * @param  s2  the second characters sequence to compare, or {@code null}.
+     * @return whether the given texts are equal, ignoring filtered-out characters.
      */
+    @SuppressWarnings("StringEquality")
     public static boolean equalsFiltered(final String s1, final String s2) {
         if (s1 == s2) {
             return true;
@@ -246,7 +247,7 @@ final class Characters {
      * part is completely removed, or either it is left unchanged.</p>
      *
      * @param  buffer  the buffer to trim if possible.
-     * @throws NullArgumentException if the given {@code buffer} is null.
+     * @throws NullPointerException if the given {@code buffer} is null.
      */
     @SuppressWarnings("fallthrough")
     public static void trimFractionalPart(final StringBuilder buffer) {

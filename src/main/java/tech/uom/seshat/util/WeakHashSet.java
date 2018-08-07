@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tech.uom.seshat;
+package tech.uom.seshat.util;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -22,7 +22,7 @@ import java.util.Iterator;
 import java.util.AbstractSet;
 import java.lang.reflect.Array;
 
-import static tech.uom.seshat.WeakEntry.*;
+import static tech.uom.seshat.util.WeakEntry.*;
 
 
 /**
@@ -55,7 +55,7 @@ import static tech.uom.seshat.WeakEntry.*;
  *
  * @see java.util.WeakHashMap
  */
-final class WeakHashSet<E> extends AbstractSet<E> {
+public final class WeakHashSet<E> extends AbstractSet<E> {
     /**
      * A weak reference to an element. This is an element in a linked list.
      * When the reference is disposed, it is removed from the enclosing set.

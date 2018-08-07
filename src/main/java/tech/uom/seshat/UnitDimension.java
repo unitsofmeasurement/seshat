@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.LinkedHashMap;
 import java.io.Serializable;
 import javax.measure.Dimension;
+import tech.uom.seshat.math.Fraction;
 
 
 /**

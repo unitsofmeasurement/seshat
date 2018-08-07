@@ -14,9 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tech.uom.seshat;
+package tech.uom.seshat.math;
 
 import java.io.Serializable;
+import tech.uom.seshat.util.WeakHashSet;
 
 
 /**
@@ -28,7 +29,7 @@ import java.io.Serializable;
  * @version 1.0
  * @since   1.0
  */
-final class Fraction extends Number implements Comparable<Fraction>, Serializable {
+public final class Fraction extends Number implements Comparable<Fraction>, Serializable {
     /**
      * For cross-version compatibility.
      */

@@ -20,6 +20,7 @@ import java.util.Arrays;
 import javax.measure.Unit;
 import javax.measure.Quantity;
 import javax.measure.UnitConverter;
+import tech.uom.seshat.math.MathFunctions;
 
 
 /**

@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tech.uom.seshat;
+package tech.uom.seshat.math;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -32,7 +32,7 @@ import java.util.Objects;
  * @version 1.0
  * @since   1.0
  */
-final class MathFunctions {
+public final class MathFunctions {
     /**
      * Number of bits in the significand (mantissa) part of IEEE 754 {@code float} representation,
      * <strong>not</strong> including the hidden bit.
@@ -200,7 +200,7 @@ testNextNumber:         while (true) {      // Simulate a "goto" statement (usua
      * @param  x  the exponent.
      * @return 10 raised to the given exponent.
      */
-    static double pow10(int x) {
+    public static double pow10(int x) {
         x -= EXPONENT_FOR_ZERO + 1;
         return (x >= 0) ? (x < POW10.length ? POW10[x] : Double.POSITIVE_INFINITY) : 0;
     }
@@ -224,7 +224,7 @@ testNextNumber:         while (true) {      // Simulate a "goto" statement (usua
      * @param  exp2  the power of 2 to convert Must be in the [-2620 … 2620] range.
      * @return the power of 10, rounded toward negative infinity.
      */
-    static int toExp10(final int exp2) {
+    public static int toExp10(final int exp2) {
         /*
          * Compute:
          *          exp2 × (log10(2) × 2ⁿ) / 2ⁿ
@@ -339,7 +339,7 @@ testNextNumber:         while (true) {      // Simulate a "goto" statement (usua
      *
      * @see Double#equals(Object)
      */
-    static boolean equals(final double v1, final double v2) {
+    public static boolean equals(final double v1, final double v2) {
         return Double.doubleToLongBits(v1) == Double.doubleToLongBits(v2);
     }
 
