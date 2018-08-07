@@ -21,7 +21,6 @@ import java.io.Serializable;
 import javax.measure.Unit;
 import javax.measure.Quantity;
 import tech.uom.seshat.math.Fraction;
-import tech.uom.seshat.util.Characters;
 
 
 /**

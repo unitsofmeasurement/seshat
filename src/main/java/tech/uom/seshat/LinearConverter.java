@@ -23,7 +23,6 @@ import java.util.Objects;
 import javax.measure.UnitConverter;
 import tech.uom.seshat.math.Fraction;
 import tech.uom.seshat.math.MathFunctions;
-import tech.uom.seshat.util.Characters;
 
 
 /**

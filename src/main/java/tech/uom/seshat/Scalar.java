@@ -20,7 +20,6 @@ import java.lang.reflect.Proxy;
 import javax.measure.Unit;
 import javax.measure.Quantity;
 import javax.measure.UnitConverter;
-import tech.uom.seshat.util.Characters;
 
 
 /**

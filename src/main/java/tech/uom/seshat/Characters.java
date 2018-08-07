@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tech.uom.seshat.util;
+package tech.uom.seshat;
 
 
 /**
@@ -23,7 +23,7 @@ package tech.uom.seshat.util;
  * @author  Martin Desruisseaux (Geomatys)
  * @version 1.0
  */
-public final class Characters {
+final class Characters {
     /**
      * Do not allow instantiation of this class.
      */
@@ -169,7 +169,7 @@ public final class Characters {
      * @return whether the given texts are equal, ignoring filtered-out characters.
      */
     @SuppressWarnings("StringEquality")
-    public static boolean equalsFiltered(final String s1, final String s2) {
+    static boolean equalsFiltered(final String s1, final String s2) {
         if (s1 == s2) {
             return true;
         }
