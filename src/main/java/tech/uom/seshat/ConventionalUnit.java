@@ -34,7 +34,6 @@ import tech.uom.seshat.util.Characters;
  * @author  Martin Desruisseaux (Geomatys)
  * @version 1.0
  * @since   1.0
- * @module
  */
 final class ConventionalUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> {
     /**

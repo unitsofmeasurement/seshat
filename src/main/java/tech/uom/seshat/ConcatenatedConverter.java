@@ -27,7 +27,6 @@ import javax.measure.UnitConverter;
  * @author  Martin Desruisseaux (Geomatys)
  * @version 1.0
  * @since   1.0
- * @module
  */
 final class ConcatenatedConverter extends AbstractConverter {
     /**

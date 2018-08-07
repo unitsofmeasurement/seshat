@@ -222,15 +222,15 @@ final class LinearConverter extends AbstractConverter {
      * Returns the inverse of this unit converter.
      * Given that the formula applied by this converter is:
      *
-     * {@preformat math
+     * <pre>
      *    y = (x⋅scale + offset) ∕ divisor
-     * }
+     * </pre>
      *
      * the inverse formula is:
      *
-     * {@preformat math
+     * <pre>
      *    x = (y⋅divisor - offset) ∕ scale
-     * }
+     * </pre>
      */
     @Override
     public synchronized UnitConverter inverse() {
@@ -327,16 +327,16 @@ final class LinearConverter extends AbstractConverter {
      * by the specified converter (right converter), and then converting by this converter (left converter).  In the
      * following equations, the 1 subscript is for the specified converter and the 2 subscript is for this converter:
      *
-     * {@preformat math
+     * <pre>
      *    t = (x⋅scale₁ + offset₁) ∕ divisor₁
      *    y = (t⋅scale₂ + offset₂) ∕ divisor₂
-     * }
+     * </pre>
      *
      * We rewrite as:
      *
-     * {@preformat math
+     * <pre>
      *    y = (x⋅scale₁⋅scale₂ + offset₁⋅scale₂ + divisor₁⋅offset₂) ∕ (divisor₁⋅divisor₂)
-     * }
+     * </pre>
      */
     @Override
     public UnitConverter concatenate(final UnitConverter converter) {

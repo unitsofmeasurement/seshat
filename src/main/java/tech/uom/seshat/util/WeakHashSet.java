@@ -224,7 +224,7 @@ public final class WeakHashSet<E> extends AbstractSet<E> {
      * {@code WeakHashSet}. Otherwise, adds {@code element} to this {@code WeakHashSet}.
      * This method is functionally equivalents to the following code:
      *
-     * {@preformat java
+     * <pre>{@code
      *     if (element != null) {
      *         T current = get(element);
      *         if (current != null) {
@@ -234,7 +234,7 @@ public final class WeakHashSet<E> extends AbstractSet<E> {
      *         }
      *     }
      *     return element;
-     * }
+     * }</pre>
      *
      * @param  <T>      the type of the element to get. Can be {@code null}.
      * @param  element  the element to get or to add in the set if not already presents,
