@@ -19,6 +19,7 @@ import javax.measure.Dimension;
 import javax.measure.Unit;
 import javax.measure.UnitConverter;
 import javax.measure.Quantity;
+import javax.measure.format.ParserException;
 import javax.measure.quantity.*;
 import javax.measure.quantity.Angle;                // Because of name collision with Angle in this SIS package.
 
@@ -1393,5 +1394,30 @@ public final class Units {
      */
     public static double derivative(final UnitConverter converter, final double value) {
         return AbstractConverter.derivative(converter, value);
+    }
+
+    /**
+     * Parses the given symbol. Invoking this method is equivalent to invoking
+     * {@link UnitFormat#parse(CharSequence)} on a shared locale-independent instance.
+     * This method is capable to handle some symbols found during WKT parsing or in XML files.
+     * The list of symbols supported by this method is implementation-dependent
+     * and may change in future SIS versions.
+     *
+     * <div class="section">NetCDF unit symbols</div>
+     * The attributes in netCDF files often merge the axis direction with the angular unit,
+     * as in {@code "degrees_east"} or {@code "degrees_north"}. This {@code valueOf} method
+     * ignores those suffixes and unconditionally returns {@link #DEGREE} for all axis directions.
+     * In particular, the units for {@code "degrees_west"} and {@code "degrees_east"}
+     * do <strong>not</strong> have opposite sign.
+     * It is caller responsibility to handle the direction of axes associated to netCDF units.
+     *
+     * @param  uom  the symbol to parse, or {@code null}.
+     * @return the parsed symbol, or {@code null} if {@code uom} was null.
+     * @throws ParserException if the given symbol can not be parsed.
+     *
+     * @see UnitFormat#parse(CharSequence)
+     */
+    public static Unit<?> valueOf(String uom) throws ParserException {
+        return (uom != null) ? UnitFormat.INSTANCE.parse(uom) : null;
     }
 }

@@ -15,8 +15,10 @@
  */
 package tech.uom.seshat;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.MissingResourceException;
 import java.io.Serializable;
 import javax.measure.Unit;
 import javax.measure.Quantity;
@@ -162,7 +164,11 @@ abstract class AbstractUnit<Q extends Quantity<Q>> implements Unit<Q>, Serializa
      */
     @Override
     public final String getName() {
-        // TODO
+        if (symbol != null) try {
+            return UnitFormat.getBundle(Locale.getDefault()).getString(symbol);
+        } catch (MissingResourceException e) {
+            // Ignore as per this method contract.
+        }
         return null;
     }
 
@@ -337,7 +343,7 @@ abstract class AbstractUnit<Q extends Quantity<Q>> implements Unit<Q>, Serializa
         if (symbol != null) {
             return symbol;
         } else {
-            return null;    // TODO
+            return UnitFormat.INSTANCE.format(this);
         }
     }
 

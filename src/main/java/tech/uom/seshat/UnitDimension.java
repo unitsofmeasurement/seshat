@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.function.Function;
 import java.io.Serializable;
+import java.io.IOException;
 import java.io.ObjectStreamException;
 import javax.measure.Dimension;
 import tech.uom.seshat.math.Fraction;
@@ -366,5 +367,17 @@ final class UnitDimension implements Dimension, Serializable {
         return (symbol != 0) ? symbol ^ (int) serialVersionUID : components.hashCode();
     }
 
-    // TODO: toString()
+    /**
+     * Returns a string representation of this dimension.
+     */
+    @Override
+    public String toString() {
+        final StringBuilder buffer = new StringBuilder(8);
+        try {
+            UnitFormat.formatComponents(components, UnitFormat.Style.SYMBOL, buffer);
+        } catch (IOException e) {
+            throw new AssertionError(e);      // Should never happen since we are writting to a StringBuilder.
+        }
+        return buffer.toString();
+    }
 }

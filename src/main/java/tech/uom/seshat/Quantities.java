@@ -21,6 +21,7 @@ import javax.measure.UnitConverter;
 import javax.measure.quantity.Time;
 import javax.measure.quantity.Angle;
 import javax.measure.quantity.Length;
+import javax.measure.format.ParserException;
 
 
 /**
@@ -43,7 +44,19 @@ public final class Quantities {
     private Quantities() {
     }
 
-    // TODO: create(double, String)
+    /**
+     * Creates a quantity for the given value and unit of measurement symbol.
+     * This is a convenience method that combines a call to {@link Units#valueOf(String)}
+     * with {@link #create(double, Unit)}.
+     *
+     * @param  value  the quantity magnitude.
+     * @param  unit   symbol of the unit of measurement associated to the given value.
+     * @return a quantity of the given type for the given value and unit of measurement.
+     * @throws ParserException if the given symbol can not be parsed.
+     */
+    public static Quantity<?> create(final double value, final String unit) {
+        return create(value, Units.valueOf(unit));
+    }
 
     /**
      * Creates a quantity for the given value and unit of measurement.

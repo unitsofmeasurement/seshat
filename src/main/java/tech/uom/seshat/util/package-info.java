@@ -18,7 +18,7 @@
  * Addition to the collection framework and miscellaneous utilities.
  * This is a partial port of {@code org.apache.sis.util} and
  * {@code org.apache.sis.util.collection} packages
- * to be used only for Seshat internal computations.</p>
+ * to be used only for Seshat internal computations.
  *
  * @author  Martin Desruisseaux (Geomatys)
  * @version 1.0
