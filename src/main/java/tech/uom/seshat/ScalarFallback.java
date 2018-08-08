@@ -15,7 +15,6 @@
  */
 package tech.uom.seshat;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -32,17 +31,16 @@ import javax.measure.Unit;
 @SuppressWarnings("serial")
 final class ScalarFallback<Q extends Quantity<Q>> extends Scalar<Q> implements InvocationHandler {
     /**
-     * The constructor for new proxy instances. Stored for allowing {@link #create(double, Unit)}
-     * to be implemented more efficiently than invoking {@link Proxy#newProxyInstance}.
+     * The type implemented by proxy instances.
      */
-    private final Constructor<? extends Q> constructor;
+    private final Class<Q> type;
 
     /**
      * Creates a new scalar for the given value and unit of measurement.
      */
-    private ScalarFallback(final double value, final Unit<Q> unit, final Constructor<? extends Q> constructor) {
+    private ScalarFallback(final double value, final Unit<Q> unit, final Class<Q> type) {
         super(value, unit);
-        this.constructor = constructor;
+        this.type = type;
     }
 
     /**
@@ -50,11 +48,7 @@ final class ScalarFallback<Q extends Quantity<Q>> extends Scalar<Q> implements I
      */
     @Override
     Quantity<Q> create(final double newValue, final Unit<Q> newUnit) {
-        try {
-            return constructor.newInstance(new ScalarFallback<>(newValue, newUnit, constructor));
-        } catch (ReflectiveOperationException e) {
-            throw new UnsupportedOperationException(e);                 // Should never happen.
-        }
+        return factory(newValue, newUnit, type);
     }
 
     /**
@@ -62,14 +56,8 @@ final class ScalarFallback<Q extends Quantity<Q>> extends Scalar<Q> implements I
      */
     @SuppressWarnings("unchecked")
     static <Q extends Quantity<Q>> Q factory(final double value, final Unit<Q> unit, final Class<Q> type) {
-        final Class<?> pc = Proxy.getProxyClass(Scalar.class.getClassLoader(), new Class<?>[] {type});
-        final Constructor<? extends Q> constructor;
-        try {
-            constructor = (Constructor<? extends Q>) pc.getConstructor(InvocationHandler.class);
-            return constructor.newInstance(new ScalarFallback<>(value, unit, constructor));
-        } catch (ReflectiveOperationException e) {
-            throw new UnsupportedOperationException(e);                 // Should never happen.
-        }
+        final ScalarFallback<Q> quantity = new ScalarFallback<>(value, unit, type);
+        return (Q) Proxy.newProxyInstance(Scalar.class.getClassLoader(), new Class<?>[] {type}, quantity);
     }
 
     /**
