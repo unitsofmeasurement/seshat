@@ -93,10 +93,10 @@ abstract class DerivedScalar<Q extends Quantity<Q>> extends Scalar<Q> {
      * The unit of measurement shall be the same than the system unit of this quantity.
      * Implementation in subclasses should be like below:
      *
-     * {@preformat java
+     * <pre>{@code
      *     assert newUnit == getSystemUnit() : newUnit;
      *     return new MyDerivedScalar(this, newValue);
-     * }
+     * }</pre>
      */
     @Override
     abstract Quantity<Q> create(double newValue, Unit<Q> newUnit);

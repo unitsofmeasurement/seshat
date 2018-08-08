@@ -20,6 +20,7 @@ import java.lang.reflect.Proxy;
 import javax.measure.Unit;
 import javax.measure.Quantity;
 import javax.measure.UnitConverter;
+import tech.uom.seshat.util.StringBuilders;
 
 
 /**
@@ -335,7 +336,7 @@ abstract class Scalar<Q extends Quantity<Q>> extends Number implements Quantity<
     @Override
     public final String toString() {
         final StringBuilder buffer = new StringBuilder().append(doubleValue());
-        Characters.trimFractionalPart(buffer);
+        StringBuilders.trimFractionalPart(buffer);
         final String symbol = getUnit().toString();
         if (symbol != null && !symbol.isEmpty()) {
             buffer.append(' ').append(symbol);

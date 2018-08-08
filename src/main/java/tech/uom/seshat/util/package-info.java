@@ -15,10 +15,9 @@
  */
 
 /**
- * Addition to the collection framework. Most classes in this package implement interfaces
- * from the <cite>Java Collection Framework</cite> defined in the {@link java.util} package.
- *
- * <p>This is a partial port of {@code org.apache.sis.util.collection} package
+ * Addition to the collection framework and miscellaneous utilities.
+ * This is a partial port of {@code org.apache.sis.util} and
+ * {@code org.apache.sis.util.collection} packages
  * to be used only for Seshat internal computations.</p>
  *
  * @author  Martin Desruisseaux (Geomatys)

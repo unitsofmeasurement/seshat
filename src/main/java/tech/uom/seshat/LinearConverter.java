@@ -23,6 +23,7 @@ import java.util.Objects;
 import javax.measure.UnitConverter;
 import tech.uom.seshat.math.Fraction;
 import tech.uom.seshat.math.MathFunctions;
+import tech.uom.seshat.util.StringBuilders;
 
 
 /**
@@ -433,16 +434,16 @@ final class LinearConverter extends AbstractConverter {
             buffer.append('(');
         }
         if (scale != 1) {
-            Characters.trimFractionalPart(buffer.append(scale));
+            StringBuilders.trimFractionalPart(buffer.append(scale));
             buffer.append(AbstractUnit.MULTIPLY);
         }
         buffer.append('x');
         if (offset != 0) {
-            Characters.trimFractionalPart(buffer.append(" + ").append(offset));
+            StringBuilders.trimFractionalPart(buffer.append(" + ").append(offset));
             buffer.append(')');
         }
         if (divisor != 1) {
-            Characters.trimFractionalPart(buffer.append(AbstractUnit.DIVIDE).append(divisor));
+            StringBuilders.trimFractionalPart(buffer.append(AbstractUnit.DIVIDE).append(divisor));
         }
         return buffer.toString();
     }
