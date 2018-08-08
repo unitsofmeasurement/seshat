@@ -129,7 +129,7 @@ final class ConventionalUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> {
      */
     @SuppressWarnings("unchecked")
     final ConventionalUnit<Q> unique(final String symbol) {
-        final Object existing = null;  // TODO
+        final Object existing = UnitRegistry.putIfAbsent(symbol, this);
         if (existing instanceof ConventionalUnit<?>) {
             final ConventionalUnit<?> c = (ConventionalUnit<?>) existing;
             if (target.equals(c.target)) {
@@ -417,7 +417,7 @@ final class ConventionalUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> {
         }
         if (super.equals(other)) {
             final ConventionalUnit<?> that = (ConventionalUnit<?>) other;
-            // TODO
+            return target.equals(that.target) && toTarget.equals(that.toTarget);
         }
         return false;
     }

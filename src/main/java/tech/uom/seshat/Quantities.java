@@ -17,6 +17,7 @@ package tech.uom.seshat;
 
 import javax.measure.Unit;
 import javax.measure.Quantity;
+import javax.measure.UnitConverter;
 import javax.measure.quantity.Time;
 import javax.measure.quantity.Angle;
 import javax.measure.quantity.Length;
@@ -35,12 +36,14 @@ import javax.measure.quantity.Length;
  * @author  Martin Desruisseaux (Geomatys)
  * @version 1.0
  */
-final class Quantities {
+public final class Quantities {
     /**
      * Do not allow instantiation of this class.
      */
     private Quantities() {
     }
+
+    // TODO: create(double, String)
 
     /**
      * Creates a quantity for the given value and unit of measurement.
@@ -54,6 +57,73 @@ final class Quantities {
      * @see UnitServices#getQuantityFactory(Class)
      */
     public static <Q extends Quantity<Q>> Q create(final double value, final Unit<Q> unit) {
-        return null;    // TODO
+        final Unit<Q> system = unit.getSystemUnit();
+        if (system instanceof SystemUnit<?>) {
+            final UnitConverter c = unit.getConverterTo(system);
+            final ScalarFactory<Q> factory = ((SystemUnit<Q>) system).factory;
+            if (c.isLinear()) {
+                /*
+                 * We require arithmetic operations (A + B, A * 2, etc.) to be performed as if all values were
+                 * converted to system unit before calculation. This is mandatory for preserving arithmetic laws
+                 * like associativity, commutativity, etc.  But in the special case were the unit of measurement
+                 * if related to the system unit with only a scale factor (no offset), we get equivalent results
+                 * even if we skip the conversion to system unit.  Since the vast majority of units fall in this
+                 * category, it is worth to do this optimization.
+                 *
+                 * (Note: despite its name, above 'isLinear()' method actually has an 'isScale()' behavior).
+                 */
+                if (factory != null) {
+                    return factory.create(value, unit);
+                } else {
+                    return ScalarFallback.factory(value, unit, ((SystemUnit<Q>) system).quantity);
+                }
+            }
+            /*
+             * If the given unit of measurement is derived from the system unit by a more complex formula
+             * than a scale factor, then we need to perform arithmetic operations using the full path
+             * (convert all values to system unit before calculation).
+             */
+            if (factory != null) {
+                final Q quantity = factory.createDerived(value, unit, system, c);
+                if (quantity != null) {
+                    return quantity;
+                }
+            }
+            return DerivedScalar.Fallback.factory(value, unit, system, c, ((SystemUnit<Q>) system).quantity);
+        } else {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    /**
+     * Returns the given quantity as an instance of the specific {@code Quantity} subtype.
+     * For example this method can be used for converting a {@code Quantity<Length>} to a {@link Length}.
+     * If the given quantity already implements the specific interface, then it is returned as-is.
+     *
+     * @param  <Q>      the quantity type (e.g. {@link Length}, {@link Angle}, {@link Time}, <i>etc.</i>), or {@code null}.
+     * @param  quantity the quantity to convert to the specific subtype.
+     * @return the given quantity as a specific subtype (may be {@code quantity} itself), or {@code null} if the given quantity was null.
+     * @throws IllegalArgumentException if the unit class associated to the given quantity is not a supported implementation.
+     */
+    @SuppressWarnings("unchecked")
+    public static <Q extends Quantity<Q>> Q castOrCopy(final Quantity<Q> quantity) {
+        if (quantity != null) {
+            final Unit<Q> unit   = quantity.getUnit();
+            final Unit<Q> system = unit.getSystemUnit();
+            if (!(system instanceof SystemUnit<?>)) {
+                throw new IllegalArgumentException();
+            }
+            final Class<Q> type = ((SystemUnit<Q>) system).quantity;
+            if (!type.isInstance(quantity)) {
+                final ScalarFactory<Q> factory = ((SystemUnit<Q>) system).factory;
+                final double value = AbstractConverter.doubleValue(quantity.getValue());
+                if (factory != null) {
+                    return factory.create(value, unit);
+                } else {
+                    return ScalarFallback.factory(value, unit, type);
+                }
+            }
+        }
+        return (Q) quantity;
     }
 }

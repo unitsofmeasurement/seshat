@@ -17,6 +17,7 @@ package tech.uom.seshat;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import javax.measure.Unit;
 import javax.measure.Quantity;
 import javax.measure.Dimension;
@@ -25,6 +26,7 @@ import javax.measure.UnconvertibleException;
 import javax.measure.IncommensurableException;
 import javax.measure.spi.QuantityFactory;
 import tech.uom.seshat.math.Fraction;
+import tech.uom.seshat.util.DerivedMap;
 
 
 /**
@@ -222,7 +224,7 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
         if (dim == null) {
             return null;            // This unit is associated to a base dimension.
         }
-        return null;    // TODO
+        return new DerivedMap<>(dim, DimToUnit.INSTANCE, Function.identity());
     }
 
     /**
@@ -231,7 +233,34 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
      */
     @Override
     final Map<SystemUnit<?>, Fraction> getBaseSystemUnits() {
-        return null;    // TODO
+        return new DerivedMap<>(dimension.components, DimToUnit.INSTANCE, Function.identity());
+    }
+
+    /**
+     * The converter for replacing the keys in the {@link SystemUnit#getBaseUnits()} map from {@link UnitDimension}
+     * instances to {@link SystemUnit} instances. We apply conversions on the fly instead than extracting the data in
+     * a new map once for all because the copy may fail if an entry contains a rational instead than an integer power.
+     * With on-the-fly conversions, the operation will not fail if the user never ask for that particular value.
+     */
+    private static final class DimToUnit implements Function<UnitDimension, SystemUnit<?>> {
+        /**
+         * The unique instance used by {@link SystemUnit#getBaseUnits()}.
+         */
+        static final DimToUnit INSTANCE = new DimToUnit();
+
+        /**
+         * Constructor for the singleton {@link #INSTANCE}.
+         */
+        private DimToUnit() {
+        }
+
+        /**
+         * Returns the unit associated to the given dimension, or {@code null} if none.
+         */
+        @Override
+        public SystemUnit<?> apply(final UnitDimension dim) {
+            return Units.get(dim);
+        }
     }
 
     /**

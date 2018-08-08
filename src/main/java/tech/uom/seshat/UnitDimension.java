@@ -18,10 +18,13 @@ package tech.uom.seshat;
 import java.util.Collections;
 import java.util.Map;
 import java.util.LinkedHashMap;
+import java.util.function.Function;
 import java.io.Serializable;
 import java.io.ObjectStreamException;
 import javax.measure.Dimension;
 import tech.uom.seshat.math.Fraction;
+import tech.uom.seshat.math.FractionConverter;
+import tech.uom.seshat.util.DerivedMap;
 
 
 /**
@@ -125,6 +128,7 @@ final class UnitDimension implements Dimension, Serializable {
         UnitDimension dim = (UnitDimension) UnitRegistry.get(components);
         if (dim == null) {
             components.replaceAll((c, power) -> power.unique());
+            components = Map.copyOf(components);
             dim = new UnitDimension(components);
             if (!Units.initialized) {
                 UnitRegistry.init(components, dim);
@@ -213,7 +217,7 @@ final class UnitDimension implements Dimension, Serializable {
         if (symbol != 0) {
             return null;
         }
-        throw new UnsupportedOperationException();  // TODO
+        return new DerivedMap<>(components, Function.identity(), FractionConverter.INSTANCE);
     }
 
     /**
@@ -235,7 +239,7 @@ final class UnitDimension implements Dimension, Serializable {
         if (components == null) {
             return Collections.singletonMap(dimension, new Fraction(1,1));
         }
-        throw new UnsupportedOperationException();  // TODO
+        return new DerivedMap<>(components, Function.identity(), FractionConverter.FromInteger.INSTANCE);
     }
 
     /**
@@ -361,4 +365,6 @@ final class UnitDimension implements Dimension, Serializable {
          */
         return (symbol != 0) ? symbol ^ (int) serialVersionUID : components.hashCode();
     }
+
+    // TODO: toString()
 }
