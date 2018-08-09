@@ -27,7 +27,6 @@
  */
 module tech.uom.seshat {
     requires unit.api;          // Temporary name, to be renamed after JSR-385 is released.
-    requires java.logging;
 
     exports tech.uom.seshat;
     /*
