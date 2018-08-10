@@ -34,6 +34,7 @@ import javax.measure.Unit;
 import javax.measure.format.ParserException;
 import tech.uom.seshat.math.Fraction;
 import tech.uom.seshat.math.MathFunctions;
+import tech.uom.seshat.resources.Errors;
 import tech.uom.seshat.util.Characters;
 import tech.uom.seshat.util.CharSequences;
 import tech.uom.seshat.util.WeakValueHashMap;
@@ -385,7 +386,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
         for (int i=0; i < label.length();) {
             final int c = label.codePointAt(i);
             if (!AbstractUnit.isSymbolChar(c) && !Character.isSpaceChar(c)) {       // NOT Character.isWhitespace(int)
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException(Errors.format(Errors.Keys.IllegalArgumentValue_2, "label", label));
             }
             i += Character.charCount(c);
         }
@@ -623,7 +624,8 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
         @SuppressWarnings("unchecked")          // Both 'unit' and 'unscaled' are 'Unit<Q>'.
         final double scale = AbstractConverter.scale(unit.getConverterTo((Unit) unscaled));
         if (Double.isNaN(scale)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(Errors.format(Errors.Keys.NonRatioUnit_1,
+                    "?⋅" + Style.OPEN + unscaled + Style.CLOSE));
         }
         /*
          * In addition of the scale, we will need to know:
@@ -965,7 +967,10 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
         final int length = symbols.length();
         final int unrecognized = CharSequences.skipLeadingWhitespaces(symbols, position.getIndex(), length);
         if (unrecognized < length) {
-            throw new ParserException(null, symbols, 0);
+            throw new ParserException(Errors.format(Errors.Keys.UnexpectedCharactersAfter_2,
+                    CharSequences.trimWhitespaces(symbols, 0, unrecognized),
+                    CharSequences.trimWhitespaces(symbols, unrecognized, length)),
+                    symbols, unrecognized);
         }
         return unit;
     }
@@ -1094,7 +1099,8 @@ scan:   for (int n; i < end; i += n) {
                     final Unit<?> term = parse(symbols, sub);
                     i = CharSequences.skipLeadingWhitespaces(symbols, sub.getIndex(), end);
                     if (i >= end || Character.codePointAt(symbols, i) != Style.CLOSE) {
-                        throw new ParserException(null, symbols, start);
+                        throw new ParserException(Errors.format(Errors.Keys.NonEquilibratedParenthesis_2,
+                               symbols.subSequence(start, i), Style.CLOSE), symbols, start);
                     }
                     unit = operation.apply(unit, term, pos);
                     operation.code = Operation.IMPLICIT;    // Default operation if there is no × or / symbols after parenthesis.
@@ -1228,7 +1234,7 @@ search:     while ((i = CharSequences.skipTrailingWhitespaces(symbols, start, i)
                             }
                         }
                     }
-                    throw new ParserException(null, symbols, position);
+                    throw new ParserException(Errors.format(Errors.Keys.NotAnInteger_1, term), symbols, position);
                 }
                 default: throw new AssertionError(code);
             }
@@ -1306,7 +1312,8 @@ search:     while ((i = CharSequences.skipTrailingWhitespaces(symbols, start, i)
                             }
                             multiplier = parseMultiplicationFactor(uom);
                         } catch (NumberFormatException e) {
-                            throw (ParserException) new ParserException(null, symbols, lower).initCause(e);
+                            throw (ParserException) new ParserException(Errors.format(
+                                    Errors.Keys.UnknownUnit_1, uom), symbols, lower).initCause(e);
                         }
                         if (operation.code == Operation.IMPLICIT) {
                             operation.code = Operation.EXPONENT;
@@ -1337,7 +1344,8 @@ search:     while ((i = CharSequences.skipTrailingWhitespaces(symbols, start, i)
                                     power = new Fraction(uom.substring(i));
                                 } catch (NumberFormatException e) {
                                     // Should never happen unless the number is larger than 'int' capacity.
-                                    throw (ParserException) new ParserException(null, symbols, lower+i).initCause(e);
+                                    throw (ParserException) new ParserException(Errors.format(
+                                            Errors.Keys.UnknownUnit_1, uom), symbols, lower+i).initCause(e);
                                 }
                                 break;
                             }
@@ -1383,7 +1391,7 @@ search:     while ((i = CharSequences.skipTrailingWhitespaces(symbols, start, i)
                     if (CharSequences.regionMatches(symbols, lower, UNITY)) {
                         return Units.UNITY;
                     }
-                    throw new ParserException(null, symbols, lower);
+                    throw new ParserException(Errors.format(Errors.Keys.UnknownUnit_1, uom), symbols, lower);
                 }
             }
         }

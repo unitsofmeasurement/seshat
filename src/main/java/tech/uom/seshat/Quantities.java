@@ -15,6 +15,7 @@
  */
 package tech.uom.seshat;
 
+import java.util.Objects;
 import javax.measure.Unit;
 import javax.measure.Quantity;
 import javax.measure.UnitConverter;
@@ -22,6 +23,7 @@ import javax.measure.quantity.Time;
 import javax.measure.quantity.Angle;
 import javax.measure.quantity.Length;
 import javax.measure.format.ParserException;
+import tech.uom.seshat.resources.Errors;
 
 
 /**
@@ -70,6 +72,7 @@ public final class Quantities {
      * @see UnitServices#getQuantityFactory(Class)
      */
     public static <Q extends Quantity<Q>> Q create(final double value, final Unit<Q> unit) {
+        Objects.requireNonNull(unit);
         final Unit<Q> system = unit.getSystemUnit();
         if (system instanceof SystemUnit<?>) {
             final UnitConverter c = unit.getConverterTo(system);
@@ -104,7 +107,7 @@ public final class Quantities {
             }
             return DerivedScalar.Fallback.factory(value, unit, system, c, ((SystemUnit<Q>) system).quantity);
         } else {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(Errors.format(Errors.Keys.UnsupportedImplementation_1, unit.getClass()));
         }
     }
 
@@ -124,7 +127,7 @@ public final class Quantities {
             final Unit<Q> unit   = quantity.getUnit();
             final Unit<Q> system = unit.getSystemUnit();
             if (!(system instanceof SystemUnit<?>)) {
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException(Errors.format(Errors.Keys.UnsupportedImplementation_1, unit.getClass()));
             }
             final Class<Q> type = ((SystemUnit<Q>) system).quantity;
             if (!type.isInstance(quantity)) {

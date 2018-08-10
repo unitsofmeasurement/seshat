@@ -19,11 +19,13 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.MissingResourceException;
+import java.io.ObjectStreamException;
 import java.io.Serializable;
 import javax.measure.Unit;
 import javax.measure.Quantity;
 import tech.uom.seshat.math.Fraction;
 import tech.uom.seshat.util.Characters;
+import tech.uom.seshat.resources.Errors;
 
 
 /**
@@ -217,7 +219,8 @@ abstract class AbstractUnit<Q extends Quantity<Q>> implements Unit<Q>, Serializa
      * Returns the error message for an incompatible unit.
      */
     final String incompatible(final Unit<?> that) {
-        return "Incompatible unit.";    // TODO
+        Objects.requireNonNull(that);
+        return Errors.format(Errors.Keys.IncompatibleUnits_2, this, that);
     }
 
     /**
@@ -362,5 +365,18 @@ abstract class AbstractUnit<Q extends Quantity<Q>> implements Unit<Q>, Serializa
      */
     static boolean isSymbolChar(final int c) {
         return Character.isLetter(c) || Characters.isSubScript(c) || "°'′’\"″%‰‱-_".indexOf(c) >= 0;
+    }
+
+    /**
+     * Invoked on deserialization for returning a unique instance of {@code AbstractUnit} if possible.
+     */
+    final Object readResolve() throws ObjectStreamException {
+        if (symbol != null && Units.initialized) {              // Force Units class initialization.
+            final Object existing = UnitRegistry.putIfAbsent(symbol, this);
+            if (equals(existing)) {
+                return (Unit<?>) existing;
+            }
+        }
+        return this;
     }
 }

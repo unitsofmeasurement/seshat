@@ -17,6 +17,7 @@ package tech.uom.seshat;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Objects;
 import javax.measure.UnitConverter;
 
 
@@ -117,6 +118,7 @@ final class ConcatenatedConverter extends AbstractConverter {
      */
     @Override
     public UnitConverter concatenate(final UnitConverter converter) {
+        Objects.requireNonNull(converter);
         if (equals(converter.inverse())) {
             return LinearConverter.IDENTITY;
         }

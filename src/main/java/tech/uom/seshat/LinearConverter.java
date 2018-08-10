@@ -336,6 +336,7 @@ final class LinearConverter extends AbstractConverter {
      */
     @Override
     public UnitConverter concatenate(final UnitConverter converter) {
+        Objects.requireNonNull(converter);
         if (converter.isIdentity()) {
             return this;
         }

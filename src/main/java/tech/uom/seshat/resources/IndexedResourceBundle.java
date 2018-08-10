@@ -375,69 +375,6 @@ public abstract class IndexedResourceBundle extends ResourceBundle {
     }
 
     /**
-     * Gets a string for the given key and replaces all occurrences of "{0}",
-     * "{1}", with values of {@code arg0}, {@code arg1}, etc.
-     *
-     * @param  key   the key for the desired string.
-     * @param  arg0  value to substitute for "{0}".
-     * @param  arg1  value to substitute for "{1}".
-     * @param  arg2  value to substitute for "{2}".
-     * @return the formatted string for the given key.
-     * @throws MissingResourceException if no object for the given key can be found.
-     */
-    public final String getString(final short  key,
-                                  final Object arg0,
-                                  final Object arg1,
-                                  final Object arg2) throws MissingResourceException
-    {
-        return getString(key, new Object[] {arg0, arg1, arg2});
-    }
-
-    /**
-     * Gets a string for the given key and replaces all occurrences of "{0}",
-     * "{1}", with values of {@code arg0}, {@code arg1}, etc.
-     *
-     * @param  key   the key for the desired string.
-     * @param  arg0  value to substitute for "{0}".
-     * @param  arg1  value to substitute for "{1}".
-     * @param  arg2  value to substitute for "{2}".
-     * @param  arg3  value to substitute for "{3}".
-     * @return the formatted string for the given key.
-     * @throws MissingResourceException if no object for the given key can be found.
-     */
-    public final String getString(final short  key,
-                                  final Object arg0,
-                                  final Object arg1,
-                                  final Object arg2,
-                                  final Object arg3) throws MissingResourceException
-    {
-        return getString(key, new Object[] {arg0, arg1, arg2, arg3});
-    }
-
-    /**
-     * Gets a string for the given key and replaces all occurrences of "{0}",
-     * "{1}", with values of {@code arg0}, {@code arg1}, etc.
-     *
-     * @param  key   the key for the desired string.
-     * @param  arg0  value to substitute for "{0}".
-     * @param  arg1  value to substitute for "{1}".
-     * @param  arg2  value to substitute for "{2}".
-     * @param  arg3  value to substitute for "{3}".
-     * @param  arg4  value to substitute for "{4}".
-     * @return the formatted string for the given key.
-     * @throws MissingResourceException if no object for the given key can be found.
-     */
-    public final String getString(final short  key,
-                                  final Object arg0,
-                                  final Object arg1,
-                                  final Object arg2,
-                                  final Object arg3,
-                                  final Object arg4) throws MissingResourceException
-    {
-        return getString(key, new Object[] {arg0, arg1, arg2, arg3, arg4});
-    }
-
-    /**
      * Returns a string representation of this object.
      * This method is for debugging purposes only.
      *

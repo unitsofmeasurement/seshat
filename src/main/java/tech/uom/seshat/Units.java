@@ -18,10 +18,11 @@ package tech.uom.seshat;
 import javax.measure.Dimension;
 import javax.measure.Unit;
 import javax.measure.UnitConverter;
-import javax.measure.Quantity;
 import javax.measure.format.ParserException;
+import javax.measure.Quantity;
 import javax.measure.quantity.*;
-import javax.measure.quantity.Angle;                // Because of name collision with Angle in this SIS package.
+import javax.measure.quantity.Angle;
+import tech.uom.seshat.resources.Errors;
 
 import static tech.uom.seshat.UnitRegistry.SI;
 import static tech.uom.seshat.UnitRegistry.ACCEPTED;
@@ -998,7 +999,7 @@ public final class Units {
          */
         mps.related(1);
         METRES_PER_SECOND   = mps;
-        KILOMETRES_PER_HOUR = add(mps, LinearConverter.scale(10, 36),     "km∕h",  ACCEPTED, (short) 0);
+        KILOMETRES_PER_HOUR = add(mps, LinearConverter.scale(10, 36), "km∕h", ACCEPTED, (short) 0);
         /*
          * All Unit<Pressure>.
          */
@@ -1234,7 +1235,7 @@ public final class Units {
     @SuppressWarnings("unchecked")
     public static Unit<Angle> ensureAngular(final Unit<?> unit) throws IllegalArgumentException {
         if (unit != null && !isAngular(unit)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(Errors.format(Errors.Keys.NonAngularUnit_1, unit));
         }
         return (Unit<Angle>) unit;
     }
@@ -1252,7 +1253,7 @@ public final class Units {
     @SuppressWarnings("unchecked")
     public static Unit<Length> ensureLinear(final Unit<?> unit) throws IllegalArgumentException {
         if (unit != null && !isLinear(unit)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(Errors.format(Errors.Keys.NonLinearUnit_1, unit));
         }
         return (Unit<Length>) unit;
     }
@@ -1270,7 +1271,7 @@ public final class Units {
     @SuppressWarnings("unchecked")
     public static Unit<Time> ensureTemporal(final Unit<?> unit) throws IllegalArgumentException {
         if (unit != null && !isTemporal(unit)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(Errors.format(Errors.Keys.NonTemporalUnit_1, unit));
         }
         return (Unit<Time>) unit;
     }
@@ -1288,7 +1289,7 @@ public final class Units {
     @SuppressWarnings("unchecked")
     public static Unit<Dimensionless> ensureScale(final Unit<?> unit) throws IllegalArgumentException {
         if (unit != null && !isScale(unit)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(Errors.format(Errors.Keys.NonScaleUnit_1, unit));
         }
         return (Unit<Dimensionless>) unit;
     }

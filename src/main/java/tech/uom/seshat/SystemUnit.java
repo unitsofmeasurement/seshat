@@ -28,6 +28,7 @@ import javax.measure.spi.QuantityFactory;
 import tech.uom.seshat.math.Fraction;
 import tech.uom.seshat.util.Characters;
 import tech.uom.seshat.util.DerivedMap;
+import tech.uom.seshat.resources.Errors;
 
 
 /**
@@ -299,7 +300,9 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
             unit = new SystemUnit<>(type, dimension, null, (byte) 0, (short) 0, null);  // Intentionally no symbol.
         }
         if (!dimension.equals(unit.dimension)) {
-            throw new ClassCastException();
+            throw new ClassCastException(Errors.format(Errors.Keys.IncompatibleUnitDimension_5, new Object[] {
+                    this, (quantity != null) ? quantity.getSimpleName() : "?", dimension,
+                    type.getSimpleName(), unit.dimension}));
         }
         return unit;
     }
@@ -397,12 +400,14 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
     @Override
     @SuppressWarnings("unchecked")
     public Unit<Q> alternate(final String symbol) {
+        Objects.requireNonNull(symbol);
         final int c = invalidCharForSymbol(symbol, 0, false);
         if (c < -1) {
-            throw new IllegalArgumentException();   // TODO
+            throw new IllegalArgumentException(Errors.format(Errors.Keys.EmptyArgument_1, "symbol"));
         }
         if (c >= 0) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(Errors.format(Errors.Keys.IllegalCharacter_2,
+                    "symbol", String.valueOf(Character.toChars(c))));
         }
         if (symbol.equals(getSymbol())) {
             return this;
@@ -422,7 +427,7 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
                         return (SystemUnit<Q>) unit;
                     }
                 }
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException(Errors.format(Errors.Keys.ElementAlreadyPresent_1, symbol));
             }
             /*
              * This method may be invoked for a new quantity, after a call to 'asType(Class)'.
@@ -480,7 +485,7 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
         if (intermediate != other) {
             UnitConverter c = other.getConverterTo(intermediate);
             if (!c.isLinear()) {
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException(Errors.format(Errors.Keys.NonRatioUnit_1, other));
             }
             if (inverse) c = c.inverse();
             result = result.transform(c);

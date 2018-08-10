@@ -25,6 +25,7 @@ import javax.measure.UnconvertibleException;
 import javax.measure.IncommensurableException;
 import tech.uom.seshat.math.Fraction;
 import tech.uom.seshat.util.Characters;
+import tech.uom.seshat.resources.Errors;
 
 
 /**
@@ -325,7 +326,7 @@ final class ConventionalUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> {
      */
     @Override
     public Unit<Q> alternate(final String symbol) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(Errors.format(Errors.Keys.NonSystemUnit_1, this));
     }
 
     /**
@@ -333,7 +334,7 @@ final class ConventionalUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> {
      */
     private void ensureRatioScale() {
         if (!toTarget.isLinear()) {
-            throw new IllegalStateException();
+            throw new IllegalStateException(Errors.format(Errors.Keys.NonRatioUnit_1, this));
         }
     }
 

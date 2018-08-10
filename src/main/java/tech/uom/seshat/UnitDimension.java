@@ -25,6 +25,7 @@ import java.io.ObjectStreamException;
 import javax.measure.Dimension;
 import tech.uom.seshat.math.Fraction;
 import tech.uom.seshat.math.FractionConverter;
+import tech.uom.seshat.resources.Errors;
 import tech.uom.seshat.util.DerivedMap;
 
 
@@ -286,7 +287,7 @@ final class UnitDimension implements Dimension, Serializable {
                     return (sum.numerator != 0) ? sum : null;
                 });
             } else if (p.numerator != 0) {
-                throw new UnsupportedOperationException();
+                throw new UnsupportedOperationException(Errors.format(Errors.Keys.UnsupportedImplementation_1, dim.getClass()));
             }
         }
         return create(product);
@@ -328,7 +329,7 @@ final class UnitDimension implements Dimension, Serializable {
     @Override
     public UnitDimension root(final int n) {
         switch (n) {
-            case 0:  throw new ArithmeticException();
+            case 0:  throw new ArithmeticException(Errors.format(Errors.Keys.IllegalArgumentValue_2, "n", 0));
             case 1:  return this;
             default: return pow(new Fraction(1,n));
         }

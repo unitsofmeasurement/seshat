@@ -154,6 +154,19 @@
           </execution>
         </executions>
       </plugin>
+      <!-- plugin>
+        <!- Compile properties files into resources UTF files. ->
+        <groupId>org.apache.sis.core</groupId>
+        <artifactId>sis-build-helper</artifactId>
+        <version>0.8</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>compile-resources</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin -->
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.0</version>
