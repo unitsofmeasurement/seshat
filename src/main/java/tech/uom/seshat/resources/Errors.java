@@ -57,6 +57,11 @@ public final class Errors extends IndexedResourceBundle {
         }
 
         /**
+         * Can not convert value “{0}” to type ‘{1}’.
+         */
+        public static final short CanNotConvertValue_2 = 18;
+
+        /**
          * Element “{0}” is already present.
          */
         public static final short ElementAlreadyPresent_1 = 1;

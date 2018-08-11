@@ -28,6 +28,7 @@ import java.text.ParsePosition;
 import java.text.ParseException;
 import java.util.ResourceBundle;
 import java.util.MissingResourceException;
+import java.util.ConcurrentModificationException;
 import java.io.IOException;
 import javax.measure.Dimension;
 import javax.measure.Unit;
@@ -386,14 +387,14 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
              * Assuming there is no bug in our algorithm, this exception should never happen
              * unless this UnitFormat has been modified concurrently in another thread.
              */
-            throw new IllegalStateException("unitToLabel");
+            throw new ConcurrentModificationException("unitToLabel");
         }
         if (unitForOldLabel != null && !unitForOldLabel.equals(unit)) {
             /*
              * Assuming there is no bug in our algorithm, this exception should never happen
              * unless this UnitFormat has been modified concurrently in another thread.
              */
-            throw new IllegalStateException("labelToUnit");
+            throw new ConcurrentModificationException("labelToUnit");
         }
     }
 

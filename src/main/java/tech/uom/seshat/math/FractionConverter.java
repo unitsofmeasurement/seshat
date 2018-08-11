@@ -16,6 +16,7 @@
 package tech.uom.seshat.math;
 
 import java.util.function.Function;
+import tech.uom.seshat.resources.Errors;
 
 
 /**
@@ -48,7 +49,7 @@ public final class FractionConverter implements Function<Fraction,Integer> {
         if ((value.numerator % value.denominator) == 0) {
             return value.numerator / value.denominator;
         }
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException(Errors.format(Errors.Keys.CanNotConvertValue_2, value, Integer.class));
     }
 
     /**
