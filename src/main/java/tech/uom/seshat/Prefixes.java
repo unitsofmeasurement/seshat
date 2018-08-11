@@ -175,7 +175,7 @@ final class Prefixes {
                             c = LinearConverter.pow(c, power, false);
                         }
                         symbol = Prefixes.concat(prefix, symbol);
-                        return new ConventionalUnit<>((AbstractUnit<?>) unit, c, symbol.intern(), (byte) 0, (short) 0);
+                        return new ConventionalUnit<>((AbstractUnit<?>) unit, c, symbol.intern(), (byte) 0);
                     }
                 }
             }
@@ -203,7 +203,7 @@ final class Prefixes {
                 {
                     symbol = symbol.substring(1);
                     UnitConverter c = converter('m');
-                    return new ConventionalUnit<>(unit, c, symbol, UnitRegistry.PREFIXABLE, (byte) 0).unique(symbol);
+                    return new ConventionalUnit<>(unit, c, symbol, UnitRegistry.PREFIXABLE).unique(symbol);
                 }
             }
         }

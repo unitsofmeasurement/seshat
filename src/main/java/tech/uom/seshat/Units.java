@@ -33,9 +33,6 @@ import static tech.uom.seshat.UnitRegistry.PREFIXABLE;
 
 /**
  * Provides constants for various Units of Measurement together with static methods working on {@link Unit} instances.
- * Unit names and definitions in this class follow the definitions provided in the EPSG geodetic dataset
- * (when the unit exists in that dataset),
- * except “year” which has been renamed “{@linkplain #TROPICAL_YEAR tropical year}”.
  * This class focuses on the most commonly used units in the geospatial domain:
  * angular units ({@linkplain #DEGREE degree}, {@linkplain #ARC_SECOND arc-second}, …),
  * linear units ({@linkplain #KILOMETRE kilometre}, {@linkplain #NAUTICAL_MILE nautical mile}, …) and
@@ -90,7 +87,7 @@ public final class Units {
     /**
      * Unit of measurement defined as 0.001 metres (1 mm).
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #METRE},
-     * the unlocalized name is “millimetre” and the identifier is EPSG:1025.
+     * and the unlocalized name is “millimetre”.
      *
      * <div class="note"><p class="simpleTagLabel" style="margin-bottom:0">Related units:</p>
      * <table class="compact" summary="Related units" style="margin-left:30px; line-height:1.25">
@@ -104,7 +101,7 @@ public final class Units {
     /**
      * Unit of measurement defined as 0.01 metres (1 cm).
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #METRE},
-     * the unlocalized name is “centimetre” and the identifier is EPSG:1033.
+     * and the unlocalized name is “centimetre”.
      *
      * <div class="note"><p class="simpleTagLabel" style="margin-bottom:0">Related units:</p>
      * <table class="compact" summary="Related units" style="margin-left:30px; line-height:1.25">
@@ -117,7 +114,7 @@ public final class Units {
 
     /**
      * The SI base unit for distances (m).
-     * The unlocalized name is “metre” and the identifier is EPSG:9001.
+     * The unlocalized name is “metre”.
      * This is the base of all other {@linkplain #isLinear(Unit) linear} units.
      *
      * <div class="note"><p class="simpleTagLabel" style="margin-bottom:0">Related units:</p>
@@ -132,7 +129,7 @@ public final class Units {
     /**
      * Unit of measurement defined as 1000 metres (1 km).
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #METRE},
-     * the unlocalized name is “kilometre” and the identifier is EPSG:9036.
+     * and the unlocalized name is “kilometre”.
      *
      * <div class="note"><p class="simpleTagLabel" style="margin-bottom:0">Related units:</p>
      * <table class="compact" summary="Related units" style="margin-left:30px; line-height:1.25">
@@ -148,7 +145,7 @@ public final class Units {
      * This is approximatively the distance between two parallels of latitude
      * separated by one {@linkplain #ARC_MINUTE arc-minute}.
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #METRE},
-     * the unlocalized name is “nautical mile” and the identifier is EPSG:9030.
+     * and the unlocalized name is “nautical mile”.
      *
      * <p>There is no internationally agreed symbol for nautical mile. Seshat uses “M” in agreement with the
      * International Hydrographic Organization (IHO) and the International Bureau of Weights and Measures (BIPM).
@@ -170,7 +167,6 @@ public final class Units {
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #METRE}.
      * The unlocalized name is “statute mile” but is localized as "international mile" in the US
      * for avoiding confusion with the US survey mile.
-     * The identifier is EPSG:9093.
      *
      * <div class="note"><p class="simpleTagLabel" style="margin-bottom:0">Related units:</p>
      * <table class="compact" summary="Related units" style="margin-left:30px; line-height:1.25">
@@ -185,7 +181,7 @@ public final class Units {
      * Unit of measurement approximatively equals to 0.3048006096… metres.
      * The legal definition is exactly 12/39.37 metres.
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #METRE},
-     * the unlocalized name is “US survey foot” and the identifier is EPSG:9003.
+     * and the unlocalized name is “US survey foot”.
      *
      * <div class="note"><p class="simpleTagLabel" style="margin-bottom:0">Related units:</p>
      * <table class="compact" summary="Related units" style="margin-left:30px; line-height:1.25">
@@ -199,7 +195,7 @@ public final class Units {
     /**
      * Unit of measurement defined as 0.3047972654 metres.
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #METRE},
-     * the unlocalized name is “Clarke’s foot” and the identifier is EPSG:9005.
+     * and the unlocalized name is “Clarke’s foot”.
      *
      * <div class="note"><p class="simpleTagLabel" style="margin-bottom:0">Related units:</p>
      * <table class="compact" summary="Related units" style="margin-left:30px; line-height:1.25">
@@ -213,7 +209,7 @@ public final class Units {
     /**
      * Unit of measurement defined as exactly 0.3048 metres (1 ft).
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #METRE},
-     * the unlocalized name is “foot” and the identifier is EPSG:9002.
+     * and the unlocalized name is “foot”.
      *
      * <div class="note"><p class="simpleTagLabel" style="margin-bottom:0">Related units:</p>
      * <table class="compact" summary="Related units" style="margin-left:30px; line-height:1.25">
@@ -301,7 +297,7 @@ public final class Units {
      * Unit of measurement defined as 10<sup>-6</sup> radians (1 µrad).
      * The distance of one microradian of latitude on Earth is approximatively 2 millimetres.
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #RADIAN},
-     * the unlocalized name is “microradian” and the identifier is EPSG:9109.
+     * and the unlocalized name is “microradian”.
      *
      * <div class="note"><p class="simpleTagLabel" style="margin-bottom:0">Related units:</p>
      * <table class="compact" summary="Related units" style="margin-left:30px; line-height:1.25">
@@ -315,7 +311,7 @@ public final class Units {
     /**
      * The SI unit for plane angles (rad).
      * There is 2π radians in a circle.
-     * The unlocalized name is “radian” and the identifier is EPSG:9101.
+     * The unlocalized name is “radian”.
      * This is the base of all other {@linkplain #isAngular(Unit) angular} units.
      *
      * <div class="note"><p class="simpleTagLabel" style="margin-bottom:0">Related units:</p>
@@ -331,7 +327,7 @@ public final class Units {
      * Unit of measurement defined as π/180 radians (1°).
      * There is 360° in a circle.
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #RADIAN},
-     * the unlocalized name is “degree” and the identifier is EPSG:9102.
+     * and the unlocalized name is “degree”.
      *
      * <div class="note"><p class="simpleTagLabel" style="margin-bottom:0">Related units:</p>
      * <table class="compact" summary="Related units" style="margin-left:30px; line-height:1.25">
@@ -347,7 +343,7 @@ public final class Units {
      * The distance of one arc-minute of latitude on Earth is approximatively 1852 metres
      * (one {@linkplain #NAUTICAL_MILE nautical mile}).
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #RADIAN},
-     * the unlocalized name is “arc-minute” and the identifier is EPSG:9103.
+     * and the unlocalized name is “arc-minute”.
      *
      * <div class="note"><p class="simpleTagLabel" style="margin-bottom:0">Related units:</p>
      * <table class="compact" summary="Related units" style="margin-left:30px; line-height:1.25">
@@ -362,7 +358,7 @@ public final class Units {
      * Unit of measurement defined as 1/(60×60) degree (1″).
      * The distance of one arc-second of latitude on Earth is approximatively 31 metres.
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #RADIAN},
-     * the unlocalized name is “arc-second” and the identifier is EPSG:9104.
+     * and the unlocalized name is “arc-second”.
      *
      * <div class="note"><p class="simpleTagLabel" style="margin-bottom:0">Related units:</p>
      * <table class="compact" summary="Related units" style="margin-left:30px; line-height:1.25">
@@ -378,7 +374,6 @@ public final class Units {
      * There is 400 grads in a circle.
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #RADIAN},
      * the unlocalized name is “grad”, but the “gon” alias is also accepted.
-     * The identifier is EPSG:9105.
      *
      * <div class="note"><p class="simpleTagLabel" style="margin-bottom:0">Related units:</p>
      * <table class="compact" summary="Related units" style="margin-left:30px; line-height:1.25">
@@ -408,7 +403,7 @@ public final class Units {
 
     /**
      * The SI base unit for durations (s).
-     * The unlocalized name is “second” and the identifier is EPSG:1040.
+     * The unlocalized name is “second”.
      * This is the base of all other {@linkplain #isTemporal(Unit) temporal} units.
      *
      * <div class="note"><p class="simpleTagLabel" style="margin-bottom:0">Related units:</p>
@@ -481,7 +476,7 @@ public final class Units {
      * This is defined by the International Union of Geological Sciences (IUGS) as exactly 31556925.445 seconds,
      * taken as the length of the tropical year in the the year 2000.
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #SECOND},
-     * the unlocalized name is “year” and the identifier is EPSG:1029.
+     * the unlocalized name is “year”.
      *
      * <div class="note"><p class="simpleTagLabel" style="margin-bottom:0">Related units:</p>
      * <table class="compact" summary="Related units" style="margin-left:30px; line-height:1.25">
@@ -506,7 +501,7 @@ public final class Units {
 
     /**
      * The SI derived unit for speed (m/s).
-     * The unlocalized name is “metres per second” and the identifier is EPSG:1026.
+     * The unlocalized name is “metres per second”.
      *
      * <div class="note"><p class="simpleTagLabel" style="margin-bottom:0">Related units:</p>
      * <table class="compact" summary="Related units" style="margin-left:30px; line-height:1.25">
@@ -846,7 +841,7 @@ public final class Units {
 
     /**
      * The base dimensionless unit for scale measurements.
-     * The unlocalized name is “unity” and the identifier is EPSG:9201.
+     * The unlocalized name is “unity”.
      * This is the base of all other {@linkplain #isScale(Unit) scale} units:
      *
      * {@link #PERCENT} (%),
@@ -869,20 +864,12 @@ public final class Units {
     /**
      * Dimensionless unit for parts per million (ppm).
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #UNITY},
-     * the unlocalized name is “parts per million” and the identifier is EPSG:9202.
+     * the unlocalized name is “parts per million”.
      *
      * @see #UNITY
      * @see #PERCENT
      */
     public static final Unit<Dimensionless> PPM;
-
-    /**
-     * Sigma-level, used in oceanography. This is a way to measure a depth as a fraction of the sea floor depth.
-     *
-     * <p>If we make this field public in a future Seshat version, we should consider introducing a new quantity type.
-     * The type to introduce has not yet been determined.</p>
-     */
-    static final Unit<Dimensionless> SIGMA;
 
     /**
      * Dimensionless unit for pixels (px).
@@ -934,16 +921,16 @@ public final class Units {
         /*
          * Base, derived or alternate units that we need to reuse more than once in this static initializer.
          */
-        final SystemUnit<Length>        m   = add(Length.class,        Scalar.Length::new,         length,        "m",   (byte) (SI | PREFIXABLE), (short) 9001);
-        final SystemUnit<Area>          m2  = add(Area.class,          Scalar.Area::new,           area,          "m²",  (byte) (SI | PREFIXABLE), (short) 0);
-        final SystemUnit<Volume>        m3  = add(Volume.class,        Scalar.Volume::new,         length.pow(3), "m³",  (byte) (SI | PREFIXABLE), (short) 0);
-        final SystemUnit<Time>          s   = add(Time.class,          Scalar.Time::new,           time,          "s",   (byte) (SI | PREFIXABLE), (short) 1040);
-        final SystemUnit<Temperature>   K   = add(Temperature.class,   Scalar.Temperature.FACTORY, temperature,   "K",   (byte) (SI | PREFIXABLE), (short) 0);
-        final SystemUnit<Speed>         mps = add(Speed.class,         Scalar.Speed::new,          speed,         "m∕s", (byte) (SI | PREFIXABLE), (short) 1026);
-        final SystemUnit<Pressure>      Pa  = add(Pressure.class,      Scalar.Pressure::new,       pressure,      "Pa",  (byte) (SI | PREFIXABLE), (short) 0);
-        final SystemUnit<Angle>         rad = add(Angle.class,         Scalar.Angle::new,          dimensionless, "rad", (byte) (SI | PREFIXABLE), (short) 9101);
-        final SystemUnit<Dimensionless> one = add(Dimensionless.class, Scalar.Dimensionless::new,  dimensionless, "",            SI,               (short) 9201);
-        final SystemUnit<Mass>          kg  = add(Mass.class,          Scalar.Mass::new,           mass,          "kg",          SI,               (short) 0);
+        final SystemUnit<Length>        m   = add(Length.class,        Scalar.Length::new,         length,        "m",   (byte) (SI | PREFIXABLE));
+        final SystemUnit<Area>          m2  = add(Area.class,          Scalar.Area::new,           area,          "m²",  (byte) (SI | PREFIXABLE));
+        final SystemUnit<Volume>        m3  = add(Volume.class,        Scalar.Volume::new,         length.pow(3), "m³",  (byte) (SI | PREFIXABLE));
+        final SystemUnit<Time>          s   = add(Time.class,          Scalar.Time::new,           time,          "s",   (byte) (SI | PREFIXABLE));
+        final SystemUnit<Temperature>   K   = add(Temperature.class,   Scalar.Temperature.FACTORY, temperature,   "K",   (byte) (SI | PREFIXABLE));
+        final SystemUnit<Speed>         mps = add(Speed.class,         Scalar.Speed::new,          speed,         "m∕s", (byte) (SI | PREFIXABLE));
+        final SystemUnit<Pressure>      Pa  = add(Pressure.class,      Scalar.Pressure::new,       pressure,      "Pa",  (byte) (SI | PREFIXABLE));
+        final SystemUnit<Angle>         rad = add(Angle.class,         Scalar.Angle::new,          dimensionless, "rad", (byte) (SI | PREFIXABLE));
+        final SystemUnit<Dimensionless> one = add(Dimensionless.class, Scalar.Dimensionless::new,  dimensionless, "",            SI);
+        final SystemUnit<Mass>          kg  = add(Mass.class,          Scalar.Mass::new,           mass,          "kg",          SI);
         /*
          * All SI prefix to be used below, with additional converters to be used more than once.
          */
@@ -962,60 +949,60 @@ public final class Units {
          */
         rad.related(4);
         RADIAN      = rad;
-        GRAD        = add(rad, LinearConverter.scale(Math.PI / 20, 200       / 20), "grad", OTHER,    (short) 9105);
-        DEGREE      = add(rad, LinearConverter.scale(Math.PI / 20, 180       / 20), "°",    ACCEPTED, (short) 9102);
-        ARC_MINUTE  = add(rad, LinearConverter.scale(Math.PI / 20, 180*60    / 20), "′",    ACCEPTED, (short) 9103);
-        ARC_SECOND  = add(rad, LinearConverter.scale(Math.PI / 20, 180*60*60 / 20), "″",    ACCEPTED, (short) 9104);
-        MICRORADIAN = add(rad, micro,                                               "µrad", SI,       (short) 9109);
+        GRAD        = add(rad, LinearConverter.scale(Math.PI / 20, 200       / 20), "grad", OTHER);
+        DEGREE      = add(rad, LinearConverter.scale(Math.PI / 20, 180       / 20), "°",    ACCEPTED);
+        ARC_MINUTE  = add(rad, LinearConverter.scale(Math.PI / 20, 180*60    / 20), "′",    ACCEPTED);
+        ARC_SECOND  = add(rad, LinearConverter.scale(Math.PI / 20, 180*60*60 / 20), "″",    ACCEPTED);
+        MICRORADIAN = add(rad, micro,                                               "µrad", SI);
         /*
          * All Unit<Length>.
          */
         m.related(7);
         METRE          = m;
-        NANOMETRE      = add(m, nano,                                     "nm",    SI,       (short) 0);
-        MILLIMETRE     = add(m, milli,                                    "mm",    SI,       (short) 1025);
-        CENTIMETRE     = add(m, centi,                                    "cm",    SI,       (short) 1033);
-        KILOMETRE      = add(m, kilo,                                     "km",    SI,       (short) 9036);
-        NAUTICAL_MILE  = add(m, LinearConverter.scale(   1852,        1), "M",     OTHER,    (short) 9030);
-        STATUTE_MILE   = add(m, LinearConverter.scale(1609344,      100), "mi",    IMPERIAL, (short) 9093);
-        US_SURVEY_FOOT = add(m, LinearConverter.scale(   1200,     3937), "ftUS",  OTHER,    (short) 9003);
-        CLARKE_FOOT    = add(m, LinearConverter.scale(3047972654d, 1E10), "ftCla", OTHER,    (short) 9005);
-        FOOT           = add(m, LinearConverter.scale(   3048,    10000), "ft",    IMPERIAL, (short) 9002);
-        INCH           = add(m, LinearConverter.scale(    254,    10000), "in",    IMPERIAL, (short) 0);
-        POINT          = add(m, LinearConverter.scale( 996264, 72000000), "pt",    OTHER,    (short) 0);
+        NANOMETRE      = add(m, nano,                                     "nm",    SI);
+        MILLIMETRE     = add(m, milli,                                    "mm",    SI);
+        CENTIMETRE     = add(m, centi,                                    "cm",    SI);
+        KILOMETRE      = add(m, kilo,                                     "km",    SI);
+        NAUTICAL_MILE  = add(m, LinearConverter.scale(   1852,        1), "M",     OTHER);
+        STATUTE_MILE   = add(m, LinearConverter.scale(1609344,      100), "mi",    IMPERIAL);
+        US_SURVEY_FOOT = add(m, LinearConverter.scale(   1200,     3937), "ftUS",  OTHER);
+        CLARKE_FOOT    = add(m, LinearConverter.scale(3047972654d, 1E10), "ftCla", OTHER);
+        FOOT           = add(m, LinearConverter.scale(   3048,    10000), "ft",    IMPERIAL);
+        INCH           = add(m, LinearConverter.scale(    254,    10000), "in",    IMPERIAL);
+        POINT          = add(m, LinearConverter.scale( 996264, 72000000), "pt",    OTHER);
         /*
          * All Unit<Time>.
          */
         s.related(5);
         SECOND         = s;
-        MILLISECOND    = add(s, milli,                                      "ms",  SI,       (short) 0);
-        MINUTE         = add(s, LinearConverter.scale(         60,      1), "min", ACCEPTED, (short) 0);
-        HOUR           = add(s, LinearConverter.scale(      60*60,      1), "h",   ACCEPTED, (short) 0);
-        DAY            = add(s, LinearConverter.scale(   24*60*60,      1), "d",   ACCEPTED, (short) 0);
-        WEEK           = add(s, LinearConverter.scale( 7*24*60*60,      1), "wk",  OTHER,    (short) 0);
-        TROPICAL_YEAR  = add(s, LinearConverter.scale(31556925445.0, 1000), "a",   OTHER,    (short) 1029);
+        MILLISECOND    = add(s, milli,                                      "ms",  SI);
+        MINUTE         = add(s, LinearConverter.scale(         60,      1), "min", ACCEPTED);
+        HOUR           = add(s, LinearConverter.scale(      60*60,      1), "h",   ACCEPTED);
+        DAY            = add(s, LinearConverter.scale(   24*60*60,      1), "d",   ACCEPTED);
+        WEEK           = add(s, LinearConverter.scale( 7*24*60*60,      1), "wk",  OTHER);
+        TROPICAL_YEAR  = add(s, LinearConverter.scale(31556925445.0, 1000), "a",   OTHER);
         /*
          * All Unit<Speed>.
          */
         mps.related(1);
         METRES_PER_SECOND   = mps;
-        KILOMETRES_PER_HOUR = add(mps, LinearConverter.scale(10, 36), "km∕h", ACCEPTED, (short) 0);
+        KILOMETRES_PER_HOUR = add(mps, LinearConverter.scale(10, 36), "km∕h", ACCEPTED);
         /*
          * All Unit<Pressure>.
          */
         Pa.related(3);
         PASCAL      = Pa;
-        HECTOPASCAL = add(Pa,  hecto,                            "hPa",  SI,    (short) 0);
-        DECIBAR     = add(Pa,  ten4,                             "dbar", OTHER, (short) 0);
-        BAR         = add(Pa,  LinearConverter.scale(100000, 1), "bar",  OTHER, (short) 0);
-        ATMOSPHERE  = add(Pa,  LinearConverter.scale(101325, 1), "atm",  OTHER, (short) 0);
+        HECTOPASCAL = add(Pa,  hecto,                            "hPa",  SI);
+        DECIBAR     = add(Pa,  ten4,                             "dbar", OTHER);
+        BAR         = add(Pa,  LinearConverter.scale(100000, 1), "bar",  OTHER);
+        ATMOSPHERE  = add(Pa,  LinearConverter.scale(101325, 1), "atm",  OTHER);
         /*
          * All Unit<Temperature>.
          */
         K.related(1);
         KELVIN       = K;
-        CELSIUS      = add(K, LinearConverter.offset(  27315, 100), "°C", SI,    (short) 0);
-        FAHRENHEIT   = add(K, new LinearConverter(100, 45967, 180), "°F", OTHER, (short) 0);
+        CELSIUS      = add(K, LinearConverter.offset(  27315, 100), "°C", SI);
+        FAHRENHEIT   = add(K, new LinearConverter(100, 45967, 180), "°F", OTHER);
         /*
          * Unit<Volume> and Unit<Mass>. Those units need to be handled in a special way because:
          * 1) The base unit of mass is "kg", not "g". This is handled by a hard-coded case in SystemUnit.
@@ -1024,38 +1011,37 @@ public final class Units {
         SQUARE_METRE = m2;
         CUBIC_METRE  = m3;
         KILOGRAM     = kg;
-        HECTARE      = add(m2, ten4,  "ha",        ACCEPTED,               (short) 0);
-        LITRE        = add(m3, milli, "L", (byte) (ACCEPTED | PREFIXABLE), (short) 0);
-        GRAM         = add(kg, milli, "g", (byte) (ACCEPTED | PREFIXABLE), (short) 0);
+        HECTARE      = add(m2, ten4,  "ha",        ACCEPTED);
+        LITRE        = add(m3, milli, "L", (byte) (ACCEPTED | PREFIXABLE));
+        GRAM         = add(kg, milli, "g", (byte) (ACCEPTED | PREFIXABLE));
         /*
          * Force, energy, electricity, magnetism and other units.
          * Frequency must be defined after angular velocities.
          */
-        HERTZ      = add(Frequency.class,           Scalar.Frequency::new, frequency,                    "Hz",  (byte) (SI | PREFIXABLE), (short) 0);
-        NEWTON     = add(Force.class,               Scalar.Force::new,     force,                        "N",   (byte) (SI | PREFIXABLE), (short) 0);
-        JOULE      = add(Energy.class,              Scalar.Energy::new,    energy,                       "J",   (byte) (SI | PREFIXABLE), (short) 0);
-        WATT       = add(Power.class,               Scalar.Power::new,     power,                        "W",   (byte) (SI | PREFIXABLE), (short) 0);
-        AMPERE     = add(ElectricCurrent.class,     null,                  current,                      "A",   (byte) (SI | PREFIXABLE), (short) 0);
-        COULOMB    = add(ElectricCharge.class,      null,                  charge,                       "C",   (byte) (SI | PREFIXABLE), (short) 0);
-        VOLT       = add(ElectricPotential.class,   null,                  potential,                    "V",   (byte) (SI | PREFIXABLE), (short) 0);
-        FARAD      = add(ElectricCapacitance.class, null,                  charge.divide(potential),     "F",   (byte) (SI | PREFIXABLE), (short) 0);
-        SIEMENS    = add(ElectricConductance.class, null,                  current.divide(potential),    "S",   (byte) (SI | PREFIXABLE), (short) 0);
-        OHM        = add(ElectricResistance.class,  null,                  potential.divide(current),    "Ω",   (byte) (SI | PREFIXABLE), (short) 0);
-        WEBER      = add(MagneticFlux.class,        null,                  magneticFlux,                 "Wb",  (byte) (SI | PREFIXABLE), (short) 0);
-        TESLA      = add(MagneticFluxDensity.class, null,                  magneticFlux.divide(area),    "T",   (byte) (SI | PREFIXABLE), (short) 0);
-        HENRY      = add(ElectricInductance.class,  null,                  magneticFlux.divide(current), "H",   (byte) (SI | PREFIXABLE), (short) 0);
-        LUX        = add(Illuminance.class,         null,                  luminous.divide(area),        "lx",  (byte) (SI | PREFIXABLE), (short) 0);
-        LUMEN      = add(LuminousFlux.class,        null,                  luminous,                     "lm",  (byte) (SI | PREFIXABLE), (short) 0);
-        CANDELA    = add(LuminousIntensity.class,   null,                  luminous,                     "cd",  (byte) (SI | PREFIXABLE), (short) 0);    // Must be after Lumen.
-        MOLE       = add(AmountOfSubstance.class,   null,                  amount,                       "mol", (byte) (SI | PREFIXABLE), (short) 0);
-        STERADIAN  = add(SolidAngle.class,          null,                  dimensionless,                "sr",  (byte) (SI | PREFIXABLE), (short) 0);
+        HERTZ      = add(Frequency.class,           Scalar.Frequency::new, frequency,                    "Hz",  (byte) (SI | PREFIXABLE));
+        NEWTON     = add(Force.class,               Scalar.Force::new,     force,                        "N",   (byte) (SI | PREFIXABLE));
+        JOULE      = add(Energy.class,              Scalar.Energy::new,    energy,                       "J",   (byte) (SI | PREFIXABLE));
+        WATT       = add(Power.class,               Scalar.Power::new,     power,                        "W",   (byte) (SI | PREFIXABLE));
+        AMPERE     = add(ElectricCurrent.class,     null,                  current,                      "A",   (byte) (SI | PREFIXABLE));
+        COULOMB    = add(ElectricCharge.class,      null,                  charge,                       "C",   (byte) (SI | PREFIXABLE));
+        VOLT       = add(ElectricPotential.class,   null,                  potential,                    "V",   (byte) (SI | PREFIXABLE));
+        FARAD      = add(ElectricCapacitance.class, null,                  charge.divide(potential),     "F",   (byte) (SI | PREFIXABLE));
+        SIEMENS    = add(ElectricConductance.class, null,                  current.divide(potential),    "S",   (byte) (SI | PREFIXABLE));
+        OHM        = add(ElectricResistance.class,  null,                  potential.divide(current),    "Ω",   (byte) (SI | PREFIXABLE));
+        WEBER      = add(MagneticFlux.class,        null,                  magneticFlux,                 "Wb",  (byte) (SI | PREFIXABLE));
+        TESLA      = add(MagneticFluxDensity.class, null,                  magneticFlux.divide(area),    "T",   (byte) (SI | PREFIXABLE));
+        HENRY      = add(ElectricInductance.class,  null,                  magneticFlux.divide(current), "H",   (byte) (SI | PREFIXABLE));
+        LUX        = add(Illuminance.class,         null,                  luminous.divide(area),        "lx",  (byte) (SI | PREFIXABLE));
+        LUMEN      = add(LuminousFlux.class,        null,                  luminous,                     "lm",  (byte) (SI | PREFIXABLE));
+        CANDELA    = add(LuminousIntensity.class,   null,                  luminous,                     "cd",  (byte) (SI | PREFIXABLE));    // Must be after Lumen.
+        MOLE       = add(AmountOfSubstance.class,   null,                  amount,                       "mol", (byte) (SI | PREFIXABLE));
+        STERADIAN  = add(SolidAngle.class,          null,                  dimensionless,                "sr",  (byte) (SI | PREFIXABLE));
         /*
          * All Unit<Dimensionless>.
          */
-        SIGMA   = add(Dimensionless.class, Scalar.Dimensionless::new, dimensionless, "sigma", OTHER, (short) 0);
-        PIXEL   = add(Dimensionless.class, Scalar.Dimensionless::new, dimensionless, "px",    OTHER, (short) 0);
-        PERCENT = add(one, centi,                                                    "%",     OTHER, (short) 0);
-        PPM     = add(one, micro,                                                    "ppm",   OTHER, (short) 9202);
+        PIXEL   = add(Dimensionless.class, Scalar.Dimensionless::new, dimensionless, "px",  OTHER);
+        PERCENT = add(one, centi,                                                    "%",   OTHER);
+        PPM     = add(one, micro,                                                    "ppm", OTHER);
         UNITY   = UnitRegistry.init(one);  // Must be last in order to take precedence over all other units associated to UnitDimension.NONE.
 
         UnitRegistry.alias(UNITY,       Short.valueOf((short) 9203));
@@ -1084,20 +1070,19 @@ public final class Units {
      * @param  dimension  the unit dimension.
      * @param  symbol     the unit symbol, or {@code null} if this unit has no specific symbol.
      * @param  scope      {@link UnitRegistry#SI}, {@link UnitRegistry#ACCEPTED}, other constants or 0 if unknown.
-     * @param  epsg       the EPSG code, or 0 if this unit has no EPSG code.
      */
     private static <Q extends Quantity<Q>> SystemUnit<Q> add(Class<Q> quantity, ScalarFactory<Q> factory,
-            UnitDimension dimension, String symbol, byte scope, short epsg)
+            UnitDimension dimension, String symbol, byte scope)
     {
-        return UnitRegistry.init(new SystemUnit<>(quantity, dimension, symbol, scope, epsg, factory));
+        return UnitRegistry.init(new SystemUnit<>(quantity, dimension, symbol, scope, factory));
     }
 
     /**
      * Invoked by {@code Units} static class initializer for registering SI conventional units.
      * This method shall be invoked in a single thread by the {@code Units} class initializer only.
      */
-    private static <Q extends Quantity<Q>> ConventionalUnit<Q> add(SystemUnit<Q> target, UnitConverter toTarget, String symbol, byte scope, short epsg) {
-        final ConventionalUnit<Q> unit = UnitRegistry.init(new ConventionalUnit<>(target, toTarget, symbol, scope, epsg));
+    private static <Q extends Quantity<Q>> ConventionalUnit<Q> add(SystemUnit<Q> target, UnitConverter toTarget, String symbol, byte scope) {
+        final ConventionalUnit<Q> unit = UnitRegistry.init(new ConventionalUnit<>(target, toTarget, symbol, scope));
         final ConventionalUnit<Q>[] related = target.related();
         if (related != null && unit.scope != UnitRegistry.SI) {
             // Search first empty slot. This algorithm is inefficient, but the length of those arrays is small (<= 7).
@@ -1403,14 +1388,6 @@ public final class Units {
      * This method is capable to handle some symbols found during WKT parsing or in XML files.
      * The list of symbols supported by this method is implementation-dependent
      * and may change in future Seshat versions.
-     *
-     * <div class="section">NetCDF unit symbols</div>
-     * The attributes in netCDF files often merge the axis direction with the angular unit,
-     * as in {@code "degrees_east"} or {@code "degrees_north"}. This {@code valueOf} method
-     * ignores those suffixes and unconditionally returns {@link #DEGREE} for all axis directions.
-     * In particular, the units for {@code "degrees_west"} and {@code "degrees_east"}
-     * do <strong>not</strong> have opposite sign.
-     * It is caller responsibility to handle the direction of axes associated to netCDF units.
      *
      * @param  uom  the symbol to parse, or {@code null}.
      * @return the parsed symbol, or {@code null} if {@code uom} was null.

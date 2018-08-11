@@ -54,16 +54,15 @@ final class ConventionalUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> {
     final UnitConverter toTarget;
 
     /**
-     * Creates a new unit having the given symbol and EPSG code.
+     * Creates a new unit having the given symbol.
      *
      * @param  target    the base or derived units to which this {@code ConventionalUnit} is related.
      * @param  toTarget  the conversion from this unit to the {@code target} unit.
      * @param  symbol    the unit symbol, or {@code null} if this unit has no specific symbol.
      * @param  scope     {@link UnitRegistry#SI}, {@link UnitRegistry#ACCEPTED}, other constants or 0 if unknown.
-     * @param  epsg      the EPSG code, or 0 if this unit has no EPSG code.
      */
-    ConventionalUnit(final AbstractUnit<Q> target, final UnitConverter toTarget, final String symbol, final byte scope, final short epsg) {
-        super(symbol, scope, epsg);
+    ConventionalUnit(final AbstractUnit<Q> target, final UnitConverter toTarget, final String symbol, final byte scope) {
+        super(symbol, scope);
         this.target   = target;
         this.toTarget = toTarget;
     }
@@ -115,9 +114,9 @@ final class ConventionalUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> {
          * Create the unit, but we may discard it later if an equivalent unit already exists in the cache.
          * The use of the cache is not only for sharing instances, but also because existing instances may
          * have more information.  For example instances provided by Units static constants may contain an
-         * EPSG code, or even an alternative symbol (e.g. “hm²” will be replaced by “ha” for hectare).
+         * alternative symbol (e.g. “hm²” will be replaced by “ha” for hectare).
          */
-        ConventionalUnit<Q> unit = new ConventionalUnit<>(target, toTarget, symbol, (byte) 0, (short) 0);
+        ConventionalUnit<Q> unit = new ConventionalUnit<>(target, toTarget, symbol, (byte) 0);
         if (symbol != null) {
             unit = unit.unique(symbol);
         }

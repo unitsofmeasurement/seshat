@@ -75,19 +75,18 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
     private transient ConventionalUnit<Q>[] related;
 
     /**
-     * Creates a new unit having the given symbol and EPSG code.
+     * Creates a new unit having the given symbol.
      *
      * @param  quantity   the type of quantity that uses this unit, or {@code null} if unknown.
      * @param  dimension  the unit dimension.
      * @param  symbol     the unit symbol, or {@code null} if this unit has no specific symbol.
      * @param  scope      {@link UnitRegistry#SI}, {@link UnitRegistry#ACCEPTED}, other constants or 0 if unknown.
-     * @param  epsg       the EPSG code, or 0 if this unit has no EPSG code.
      * @param  factory    the factory to use for creating quantities, or {@code null} if none.
      */
     SystemUnit(final Class<Q> quantity, final UnitDimension dimension, final String symbol,
-            final byte scope, final short epsg, final ScalarFactory<Q> factory)
+            final byte scope, final ScalarFactory<Q> factory)
     {
-        super(symbol, scope, epsg);
+        super(symbol, scope);
         this.quantity  = quantity;
         this.dimension = dimension;
         this.factory   = factory;
@@ -146,7 +145,7 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
         if (newDimension == dimension && sameSymbol(symbol)) {
             return this;
         }
-        return new SystemUnit<>(null, newDimension, symbol, (byte) 0, (short) 0, null);
+        return new SystemUnit<>(null, newDimension, symbol, (byte) 0, null);
     }
 
     /**
@@ -297,7 +296,7 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
          */
         SystemUnit<T> unit = Units.get(type);
         if (unit == null) {
-            unit = new SystemUnit<>(type, dimension, null, (byte) 0, (short) 0, null);  // Intentionally no symbol.
+            unit = new SystemUnit<>(type, dimension, null, (byte) 0, null);  // Intentionally no symbol.
         }
         if (!dimension.equals(unit.dimension)) {
             throw new ClassCastException(Errors.format(Errors.Keys.IncompatibleUnitDimension_5, new Object[] {
@@ -412,7 +411,7 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
         if (symbol.equals(getSymbol())) {
             return this;
         }
-        final SystemUnit<Q> alt = new SystemUnit<>(quantity, dimension, symbol, (byte) 0, (short) 0, factory);
+        final SystemUnit<Q> alt = new SystemUnit<>(quantity, dimension, symbol, (byte) 0, factory);
         if (quantity != null) {
             /*
              * Use the cache only if this unit has a non-null quantity type. Do not use the cache even

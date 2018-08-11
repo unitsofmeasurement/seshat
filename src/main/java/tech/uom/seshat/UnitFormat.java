@@ -46,13 +46,6 @@ import tech.uom.seshat.util.WeakValueHashMap;
  * In addition to the symbols of the <cite>Système international</cite> (SI), this class is also capable to handle
  * some symbols found in <cite>Well Known Text</cite> (WKT) definitions or in XML files.
  *
- * <div class="section">NetCDF unit symbols</div>
- * The attributes in netCDF files often merge the axis direction with the angular unit,
- * as in {@code "degrees_east"}, {@code "degrees_north"} or {@code "Degrees North"}.
- * This class ignores those suffixes and unconditionally returns {@link Units#DEGREE} for all axis directions.
- * In particular, the units for {@code "degrees_west"} and {@code "degrees_east"} do <strong>not</strong> have
- * opposite sign. It is caller responsibility to handle the direction of axes associated to netCDF units.
- *
  * <div class="section">Multi-threading</div>
  * {@code UnitFormat} is generally not thread-safe. If units need to be parsed or formatted in different threads,
  * each thread should have its own {@code UnitFormat} instance.
@@ -942,7 +935,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
      * If the parse completes without reading the entire length of the text, an exception is thrown.
      *
      * <p>The parsing is lenient: symbols can be products or quotients of units like “m∕s”,
-     * words like “meters per second”, or authority codes like {@code "urn:ogc:def:uom:EPSG::1026"}.
+     * or words like “meters per second”.
      * The product operator can be either {@code '.'} (ASCII) or {@code '⋅'} (Unicode) character.
      * Exponent after symbol can be decimal digits as in “m2” or a superscript as in “m²”.</p>
      *
@@ -977,7 +970,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
      * After parsing, the above-cited index is updated to the first unparsed character.
      *
      * <p>The parsing is lenient: symbols can be products or quotients of units like “m∕s”,
-     * words like “meters per second”, or authority codes like {@code "urn:ogc:def:uom:EPSG::1026"}.
+     * or words like “meters per second”.
      * The product operator can be either {@code '.'} (ASCII) or {@code '⋅'} (Unicode) character.
      * Exponent after symbol can be decimal digits as in “m2” or a superscript as in “m²”.</p>
      *
@@ -994,11 +987,6 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
     public Unit<?> parse(CharSequence symbols, final ParsePosition position) throws ParserException {
         Objects.requireNonNull(symbols);
         Objects.requireNonNull(position);
-        /*
-         * Check for authority codes (currently only EPSG, but more could be added later).
-         * Example: "urn:ogc:def:uom:EPSG::9001". If the unit is not an authority code
-         * (which is the most common case), only then we will parse the unit symbols.
-         */
         int end   = symbols.length();
         int start = CharSequences.skipLeadingWhitespaces(symbols, position.getIndex(), end);
         /*

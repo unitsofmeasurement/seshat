@@ -101,26 +101,14 @@ abstract class AbstractUnit<Q extends Quantity<Q>> implements Unit<Q>, Serializa
     final transient byte scope;
 
     /**
-     * The EPSG code, or 0 if this unit has no EPSG code.
-     *
-     * <p>This information is not serialized because {@link #readResolve()} will replace the deserialized instance
-     * by a hard-coded instance with appropriate value, if possible.</p>
-     *
-     * @see #equals(short, short)
-     */
-    final transient short epsg;
-
-    /**
-     * Creates a new unit having the given symbol and EPSG code.
+     * Creates a new unit having the given symbol.
      *
      * @param  symbol  the unit symbol, or {@code null} if this unit has no specific symbol.
      * @param  scope   {@link UnitRegistry#SI}, {@link UnitRegistry#ACCEPTED}, other constants or 0 if unknown.
-     * @param  epsg    the EPSG code, or 0 if this unit has no EPSG code.
      */
-    AbstractUnit(final String symbol, final byte scope, final short epsg) {
+    AbstractUnit(final String symbol, final byte scope) {
         this.symbol = symbol;
         this.scope  = scope;
-        this.epsg   = epsg;
     }
 
     /**
@@ -158,7 +146,6 @@ abstract class AbstractUnit<Q extends Quantity<Q>> implements Unit<Q>, Serializa
 
     /**
      * Returns the name (if any) of this unit. For example {@link Units#METRE} has the "m" symbol and the "metre" name.
-     * If this unit exists in the EPSG database, then this method should return the name as specified in the database.
      *
      * @return the unit name, or {@code null} if this unit has no specific name.
      *
@@ -312,12 +299,12 @@ abstract class AbstractUnit<Q extends Quantity<Q>> implements Unit<Q>, Serializa
             return false;
         }
         final AbstractUnit<?> that = (AbstractUnit<?>) other;
-        return equals(epsg, that.epsg) && equals(scope, that.scope) && Objects.equals(symbol, that.symbol);
+        return equals(scope, that.scope) && Objects.equals(symbol, that.symbol);
     }
 
     /**
      * Compares the given values only if both of them are non-zero. If at least one value is zero (meaning "unknown"),
-     * assume that values are equal. We do that because deserialized {@code AbstractUnit} instances have {@link #epsg}
+     * assume that values are equal. We do that because deserialized {@code AbstractUnit} instances have {@code epsg}
      * and {@link #scope} fields initialized to 0, and we need to ignore those values when comparing the deserialized
      * instances with instances hard-coded in {@link Units} class. We should not have inconsistencies because there is
      * no public way to set those fields; they can only be defined in the {@code Units} hard-coded constants.

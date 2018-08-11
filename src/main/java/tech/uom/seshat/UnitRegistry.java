@@ -84,7 +84,6 @@ final class UnitRegistry implements SystemOfUnits, Serializable {
      *   <tr><td>{@link UnitDimension}</td>               <td>{@link SystemUnit}</td>    <td>Key is the dimension of base or derived units.</td></tr>
      *   <tr><td>{@code Class<Quantity>}</td>             <td>{@link SystemUnit}</td>    <td>Key is the quantity type of base of derived units.</td></tr>
      *   <tr><td>{@link String}</td>                      <td>{@link AbstractUnit}</td>  <td>Key is the unit symbol.</td></tr>
-     *   <tr><td>{@link Short}</td>                       <td>{@link AbstractUnit}</td>  <td>Key is the EPSG code.</td></tr>
      * </table>
      */
     private static final Map<Object,Object> HARD_CODED = new HashMap<>(256);
@@ -123,7 +122,6 @@ final class UnitRegistry implements SystemOfUnits, Serializable {
         /* Unconditional */ existed  = (HARD_CODED.put(unit.dimension, unit) == null) ? 0 : 1;
         /* Unconditional */ existed |= (HARD_CODED.put(unit.quantity,  unit) == null) ? 0 : 2;
         if (symbol != null) existed |= (HARD_CODED.put(symbol,         unit) == null) ? 0 : 4;
-        if (unit.epsg != 0) existed |= (HARD_CODED.put(unit.epsg,      unit) == null) ? 0 : 8;
         /*
          * Key collision on dimension and quantity tolerated for dimensionless units only, with an
          * an exception for "candela" because "lumen" is candela divided by a dimensionless unit.
@@ -150,16 +148,14 @@ final class UnitRegistry implements SystemOfUnits, Serializable {
     static <Q extends Quantity<Q>> ConventionalUnit<Q> init(final ConventionalUnit<Q> unit) {
         assert !Units.initialized : unit;        // This assertion happens during Units initialization, but it is okay.
         if (HARD_CODED.put(unit.getSymbol(), unit) == null) {
-            if (unit.epsg == 0 || HARD_CODED.put(unit.epsg, unit) == null) {
-                return unit;
-            }
+            return unit;
         }
         throw new AssertionError(unit);      // Shall not map the same unit twice.
     }
 
     /**
      * Adds an alias for the given unit. The given alias shall be either an instance of {@link String}
-     * (for a symbol alias) or an instance of {@link Short} (for an EPSG code alias).
+     * (for a symbol alias).
      */
     static void alias(final Unit<?> unit, final Comparable<?> alias) {
         assert !Units.initialized : unit;        // This assertion happens during Units initialization, but it is okay.
