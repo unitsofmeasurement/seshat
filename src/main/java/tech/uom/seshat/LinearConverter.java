@@ -31,14 +31,6 @@ import tech.uom.seshat.util.StringBuilders;
  * Note that the "linear" word in this class does not have the same meaning than the same word
  * in the {@link #isLinear()} method inherited from JSR-363.
  *
- * <p><b>Implementation note:</b>
- * for performance reason we should create specialized subtypes for the case where there is only a scale to apply,
- * or only an offset, <i>etc.</i> But we don't do that in Apache SIS implementation because we will rarely use the
- * {@code UnitConverter} for converting a lot of values. We rather use {@code MathTransform} for operations on
- * <var>n</var>-dimensional tuples, and unit conversions are only a special case of those more generic operations.
- * The {@code sis-referencing} module provided the specialized implementations needed for efficient operations
- * and know how to copy the {@code UnitConverter} coefficients into an affine transform matrix.</p>
- *
  * @author  Martin Desruisseaux (Geomatys)
  * @version 1.0
  */
@@ -65,7 +57,7 @@ final class LinearConverter extends AbstractConverter {
 
     /**
      * A divisor applied after the conversion.
-     * The complete formula used by Apache SIS is {@code y = (x*scale + offset) / divisor}.
+     * The complete formula used by Seshat is {@code y = (x*scale + offset) / divisor}.
      * This division is mathematically unneeded since we could divide the offset and scale factor directly,
      * but we keep it for accuracy reasons because most unit conversion factors are defined in base 10 and
      * IEEE 754 can not represent fractional values in base 10 accurately.
@@ -201,7 +193,7 @@ final class LinearConverter extends AbstractConverter {
      * </ul>
      *
      * Note that this definition allows scale factors but does not allow offsets.
-     * Consequently this is a different definition of "linear" than this class and the rest of Apache SIS.
+     * Consequently this is a different definition of "linear" than this class.
      */
     @Override
     public boolean isLinear() {
@@ -280,9 +272,6 @@ final class LinearConverter extends AbstractConverter {
     /**
      * Applies the linear conversion on the given value. This method uses {@link BigDecimal} arithmetic if
      * the given value is an instance of {@code BigDecimal}, or IEEE 754 floating-point arithmetic otherwise.
-     *
-     * <p>Apache SIS rarely uses {@link BigDecimal} arithmetic, so providing an efficient implementation of
-     * this method is not a goal.</p>
      */
     @Override
     public Number convert(Number value) {
@@ -425,7 +414,7 @@ final class LinearConverter extends AbstractConverter {
 
     /**
      * Returns a string representation of this converter for debugging purpose.
-     * This string representation may change in any future SIS release.
+     * This string representation may change in any future Seshat release.
      * Current format is of the form "y = scale⋅x + offset".
      */
     @Override

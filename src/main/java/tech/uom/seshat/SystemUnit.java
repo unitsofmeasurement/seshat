@@ -230,7 +230,7 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
     }
 
     /**
-     * Returns the base units used by Apache SIS implementations.
+     * Returns the base units used by Seshat implementations.
      * Contrarily to {@link #getBaseUnits()}, this method never returns {@code null}.
      */
     @Override
@@ -317,7 +317,7 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
     final boolean equalsIgnoreMetadata(final Unit<Q> other) {
         if (quantity != null && other instanceof SystemUnit<?>) {
             /*
-             * For SIS implementation, we just need to compare the quantity class, if known.
+             * For Seshat implementation, we just need to compare the quantity class, if known.
              * Two units for the same quantity implies that they are also for the same dimension.
              */
             final Class<?> c = ((SystemUnit<Q>) other).quantity;
@@ -354,7 +354,7 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
         /*
          * At this point we know that the given units is not a system unit. Ask the conversion
          * FROM the given units (before to inverse it) instead than TO the given units because
-         * in Apache SIS implementation, the former returns directly ConventionalUnit.toTarget
+         * in Seshat implementation, the former returns directly ConventionalUnit.toTarget
          * while the later implies a recursive call to this method.
          */
         return that.getConverterTo(step).inverse();
@@ -389,7 +389,7 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
      * Returns a system unit equivalent to this unscaled standard unit but used in expressions
      * to distinguish between quantities of a different nature but of the same dimensions.
      *
-     * <p>The most important alternate unit in Apache SIS is {@link Units#RADIAN}, defined as below:</p>
+     * <p>The most important alternate unit in Seshat is {@link Units#RADIAN}, defined as below:</p>
      *
      * <pre>{@code Unit<Angle> RADIAN = ONE.alternate("rad").asType(Angle.class);}</pre>
      *

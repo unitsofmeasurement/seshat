@@ -133,9 +133,9 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
          *
          * <div class="section">Modification to UCUM syntax rules</div>
          * UCUM does not allow floating point numbers in unit terms, so the use of period as an operator
-         * should not be ambiguous. However Apache SIS relaxes this restriction in order to support the
+         * should not be ambiguous. However Seshat relaxes this restriction in order to support the
          * scale factors commonly found in angular units (e.g. π/180). The meaning of a period in a string
-         * is resolved with two SIS-specific rules:
+         * is resolved with two Seshat-specific rules:
          *
          * <ul>
          *   <li>Unit symbols shall not begin or end with a decimal digit or a superscript.</li>
@@ -362,12 +362,12 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
      * {@linkplain Characters#isSubScript(int) subscripts}, {@linkplain Character#isSpaceChar(int) spaces}
      * (including non-breaking spaces but <strong>not</strong> CR/LF characters), the degree sign (°) and
      * a few other characters like underscore,
-     * but the set of legal characters may be expanded in future Apache SIS versions.
+     * but the set of legal characters may be expanded in future Seshat versions.
      * However the following restrictions are likely to remain:
      *
      * <ul>
      *   <li>The following characters are reserved since they have special meaning in UCUM format, in URI
-     *       or in Apache SIS parser: <blockquote>" # ( ) * + - . / : = ? [ ] { } ^ ⋅ ∕</blockquote></li>
+     *       or in Seshat parser: <blockquote>" # ( ) * + - . / : = ? [ ] { } ^ ⋅ ∕</blockquote></li>
      *   <li>The symbol can not begin or end with digits, since such digits would be confused with unit power.</li>
      * </ul>
      *
@@ -487,7 +487,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
                  * of "degree"), some plural forms (for example "feet" instead of "foot") and a few common misspellings
                  * (for exemple "Celcius" instead of "Celsius").
                  */
-                final ResourceBundle r = ResourceBundle.getBundle("org.apache.sis.measure.UnitAliases", locale, UnitFormat.class.getClassLoader());
+                final ResourceBundle r = ResourceBundle.getBundle("tech.uom.seshat.UnitAliases", locale, UnitFormat.class.getClassLoader());
                 for (final String name : r.keySet()) {
                     map.put(name.intern(), Units.get(r.getString(name)));
                 }
@@ -543,7 +543,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
      *       then that label is appended unconditionally.</li>
      *   <li>Otherwise if the formatting style is {@link Style#NAME} and the {@link Unit#getName()} method
      *       returns a non-null value, then that value is appended. {@code Unit} instances implemented by
-     *       Apache SIS are handled in a special way for localizing the name according the
+     *       Seshat are handled in a special way for localizing the name according the
      *       {@linkplain #setLocale(Locale) locale specified to this format}.</li>
      *   <li>Otherwise if the {@link Unit#getSymbol()} method returns a non-null value,
      *       then that value is appended.</li>
@@ -570,7 +570,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
         }
         /*
          * Choice 2: value specified by Unit.getName(). We skip this check if the given Unit is an instance
-         * implemented by Apache SIS because  AbstractUnit.getName()  delegates to the same resource bundle
+         * implemented by Seshat because  AbstractUnit.getName()  delegates to the same resource bundle
          * than the one used by this block. We are better to use the resource bundle of the UnitFormat both
          * for performance reasons and because the locale may not be the same.
          */
@@ -599,7 +599,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
         }
         /*
          * Choice 3: if the unit has a specific symbol, appends that symbol.
-         * Apache SIS implementation use Unicode characters in the symbol, which are not valid for UCUM.
+         * Seshat implementation uses Unicode characters in the symbol, which are not valid for UCUM.
          * But Styme.UCUM.appendSymbol(…) performs required replacements.
          */
         {
@@ -636,7 +636,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
         boolean hasNumerator = false;
         final Map<? extends Unit<?>, ? extends Number> components;
         if (unscaled instanceof AbstractUnit<?>) {
-            // In Apache SIS implementation, power may be fractional.
+            // In Seshat implementation, power may be fractional.
             final Map<SystemUnit<?>, Fraction> c = ((AbstractUnit<?>) unscaled).getBaseSystemUnits();
             components = c;
             for (final Map.Entry<SystemUnit<?>, Fraction> e : c.entrySet()) {
@@ -1272,7 +1272,7 @@ search:     while ((i = CharSequences.skipTrailingWhitespaces(symbols, start, i)
     {
         final String uom = CharSequences.trimWhitespaces(symbols, lower, upper).toString();
         /*
-         * Check for labels explicitly given by users. Those labels have precedence over the Apache SIS hard-coded
+         * Check for labels explicitly given by users. Those labels have precedence over the Seshat hard-coded
          * symbols. If no explicit label was found, check for symbols and names known to this UnitFormat instance.
          */
         Unit<?> unit = labelToUnit.get(uom);
@@ -1286,7 +1286,7 @@ search:     while ((i = CharSequences.skipTrailingWhitespaces(symbols, start, i)
                     /*
                      * If the first character is a digit, presume that the term is a multiplication factor.
                      * The "*" character is used for raising the number on the left to the power on the right.
-                     * Example: "10*6" is equal to one million. SIS also handles the "^" character as "*".
+                     * Example: "10*6" is equal to one million. Seshat also handles the "^" character as "*".
                      *
                      * In principle, spaces are not allowed in unit symbols (in particular, UCUM specifies that
                      * spaces should not be interpreted as multication operators).  However in practice we have

@@ -32,7 +32,7 @@ import tech.uom.seshat.util.WeakValueHashMap;
 
 /**
  * Lookup mechanism for finding a units from its quantity, dimension or symbol.
- * This class opportunistically implements {@link SystemOfUnits}, but Apache SIS
+ * This class opportunistically implements {@link SystemOfUnits}, but Seshat
  * rather uses the static methods directly since we define all units in terms of SI.
  *
  * @author  Martin Desruisseaux (Geomatys)
@@ -73,7 +73,7 @@ final class UnitRegistry implements SystemOfUnits, Serializable {
     static final byte OTHER = 16;
 
     /**
-     * All {@link UnitDimension}, {@link SystemUnit} or {@link ConventionalUnit} that are hard-coded in Apache SIS.
+     * All {@link UnitDimension}, {@link SystemUnit} or {@link ConventionalUnit} that are hard-coded in Seshat.
      * This map is populated by {@link Units} static initializer and shall not be modified after initialization,
      * in order to avoid the need for synchronization. Key and value types are restricted to the following pairs:
      *

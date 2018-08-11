@@ -45,7 +45,7 @@ import tech.uom.seshat.resources.Errors;
  *       shifted by 237.15 degrees compared to the Kelvin unit.</li>
  * </ul>
  *
- * In Apache SIS implementation, base and derived units are represented by the same class: {@link SystemUnit}.
+ * In Seshat implementation, base and derived units are represented by the same class: {@link SystemUnit}.
  * All unit instances shall be immutable and thread-safe.
  *
  * @author  Martin Desruisseaux (MPO, Geomatys)
@@ -194,7 +194,7 @@ abstract class AbstractUnit<Q extends Quantity<Q>> implements Unit<Q>, Serializa
     public abstract Map<SystemUnit<?>, Integer> getBaseUnits();
 
     /**
-     * Returns the base units used by Apache SIS implementations.
+     * Returns the base units used by Seshat implementations.
      * Contrarily to {@link #getBaseUnits()}, this method never returns {@code null}.
      */
     abstract Map<SystemUnit<?>, Fraction> getBaseSystemUnits();
@@ -353,7 +353,7 @@ abstract class AbstractUnit<Q extends Quantity<Q>> implements Unit<Q>, Serializa
     /**
      * Returns {@code true} if the given Unicode code point is a valid character for a unit symbol.
      * Current implementation accepts letters, subscripts and the degree sign, but the set of legal
-     * characters may be expanded in any future SIS version (however it should never allow spaces).
+     * characters may be expanded in any future Seshat version (however it should never allow spaces).
      * The goal is to avoid confusion with exponents and to detect where a unit symbol ends.
      *
      * <p>Space characters must be excluded from the set of legal characters because allowing them

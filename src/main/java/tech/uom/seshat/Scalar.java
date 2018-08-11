@@ -61,7 +61,7 @@ abstract class Scalar<Q extends Quantity<Q>> extends Number implements Quantity<
     /**
      * Creates a new quantity of same type than this quantity but with a different value and/or unit.
      * This method performs the same work than {@link Quantities#create(double, Unit)}, but without
-     * the need to check for the Apache SIS specific {@link SystemUnit} implementation.
+     * the need to check for the Seshat specific {@link SystemUnit} implementation.
      *
      * <p>This method is invoked (indirectly) in only two situations:</p>
      * <ul>
@@ -72,7 +72,7 @@ abstract class Scalar<Q extends Quantity<Q>> extends Number implements Quantity<
      * </ul>
      *
      * {@link DerivedScalar} relies on the fact that there is no other situations where this method
-     * is invoked. If this assumption become not true anymore in a future SIS version, then we need
+     * is invoked. If this assumption become not true anymore in a future Seshat version, then we need
      * to revisit {@code DerivedScalar}.
      *
      * @see Quantities#create(double, Unit)

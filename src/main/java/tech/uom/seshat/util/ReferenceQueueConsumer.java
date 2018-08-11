@@ -21,7 +21,7 @@ import java.lang.ref.ReferenceQueue;
 
 /**
  * A thread processing all {@link Reference} instances enqueued in a {@link ReferenceQueue}.
- * This is the central place where <em>every</em> weak references produced by the SIS library
+ * This is the central place where <em>every</em> weak references produced by the Seshat library
  * are consumed. This thread will invoke the {@link WeakEntry#dispose()} method for each
  * references enqueued by the garbage collector.
  *

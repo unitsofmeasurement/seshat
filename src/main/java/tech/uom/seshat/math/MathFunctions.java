@@ -57,7 +57,7 @@ public final class MathFunctions {
     /**
      * The highest prime number supported by the {@link #nextPrimeNumber(int)} method.
      * In the current implementation, this value is {@value}. However this limit may
-     * change in any future Apache SIS version.
+     * change in any future Seshat version.
      *
      * <p>The current value is the highest prime number representable as an unsigned 16 bits integer.
      * This is enough for current needs because 16 bits prime numbers are sufficient for finding

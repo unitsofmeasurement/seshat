@@ -33,7 +33,7 @@ import static java.lang.Character.*;
  * Java defines two methods for testing if a character is a white space:
  * {@link Character#isWhitespace(int)} and {@link Character#isSpaceChar(int)}.
  * Those two methods differ in the way they handle no-break spaces, tabulations
- * and line feeds. The general policy in the SIS library is:
+ * and line feeds. The general policy in the Seshat library is:
  *
  * <ul>
  *   <li>Use {@code isWhitespace(…)} when separating entities (words, numbers, tokens, <i>etc.</i>)
@@ -51,10 +51,6 @@ import static java.lang.Character.*;
  * But if there is spaces to skip <em>inside</em> a single number, then {@code isSpaceChar(…)} is a good choice
  * for accepting no-break spaces and for stopping the parse operation at tabulations or line feed character.
  * A tabulation or line feed between two characters is very likely to separate two distinct values.</div>
- *
- * In practice, the {@link java.text.Format} implementations in the SIS library typically use
- * {@code isSpaceChar(…)} while most of the rest of the SIS library, including this
- * {@code CharSequences} class, consistently uses {@code isWhitespace(…)}.
  *
  * <p>Note that the {@link String#trim()} method doesn't follow any of those policies and should
  * generally be avoided. That {@code trim()} method removes every ISO control characters without

@@ -150,7 +150,7 @@ public final class Units {
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #METRE},
      * the unlocalized name is “nautical mile” and the identifier is EPSG:9030.
      *
-     * <p>There is no internationally agreed symbol for nautical mile. Apache SIS uses “M” in agreement with the
+     * <p>There is no internationally agreed symbol for nautical mile. Seshat uses “M” in agreement with the
      * International Hydrographic Organization (IHO) and the International Bureau of Weights and Measures (BIPM).
      * But “NM” and “nmi” are also in use.</p>
      *
@@ -165,7 +165,7 @@ public final class Units {
 
     /**
      * Unit of measurement defined as exactly 1609.344 metres (1 mi).
-     * This unit is often named “mile” without qualifier, but Apache SIS uses “statute mile”
+     * This unit is often named “mile” without qualifier, but Seshat uses “statute mile”
      * for emphasing the difference with {@linkplain #NAUTICAL_MILE nautical mile}.
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #METRE}.
      * The unlocalized name is “statute mile” but is localized as "international mile" in the US
@@ -879,7 +879,7 @@ public final class Units {
     /**
      * Sigma-level, used in oceanography. This is a way to measure a depth as a fraction of the sea floor depth.
      *
-     * <p>If we make this field public in a future SIS version, we should consider introducing a new quantity type.
+     * <p>If we make this field public in a future Seshat version, we should consider introducing a new quantity type.
      * The type to introduce has not yet been determined.</p>
      */
     static final Unit<Dimensionless> SIGMA;
@@ -1298,7 +1298,7 @@ public final class Units {
      * Multiplies the given unit by the given ratio. For example multiplying {@link #CENTIMETRE} by 254/100 gives
      * {@link #INCH}. Invoking this method is equivalent to invoking <code>{@linkplain Unit#multiply(double)
      * Unit.multiply}(numerator / denominator)</code> except that the use of a ration of integer values help
-     * Apache SIS to improve accuracy when more than one arithmetic operation are chained.
+     * Seshat to improve accuracy when more than one arithmetic operation are chained.
      *
      * @param  <Q>          the quantity measured by the unit.
      * @param  unit         the unit to multiply.
@@ -1402,7 +1402,7 @@ public final class Units {
      * {@link UnitFormat#parse(CharSequence)} on a shared locale-independent instance.
      * This method is capable to handle some symbols found during WKT parsing or in XML files.
      * The list of symbols supported by this method is implementation-dependent
-     * and may change in future SIS versions.
+     * and may change in future Seshat versions.
      *
      * <div class="section">NetCDF unit symbols</div>
      * The attributes in netCDF files often merge the axis direction with the angular unit,

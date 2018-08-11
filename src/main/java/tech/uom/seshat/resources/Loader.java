@@ -48,7 +48,7 @@ final class Loader extends ResourceBundle.Control {
     public static final Loader INSTANCE = new Loader();
 
     /**
-     * Creates the unique instance of the SIS resource bundle loader.
+     * Creates the unique instance of the Seshat resource bundle loader.
      */
     private Loader() {
     }

@@ -233,7 +233,7 @@ final class ConventionalUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> {
     }
 
     /**
-     * Returns the base units used by Apache SIS implementations.
+     * Returns the base units used by Seshat implementations.
      * Contrarily to {@link #getBaseUnits()}, this method never returns {@code null}.
      */
     @Override

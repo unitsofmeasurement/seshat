@@ -31,7 +31,7 @@ import tech.uom.seshat.util.DerivedMap;
 
 /**
  * Dimension (length, mass, time, <i>etc.</i>) of a unit of measurement.
- * Only two kind of dimensions are defined in Apache SIS:
+ * Only two kind of dimensions are defined in Seshat:
  *
  * <ul>
  *   <li>Base dimensions are the 7 base dimensions specified by the SI system.</li>
@@ -233,7 +233,7 @@ final class UnitDimension implements Dimension, Serializable {
             return ((UnitDimension) dimension).components;
         }
         /*
-         * Fallback for non-SIS implementations. The cast from <? extends Dimension> to <Dimension>
+         * Fallback for non-Seshat implementations. The cast from <? extends Dimension> to <Dimension>
          * is safe if we use the 'components' map as a read-only map (no put operation allowed).
          */
         @SuppressWarnings("unchecked")
