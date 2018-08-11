@@ -41,9 +41,8 @@ import java.util.ResourceBundle;
  * completed by some special cases handled by this class. Roughly speaking:</p>
  *
  * <ul>
- *   <li>{@link Number}, {@link java.util.Date}, {@link CodeList} and {@link InternationalString} instances
+ *   <li>{@link Number} and {@link java.util.Date} instances
  *       are localized using the current {@code ResourceBundle} locale.</li>
- *   <li>Long {@link CharSequence} instances are shortened by {@link CharSequences#shortSentence(CharSequence, int)}.</li>
  *   <li>{@link Class} and {@link Throwable} instances are summarized.</li>
  * </ul>
  *
@@ -113,7 +112,6 @@ public abstract class IndexedResourceBundle extends ResourceBundle {
      * @return resources in the given locale.
      * @throws MissingResourceException if resources can't be found.
      *
-     * @see Vocabulary#getResources(Locale)
      * @see Errors#getResources(Locale)
      */
     protected static <T extends IndexedResourceBundle> T getBundle(Class<T> base, Locale locale)
@@ -269,15 +267,6 @@ public abstract class IndexedResourceBundle extends ResourceBundle {
      * a copy of that array will be returned. If {@code arguments} is not an array, it will be
      * placed in an array of length 1.
      *
-     * <p>All the array elements will be checked for {@link CharSequence}, {@link InternationalString},
-     * {@link CodeList}, {@link Throwable} or {@link Class} instances.
-     * All {@code InternationalString} instances will be localized according this resource bundle locale.
-     * Any characters sequences of length greater than {@link #MAX_STRING_LENGTH} will be shortened using
-     * the {@link CharSequences#shortSentence(CharSequence, int)} method.</p>
-     *
-     * <div class="note"><b>Note:</b>
-     * If more cases are added, remember to update class and package javadoc.</div>
-     *
      * @param  arguments  the object to check.
      * @return {@code arguments} as an array, eventually with some elements replaced.
      */
@@ -307,11 +296,11 @@ public abstract class IndexedResourceBundle extends ResourceBundle {
      * formatted using {@link MessageFormat}. Calling this method is approximately equivalent to
      * calling:
      *
-     * {@preformat java
+     * <pre>{@code
      *     String pattern = getString(key);
      *     Format f = new MessageFormat(pattern);
      *     return f.format(arg0);
-     * }
+     * }</pre>
      *
      * If {@code arg0} is not already an array, it will be placed into an array of length 1. Using
      * {@link MessageFormat}, all occurrences of "{0}", "{1}", "{2}" in the resource string will be
@@ -324,7 +313,6 @@ public abstract class IndexedResourceBundle extends ResourceBundle {
      *
      * @see #getString(String)
      * @see #getString(short,Object,Object)
-     * @see #getString(short,Object,Object,Object)
      * @see MessageFormat
      */
     public final String getString(final short key, final Object arg0) throws MissingResourceException {

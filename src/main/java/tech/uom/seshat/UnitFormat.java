@@ -141,8 +141,6 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
          *   <li>Unit symbols shall not begin or end with a decimal digit or a superscript.</li>
          *   <li>A period between two decimal digits is interpreted as a decimal separator.</li>
          * </ul>
-         *
-         * @see org.apache.sis.util.CharSequences#toASCII(CharSequence)
          */
         UCUM('.', '/') {
             /** Replace non-ASCII characters on a "best effort" basis. */
@@ -314,8 +312,6 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
      * instructs this formatter to use the “meter” spelling instead of “metre”.
      *
      * @param  locale  the new locale for this {@code UnitFormat}.
-     *
-     * @see UnitServices#getUnitFormat(String)
      */
     public void setLocale(final Locale locale) {
         Objects.requireNonNull(locale);

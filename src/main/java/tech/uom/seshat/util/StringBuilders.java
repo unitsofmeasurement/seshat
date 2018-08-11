@@ -67,8 +67,6 @@ public final class StringBuilders {
      * been appended to the buffer}, in order to make it appears like an integer when possible.
      *
      * @param  buffer  the buffer to trim if possible.
-     *
-     * @see CharSequences#trimFractionalPart(CharSequence)
      */
     @SuppressWarnings("fallthrough")
     public static void trimFractionalPart(final StringBuilder buffer) {

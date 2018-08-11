@@ -132,7 +132,6 @@ public final strictfp class LinearConverterTest {
 
     /**
      * Tests {@link LinearConverter#convert(Number)} with a value of type {@link Float}.
-     * This method indirectly tests {@link org.apache.sis.math.DecimalFunctions#floatToDouble(float)}.
      */
     @Test
     public void testConvertFloat() {

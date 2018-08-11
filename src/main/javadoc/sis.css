@@ -197,7 +197,7 @@ div.preformat {
 }
 
 /*
- * Output of {@preformat} inline tag.
+ * Output of <pre> blocks.
  */
 pre.code-sample {
   margin-left:   40px;

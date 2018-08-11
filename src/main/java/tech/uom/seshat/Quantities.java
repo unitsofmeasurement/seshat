@@ -68,8 +68,6 @@ public final class Quantities {
      * @param  unit   the unit of measurement associated to the given value.
      * @return a quantity of the given type for the given value and unit of measurement.
      * @throws IllegalArgumentException if the given unit class is not a supported implementation.
-     *
-     * @see UnitServices#getQuantityFactory(Class)
      */
     public static <Q extends Quantity<Q>> Q create(final double value, final Unit<Q> unit) {
         Objects.requireNonNull(unit);

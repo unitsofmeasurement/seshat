@@ -322,7 +322,7 @@ public final class Units {
      * <table class="compact" summary="Related units" style="margin-left:30px; line-height:1.25">
      *   <tr><td>SI angle units:</td>   <td style="word-spacing:1em">{@link #MICRORADIAN}, <u><b>{@code RADIAN}</b></u>.</td></tr>
      *   <tr><td>In other systems:</td> <td style="word-spacing:1em">{@link #DEGREE}, {@link #ARC_MINUTE}, {@link #ARC_SECOND}, {@link #GRAD}.</td></tr>
-     *   <tr><td>Derived units:</td>    <td style="word-spacing:1em">{@link #STERADIAN}, {@link #RADIANS_PER_SECOND}.</td></tr>
+     *   <tr><td>Derived units:</td>    <td style="word-spacing:1em">{@link #STERADIAN}.</td></tr>
      * </table></div>
      */
     public static final Unit<Angle> RADIAN;

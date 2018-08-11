@@ -34,7 +34,7 @@
  * a {@code choice} format type (useful for handling plural forms), and localizes properly objects of unspecified type
  * (by contrast, the {@code Formatter} {@code "%s"} type always invoke {@code toString()}). The later advantage is
  * important for messages in which the same argument could receive {@link java.lang.Number} or {@link java.util.Date}
- * instances as well as {@link java.lang.String}. Furthermore, the {@link java.util.logging} framework is designed for
+ * instances as well as {@link java.lang.String}. Furthermore, the {@code java.util.logging} framework is designed for
  * use with {@code MessageFormat} (see the {@code Formatter.formatMessage(LogRecord)} method).</div>
  *
  * Developers can add resources by editing the {@code *.properties} file in the source code directory,

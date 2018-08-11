@@ -173,7 +173,10 @@
         <configuration>
           <debug>false</debug>
           <verbose>false</verbose>
-          <compilerArgument>-Xlint:all</compilerArgument>
+          <compilerArgs>
+            <arg>-Xlint:all</arg>
+            <arg>-Xdoclint:all</arg>
+          </compilerArgs>
           <useIncrementalCompilation>false</useIncrementalCompilation> <!-- https://jira.codehaus.org/browse/MCOMPILER-209 -->
           <release>${maven.compile.targetLevel}</release>
         </configuration>

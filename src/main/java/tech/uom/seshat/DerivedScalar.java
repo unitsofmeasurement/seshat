@@ -31,7 +31,7 @@ import java.util.Objects;
  *
  * <p>The {@link Scalar} parent class is restricted to cases where the relationship with system unit
  * is a scale factor. This {@code DerivedScalar} subclass allow the relationship to be more generic.
- * It is a design similar to {@link org.opengis.referencing.crs.DerivedCRS}</p>
+ * It is a design similar to {@code org.opengis.referencing.crs.DerivedCRS}</p>
  *
  * @author  Martin Desruisseaux (Geomatys)
  * @version 1.0

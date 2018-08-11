@@ -32,8 +32,8 @@ import static java.lang.Character.*;
  * <div class="section">Policy on space characters</div>
  * Java defines two methods for testing if a character is a white space:
  * {@link Character#isWhitespace(int)} and {@link Character#isSpaceChar(int)}.
- * Those two methods differ in the way they handle {@linkplain Characters#NO_BREAK_SPACE
- * no-break spaces}, tabulations and line feeds. The general policy in the SIS library is:
+ * Those two methods differ in the way they handle no-break spaces, tabulations
+ * and line feeds. The general policy in the SIS library is:
  *
  * <ul>
  *   <li>Use {@code isWhitespace(…)} when separating entities (words, numbers, tokens, <i>etc.</i>)
@@ -58,8 +58,7 @@ import static java.lang.Character.*;
  *
  * <p>Note that the {@link String#trim()} method doesn't follow any of those policies and should
  * generally be avoided. That {@code trim()} method removes every ISO control characters without
- * distinction about whether the characters are space or not, and ignore all Unicode spaces.
- * The {@link #trimWhitespaces(String)} method defined in this class can be used as an alternative.</p>
+ * distinction about whether the characters are space or not, and ignore all Unicode spaces.</p>
  *
  * <div class="section">Handling of null values</div>
  * Most methods in this class accept a {@code null} {@code CharSequence} argument. In such cases
@@ -176,7 +175,6 @@ search:     for (; fromIndex <= toIndex; fromIndex++) {
      * @throws NullPointerException if the {@code text} argument is null.
      *
      * @see #skipTrailingWhitespaces(CharSequence, int, int)
-     * @see #trimWhitespaces(CharSequence)
      */
     public static int skipLeadingWhitespaces(final CharSequence text, int fromIndex, final int toIndex) {
         while (fromIndex < toIndex) {
@@ -213,7 +211,6 @@ search:     for (; fromIndex <= toIndex; fromIndex++) {
      * @throws NullPointerException if the {@code text} argument is null.
      *
      * @see #skipLeadingWhitespaces(CharSequence, int, int)
-     * @see #trimWhitespaces(CharSequence)
      */
     public static int skipTrailingWhitespaces(final CharSequence text, final int fromIndex, int toIndex) {
         while (toIndex > fromIndex) {
@@ -231,18 +228,10 @@ search:     for (; fromIndex <= toIndex; fromIndex++) {
      * and combined characters like ㎏, ㎎, ㎝, ㎞, ㎢, ㎦, ㎖, ㎧, ㎩, ㎐, <i>etc.</i> are replaced
      * by the corresponding sequences of characters.
      *
-     * <div class="note"><b>Note:</b>
-     * the replacement of Greek letters is a more complex task than what this method can do,
-     * since it depends on the context. For example if the Greek letters are abbreviations
-     * for coordinate system axes like φ and λ, then the replacements depend on the enclosing
-     * coordinate system. See {@link org.apache.sis.io.wkt.Transliterator} for more information.</div>
-     *
      * @param  text  the text to scan for Unicode characters to replace by ASCII characters, or {@code null}.
      * @return the given text with substitutions applied, or {@code text} if no replacement
      *         has been applied, or {@code null} if the given text was null.
      *
-     * @see StringBuilders#toASCII(StringBuilder)
-     * @see org.apache.sis.io.wkt.Transliterator#filter(String)
      * @see java.text.Normalizer
      */
     public static CharSequence toASCII(final CharSequence text) {
@@ -359,7 +348,6 @@ search:     for (; fromIndex <= toIndex; fromIndex++) {
      *         or {@code null} if the given text was null
      *
      * @see String#replace(char, char)
-     * @see StringBuilders#replace(StringBuilder, String, String)
      * @see String#replace(CharSequence, CharSequence)
      */
     public static CharSequence replace(final CharSequence text, final CharSequence toSearch, final CharSequence replaceBy) {
