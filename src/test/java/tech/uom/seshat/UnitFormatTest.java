@@ -364,18 +364,6 @@ public final strictfp class UnitFormatTest {
     }
 
     /**
-     * Tests parsing a unit defined by a URI in OGC namespace.
-     * Example: {@code "urn:ogc:def:uom:EPSG::1026"} is for metres per second.
-     */
-    @Test
-    public void testParseEPSG() {
-        final UnitFormat f = new UnitFormat(Locale.UK);
-        assertSame(Units.METRE,             f.parse("urn:ogc:def:uom:EPSG::9001"));
-        assertSame(Units.METRES_PER_SECOND, f.parse("urn:ogc:def:uom:EPSG::1026"));
-        assertSame(Units.METRE, f.parse("http://schemas.opengis.net/iso/19139/20070417/resources/uom/gmxUom.xml#xpointer(//*[@gml:id='m'])"));
-    }
-
-    /**
      * Tests parsing of symbols without arithmetic operations other than exponent.
      */
     @Test
@@ -598,7 +586,6 @@ public final strictfp class UnitFormatTest {
         roundtrip(f, "m2.s-1",           "m²∕s");
         roundtrip(f, "mol.m-3",          "mol∕m³");
         roundtrip(f, "J.m-2",            "J∕m²");
-        roundtrip(f, "psu",              "psu");
         roundtrip(f, "kg-2.s-1",         "1∕(kg²⋅s)");
         roundtrip(f, "K*K",              "K²");
         roundtrip(f, "kg.m-3.s-1",       "kg∕(m³⋅s)");

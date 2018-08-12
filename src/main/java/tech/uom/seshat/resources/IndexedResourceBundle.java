@@ -15,8 +15,7 @@
  */
 package tech.uom.seshat.resources;
 
-import java.net.URL;
-import java.io.BufferedInputStream;
+import java.io.InputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -56,17 +55,15 @@ import java.util.ResourceBundle;
  */
 public abstract class IndexedResourceBundle extends ResourceBundle {
     /**
+     * The filename extension of resource files.
+     */
+    private static final String EXTENSION = ".utf";
+
+    /**
      * First valid key index.
      * We start at 1 rather than 0 in order to keep value 0 available for meaning "no localized message".
      */
     static final int FIRST = 1;
-
-    /**
-     * The path of the binary file containing resources, or {@code null} if there is no resources
-     * or if the resources have already been loaded. The resources may be a file or an entry in a
-     * JAR file.
-     */
-    private URL resources;
 
     /**
      * The array of resources. Keys are an array index plus {@value #FIRST}. For example the value for key "14" is
@@ -94,13 +91,9 @@ public abstract class IndexedResourceBundle extends ResourceBundle {
     private transient short lastKey;
 
     /**
-     * Constructs a new resource bundle loading data from the given UTF file.
-     *
-     * @param  resources  the path of the binary file containing resources, or {@code null} if
-     *         there is no resources. The resources may be a file or an entry in a JAR file.
+     * Constructs a new resource bundle loading data from a file inferred from the class name.
      */
-    IndexedResourceBundle(final URL resources) {
-        this.resources = resources;
+    IndexedResourceBundle() {
     }
 
     /**
@@ -121,7 +114,7 @@ public abstract class IndexedResourceBundle extends ResourceBundle {
             locale = Locale.getDefault();
         }
         // No caching; we rely on the one implemented in ResourceBundle.
-        return base.cast(getBundle(base.getName(), locale, base.getClassLoader(), Loader.INSTANCE));
+        return base.cast(getBundle(base.getName(), locale, base.getModule()));
     }
 
     /**
@@ -191,22 +184,22 @@ public abstract class IndexedResourceBundle extends ResourceBundle {
             values = this.values;
             if (values == null) {
                 /*
-                 * If there is no explicit resources for this instance, inherit the resources
-                 * from the parent. Note that this IndexedResourceBundle instance may still
-                 * differ from its parent in the way dates and numbers are formatted.
+                 * Loads resources from the UTF file.
                  */
-                if (resources == null) {
+                final Class<?> c = getClass();
+                final InputStream in = c.getResourceAsStream(c.getSimpleName() + EXTENSION);
+                if (in == null) {
                     /*
+                     * If there is no explicit resources for this instance, inherit the resources
+                     * from the parent. Note that this IndexedResourceBundle instance may still
+                     * differ from its parent in the way dates and numbers are formatted.
+                     *
                      * If we get a NullPointerException or ClassCastException here,
                      * it would be a bug in the way we create the chain of parents.
                      */
                     values = ((IndexedResourceBundle) parent).ensureLoaded(key);
                 } else {
-                    /*
-                     * Loads resources from the UTF file.
-                     */
-                    final String baseName = getClass().getCanonicalName();
-                    try (DataInputStream input = new DataInputStream(new BufferedInputStream(resources.openStream()))) {
+                    try (DataInputStream input = new DataInputStream(in)) {
                         values = new String[input.readInt()];
                         for (int i=0; i<values.length; i++) {
                             values[i] = input.readUTF();
@@ -216,9 +209,8 @@ public abstract class IndexedResourceBundle extends ResourceBundle {
                         }
                     } catch (IOException exception) {
                         throw (MissingResourceException) new MissingResourceException(
-                                exception.getLocalizedMessage(), baseName, key).initCause(exception);
+                                exception.getLocalizedMessage(), c.getCanonicalName(), key).initCause(exception);
                     }
-                    resources = null;                                           // Not needed anymore, let GC do its job.
                 }
                 this.values = values;
             }

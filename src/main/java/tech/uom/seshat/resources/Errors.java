@@ -15,7 +15,6 @@
  */
 package tech.uom.seshat.resources;
 
-import java.net.URL;
 import java.util.Locale;
 import java.util.MissingResourceException;
 
@@ -34,7 +33,7 @@ import java.util.MissingResourceException;
  * @author  Martin Desruisseaux (IRD, Geomatys)
  * @version 1.0
  */
-public final class Errors extends IndexedResourceBundle {
+public class Errors extends IndexedResourceBundle {
     /**
      * Resource keys. This class is used when compiling sources, but no dependencies to
      * {@code Keys} should appear in any resulting class files. Since the Java compiler
@@ -150,13 +149,10 @@ public final class Errors extends IndexedResourceBundle {
     }
 
     /**
-     * Constructs a new resource bundle loading data from the given UTF file.
-     *
-     * @param resources  the path of the binary file containing resources, or {@code null} if
-     *        there is no resources. The resources may be a file or an entry in a JAR file.
+     * Constructs a new resource bundle loading data from a UTF file of the same name.
+     * This constructor needs to be public for instantiation by {@link java.util.ResourceBundle}.
      */
-    Errors(final URL resources) {
-        super(resources);
+    public Errors() {
     }
 
     /**

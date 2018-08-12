@@ -130,7 +130,16 @@ final class UnitDimension implements Dimension, Serializable {
         UnitDimension dim = (UnitDimension) UnitRegistry.get(components);
         if (dim == null) {
             components.replaceAll((c, power) -> power.unique());
-            components = Map.copyOf(components);
+            // We can not use Map.copyOf because we need to preserve order.
+            switch (components.size()) {
+                default: components = Collections.unmodifiableMap(components); break;
+                case 0:  components = Collections.emptyMap(); break;
+                case 1: {
+                    final Map.Entry<UnitDimension,Fraction> entry = components.entrySet().iterator().next();
+                    components = Collections.singletonMap(entry.getKey(), entry.getValue());
+                    break;
+                }
+            }
             dim = new UnitDimension(components);
             if (!Units.initialized) {
                 UnitRegistry.init(components, dim);

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import javax.measure.spi.ServiceProvider;
 
 /**
  * Implementation of Units of Measurement API defined by JSR 363.
@@ -34,4 +35,6 @@ module tech.uom.seshat {
      * purpose of Seshat to publish additional collection implementations. Those classes are
      * public in Apache SIS if needed.
      */
+
+    provides ServiceProvider with tech.uom.seshat.UnitServices;
 }

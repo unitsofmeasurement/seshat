@@ -201,7 +201,6 @@
               <Specification-Version>${jsr.version}</Specification-Version>
               <Specification-Vendor>Java Community Process</Specification-Vendor>
               <Implementation-URL>https://github.com/unitsofmeasurement/seshat</Implementation-URL>
-              <Automatic-Module-Name>tech.uom.seshat</Automatic-Module-Name>
             </manifestEntries>
           </archive>
         </configuration>
