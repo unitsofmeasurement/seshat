@@ -518,8 +518,8 @@ public final class Fraction extends Number implements Comparable<Fraction>, Seri
                 case '⁄':
                 case '/':
                 case '∕': {
-                    numerator   = Integer.parseInt(s.substring(0,i));       // TODO: revisit with JDK9.
-                    denominator = Integer.parseInt(s.substring(i+1));
+                    numerator   = Integer.parseInt(s, 0, i, 10);
+                    denominator = Integer.parseInt(s, i+1, s.length(), 10);
                     return;
                 }
             }
