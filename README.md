@@ -8,3 +8,35 @@ is an implementation of Units of Measurement API defined by JSR 363. Seshat is
 a subset of [Apache Spatial Information System (SIS)](http://sis.apache.org/)
 library keeping only the classes required for JSR 363, with geospatial-specific
 functionalities omitted.
+Seshat supports arithmetic operations on units and on quantities.
+The unit (including SI prefix) and the quantity type resulting from
+those arithmetic operations are automatically inferred.
+For example this line of code:
+
+```
+System.out.println( Units.PASCAL.multiply(1000) );
+```
+
+prints "kPa", _i.e._ the kilo prefix has been automatically applied
+(SI prefixes are applied on SI units only, not on other systems).
+Other example:
+
+```
+Force  f = Quantities.create(4, Units.NEWTON);
+Length d = Quantities.create(6, Units.MILLIMETRE);
+Time   t = Quantities.create(3, Units.SECOND);
+Quantity<?> e = f.multiply(d).divide(t);
+System.out.println(e);
+System.out.println("Instance of Power: " + (e instanceof Power));
+```
+
+prints:
+
+```
+8 mW
+Instance of Power: true
+```
+
+In this example, Seshat detects that the result of N*m/s is Watt,
+inherits the milli prefix from millimetre and creates an instance
+of `Power`, not just `Quantity<Power>` (the generic parent).

@@ -22,6 +22,29 @@ import javax.measure.spi.ServiceProvider;
  * The omitted functionalities are {@code Salinity}, {@code AngularVelocity} and {@code ScaleRateOfChange}
  * quantities, sigma-level units, sexagesimal units and EPSG codes.
  *
+ * <p>Seshat supports arithmetic operations on units and on quantities.
+ * The unit (including SI prefix) and the quantity type resulting from
+ * those arithmetic operations are automatically inferred.
+ * For example this line of code:
+ *
+ * <blockquote><pre>{@code System.out.println( Units.PASCAL.multiply(1000) );}</pre></blockquote>
+ *
+ * <p>prints <i>"kPa"</i>, i.e. the kilo prefix has been automatically applied
+ * (SI prefixes are applied on SI units only, not on other systems).
+ * Other example:</p>
+ *
+ * <blockquote><pre>{@code Force  f = Quantities.create(4, Units.NEWTON);
+ *Length d = Quantities.create(6, Units.MILLIMETRE);
+ *Time   t = Quantities.create(3, Units.SECOND);
+ *Quantity<?> e = f.multiply(d).divide(t);
+ *System.out.println(e);
+ *System.out.println("Instance of Power: " + (e instanceof Power));}</pre></blockquote>
+ *
+ * <p>prints <i>"8 mW"</i> and <i>"Instance of Power: true"</i>,
+ * i.e. Seshat detects that the result of N⋅m∕s is Watt,
+ * inherits the milli prefix from millimetre and creates an instance
+ * of {@link javax.measure.quantity.Power}, not just {@code Quantity<Power>} (the generic parent).</p>
+ *
  * @author  Martin Desruisseaux (MPO, IRD, Geomatys)
  * @version 1.0
  * @since   1.0
