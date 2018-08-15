@@ -41,9 +41,9 @@ In this example, Seshat detects that the result of N*m/s is Watt,
 inherits the milli prefix from millimetre and creates an instance
 of `Power`, not just `Quantity<Power>` (the generic parent).
 
-Parsing and formatting use Unicode symbols by default, as in µg∕m².
-Parenthesis are recognized at parsing time and used for denominators at formatting time, as in kg∕(m²⋅s).
-While uncommon, Seshat accepts fractional powers as in m^⅔∕s.
+Parsing and formatting use Unicode symbols by default, as in µg/m².
+Parenthesis are recognized at parsing time and used for denominators at formatting time, as in kg/(m²⋅s).
+While uncommon, Seshat accepts fractional powers as in m^⅔.
 Some sentences like _"100 feet"_, _"square metre"_ and _"degree Kelvin"_
 are also recognized at parsing time.
 
