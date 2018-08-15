@@ -29,7 +29,7 @@ import javax.measure.spi.ServiceProvider;
  *
  * <blockquote><pre>{@code System.out.println( Units.PASCAL.multiply(1000) );}</pre></blockquote>
  *
- * <p>prints <i>"kPa"</i>, i.e. the kilo prefix has been automatically applied
+ * <p>prints <cite>"kPa"</cite>, i.e. the kilo prefix has been automatically applied
  * (SI prefixes are applied on SI units only, not on other systems).
  * Other example:</p>
  *
@@ -40,10 +40,16 @@ import javax.measure.spi.ServiceProvider;
  *System.out.println(e);
  *System.out.println("Instance of Power: " + (e instanceof Power));}</pre></blockquote>
  *
- * <p>prints <i>"8 mW"</i> and <i>"Instance of Power: true"</i>,
+ * <p>prints <cite>"8 mW"</cite> and <cite>"Instance of Power: true"</cite>,
  * i.e. Seshat detects that the result of N⋅m∕s is Watt,
  * inherits the milli prefix from millimetre and creates an instance
  * of {@link javax.measure.quantity.Power}, not just {@code Quantity<Power>} (the generic parent).</p>
+ *
+ * {@linkplain tech.uom.seshat.Units#valueOf(String) Parsing} and formatting use Unicode symbols by default, as in µg/m².
+ * Parenthesis are recognized at parsing time and used for denominators at formatting time, as in kg/(m²⋅s).
+ * While uncommon, Seshat accepts fractional powers as in m^⅔.
+ * Some sentences like <cite>"100 feet"</cite>, <cite>"square metre"</cite> and <cite>"degree Kelvin"</cite>
+ * are also recognized at parsing time.
  *
  * @author  Martin Desruisseaux (MPO, IRD, Geomatys)
  * @version 1.0

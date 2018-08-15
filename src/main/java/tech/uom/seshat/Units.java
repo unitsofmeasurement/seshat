@@ -1385,7 +1385,6 @@ public final class Units {
     /**
      * Parses the given symbol. Invoking this method is equivalent to invoking
      * {@link UnitFormat#parse(CharSequence)} on a shared locale-independent instance.
-     * This method is capable to handle some symbols found during WKT parsing or in XML files.
      * The list of symbols supported by this method is implementation-dependent
      * and may change in future Seshat versions.
      *
