@@ -15,6 +15,7 @@
  */
 import javax.measure.spi.ServiceProvider;
 
+
 /**
  * Implementation of Units of Measurement API defined by JSR 363.
  * Seshat is a subset of <a href="http://sis.apache.org/">Apache Spatial Information System (SIS)</a>
@@ -25,7 +26,7 @@ import javax.measure.spi.ServiceProvider;
  * <p>Seshat supports arithmetic operations on units and on quantities.
  * The unit (including SI prefix) and the quantity type resulting from
  * those arithmetic operations are automatically inferred.
- * For example this line of code:
+ * For example this line of code:</p>
  *
  * <blockquote><pre>{@code System.out.println( Units.PASCAL.multiply(1000) );}</pre></blockquote>
  *
