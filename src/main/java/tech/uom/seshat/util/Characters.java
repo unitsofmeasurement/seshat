@@ -94,13 +94,13 @@ public final class Characters {
     }
 
     /**
-     * Converts the given character argument to normal script.
+     * Converts the given code point to normal script.
      *
      * @param  c  the character to convert.
      * @return the given character as a normal script, or {@code c} if the
      *         given character was not a superscript or a subscript.
      */
-    public static char toNormalScript(char c) {
+    public static int toNormalScript(int c) {
         switch (c) {
             case '\u2071': // Exceptions to the default case. They would be the ¹²³
             case '\u2072': // cases if they were not defined in the Latin-1 range.
