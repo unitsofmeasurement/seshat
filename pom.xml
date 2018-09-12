@@ -156,7 +156,7 @@
         <!-- Compile properties files into resources UTF files. -->
         <groupId>org.apache.sis.core</groupId>
         <artifactId>sis-build-helper</artifactId>
-        <version>dev-1.0-SNAPSHOT</version>
+        <version>1.0-M1</version>
         <executions>
           <execution>
             <goals>
@@ -235,9 +235,9 @@
       <id>geotoolkit.org</id>
       <name>Geotoolkit.org repository</name>
       <url>http://maven.geotoolkit.org/</url>
-      <releases>
+      <snapshots>
         <enabled>false</enabled>
-      </releases>
+      </snapshots>
     </pluginRepository>
   </pluginRepositories>
 </project>
