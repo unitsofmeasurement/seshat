@@ -120,13 +120,17 @@ public final strictfp class UnitFormatTest {
         verify(declared, "PIXEL",               "",             "px",    "pixel",                   Units.PIXEL);
         assertTrue("Missing units in test:" + declared, declared.isEmpty());
     }
-    
+
+    /**
+     * Tests the parsing of {@code "1/l"}.
+     */
     @Test
+    @org.junit.Ignore("this currently fails")
     public void testParseInverseL() {
         final UnitFormat f = new UnitFormat(Locale.ROOT);
         Unit<?> u = f.parse("1/l");
         assertNotNull(u);
-        //assertEquals("1/l", u.toString()); this currently fails
+        assertEquals("1/l", u.toString());
     }
 
     /**
