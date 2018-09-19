@@ -122,18 +122,6 @@ public final strictfp class UnitFormatTest {
     }
 
     /**
-     * Tests the parsing of {@code "1/l"}.
-     */
-    @Test
-    @org.junit.Ignore("this currently fails")
-    public void testParseInverseL() {
-        final UnitFormat f = new UnitFormat(Locale.ROOT);
-        Unit<?> u = f.parse("1/l");
-        assertNotNull(u);
-        assertEquals("1/l", u.toString());
-    }
-
-    /**
      * Verifies one of the constants declared in the {@link Unit} class.
      *
      * @param declared   a map from which to remove the {@code field} value, for verifying that we didn't forgot an element.
@@ -206,6 +194,17 @@ public final strictfp class UnitFormatTest {
             final String message = e.getMessage();
             assertTrue(message, message.contains("m¹"));
         }
+    }
+
+    /**
+     * Tests the assignation of two labels on the same unit.
+     */
+    @Test
+    public void testDuplicatedLabels() {
+        final UnitFormat f = new UnitFormat(Locale.ENGLISH);
+        f.label(Units.DEGREE, "deg");
+        f.label(Units.DEGREE, "dd");        // For "decimal degrees"
+        roundtrip(f, "dd", "dd");
     }
 
     /**
@@ -494,6 +493,16 @@ public final strictfp class UnitFormatTest {
          */
         assertEquals("mg∕m",  f.parse("10^-6.kg/m").getSymbol());
         assertEquals("µg∕m³", f.parse("μg.m-3").getSymbol());
+    }
+
+    /**
+     * Tests the parsing of {@code "1/l"}.
+     */
+    @Test
+    public void testParseInverseL() {
+        final UnitFormat f = new UnitFormat(Locale.UK);
+        final Unit<?> u = f.parse("1/l");
+        assertEquals("1∕L", u.toString());
     }
 
     /**

@@ -1056,7 +1056,7 @@ public final class Units {
         UnitRegistry.alias(HECTARE,   "hm²");
         UnitRegistry.alias(LITRE,       "l");
         UnitRegistry.alias(LITRE,       "ℓ");
-        UnitRegistry.alias(UNITY,       "1");
+        UnitRegistry.alias(UNITY, SystemUnit.ONE);
 
         initialized = true;
     }
