@@ -16,7 +16,6 @@
 package tech.uom.seshat.math;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 
 /**
@@ -125,7 +124,9 @@ public final class MathFunctions {
      * @see java.math.BigInteger#isProbablePrime(int)
      */
     static int primeNumberAt(final int index) throws IndexOutOfBoundsException {
-        Objects.checkIndex(index, PRIMES_LENGTH_16_BITS);
+        if (index < 0 || index >= PRIMES_LENGTH_16_BITS) {
+            throw new IndexOutOfBoundsException();
+        }
         short[] primes = MathFunctions.primes;
         if (index >= primes.length) {
             synchronized (MathFunctions.class) {

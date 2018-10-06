@@ -17,6 +17,8 @@ package tech.uom.seshat.util;
 
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -91,7 +93,7 @@ final class ReferenceQueueConsumer extends Thread {
                     ((WeakEntry<?>) ref).dispose();
                 }
             } catch (Throwable exception) {
-                System.getLogger("tech.uom.seshat").log(System.Logger.Level.WARNING, exception);
+                Logger.getLogger("tech.uom.seshat").log(Level.FINE, exception.toString(), exception);
             }
         }
         // Do not log anything at this point, since the loggers may be shutdown now.

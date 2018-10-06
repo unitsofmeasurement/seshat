@@ -120,8 +120,8 @@
   </dependencies>
 
   <properties>
-    <maven.compile.sourceLevel>10</maven.compile.sourceLevel>
-    <maven.compile.targetLevel>10</maven.compile.targetLevel>
+    <maven.compile.sourceLevel>8</maven.compile.sourceLevel>
+    <maven.compile.targetLevel>8</maven.compile.targetLevel>
   </properties>
 
 
@@ -201,6 +201,7 @@
               <Specification-Version>${jsr.version}</Specification-Version>
               <Specification-Vendor>Java Community Process</Specification-Vendor>
               <Implementation-URL>https://github.com/unitsofmeasurement/seshat</Implementation-URL>
+              <Automatic-Module-Name>tech.uom.seshat</Automatic-Module-Name>
             </manifestEntries>
           </archive>
         </configuration>

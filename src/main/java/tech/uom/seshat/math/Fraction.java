@@ -206,8 +206,8 @@ public final class Fraction extends Number implements Comparable<Fraction>, Seri
      * @throws ArithmeticException if the result overflows.
      */
     public Fraction multiply(final Fraction other) {
-        return simplify(Math.multiplyFull(numerator,   other.numerator),
-                        Math.multiplyFull(denominator, other.denominator));
+        return simplify(numerator   * (long) other.numerator,
+                        denominator * (long) other.denominator);
     }
 
     /**
@@ -218,8 +218,8 @@ public final class Fraction extends Number implements Comparable<Fraction>, Seri
      * @throws ArithmeticException if the result overflows.
      */
     public Fraction divide(final Fraction other) {
-        return simplify(Math.multiplyFull(numerator,   other.denominator),
-                        Math.multiplyFull(denominator, other.numerator));
+        return simplify(numerator   * (long) other.denominator,
+                        denominator * (long) other.numerator);
     }
 
     /**
@@ -391,8 +391,8 @@ public final class Fraction extends Number implements Comparable<Fraction>, Seri
      */
     @Override
     public int compareTo(final Fraction other) {
-        return Long.signum(Math.multiplyFull(numerator, other.denominator)
-                         - Math.multiplyFull(other.numerator, denominator));
+        return Long.signum(numerator * (long) other.denominator
+                         - other.numerator * (long) denominator);
     }
 
     /**
@@ -519,8 +519,8 @@ public final class Fraction extends Number implements Comparable<Fraction>, Seri
                 case '⁄':
                 case '/':
                 case '∕': {
-                    numerator   = Integer.parseInt(s, 0, i, 10);
-                    denominator = Integer.parseInt(s, i+1, length, 10);
+                    numerator   = Integer.parseInt(s.substring(0, i));
+                    denominator = Integer.parseInt(s.substring(i+1, length));
                     return;
                 }
             }

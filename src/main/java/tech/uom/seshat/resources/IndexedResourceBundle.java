@@ -24,6 +24,8 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.NoSuchElementException;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -114,7 +116,7 @@ public abstract class IndexedResourceBundle extends ResourceBundle {
             locale = Locale.getDefault();
         }
         // No caching; we rely on the one implemented in ResourceBundle.
-        return base.cast(getBundle(base.getName(), locale, base.getModule()));
+        return base.cast(getBundle(base.getName(), locale, base.getClassLoader()));
     }
 
     /**
@@ -245,7 +247,7 @@ public abstract class IndexedResourceBundle extends ResourceBundle {
                 keyID = getKeyConstants().getKeyValue(key);
             } catch (ReflectiveOperationException e) {
                 e.addSuppressed(exception);
-                System.getLogger("tech.uom.seshat").log(System.Logger.Level.WARNING, e);
+                Logger.getLogger("tech.uom.seshat").log(Level.FINE, e.toString(), e);
                 return null;                // This is okay as of 'handleGetObject' contract.
             }
         }
