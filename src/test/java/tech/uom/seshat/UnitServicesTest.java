@@ -15,6 +15,8 @@
  */
 package tech.uom.seshat;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.Locale;
 import javax.measure.Unit;
@@ -113,7 +115,7 @@ public final strictfp class UnitServicesTest {
     @Test
     public void testGetAvailableFormatNames() {
         final ServiceProvider provider = ServiceProvider.current();
-        assertEquals(Set.of("SYMBOL", "UCUM", "NAME"),
+        assertEquals(new HashSet<>(Arrays.asList("SYMBOL", "UCUM", "NAME")),
                 provider.getUnitFormatService().getAvailableFormatNames());
     }
 

@@ -265,7 +265,7 @@ final class LinearConverter extends AbstractConverter {
      */
     @Override
     public double convert(final double value) {
-        return (value * scale + offset) / divisor;
+        return Math.fma(value, scale, offset) / divisor;
     }
 
     /**

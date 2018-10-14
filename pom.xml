@@ -120,8 +120,9 @@
   </dependencies>
 
   <properties>
-    <maven.compile.sourceLevel>10</maven.compile.sourceLevel>
-    <maven.compile.targetLevel>10</maven.compile.targetLevel>
+    <maven.compile.sourceLevel>8</maven.compile.sourceLevel>
+    <maven.compile.targetLevel>8</maven.compile.targetLevel>
+    <next.java.version>10</next.java.version>
   </properties>
 
 
@@ -141,7 +142,7 @@
             <configuration>
               <rules>
                 <requireJavaVersion>
-                  <version>10</version>
+                  <version>${next.java.version}</version>
                 </requireJavaVersion>
                 <dependencyConvergence/>
               </rules>
@@ -181,6 +182,30 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.8</version>
+        <executions>
+          <execution>
+            <phase>prepare-package</phase>
+            <goals><goal>run</goal></goals>
+            <configuration>
+              <target>
+                <mkdir dir       = "${project.build.directory}/classes/META-INF/versions/${next.java.version}"/>
+                <javac destdir   = "${project.build.directory}/classes/META-INF/versions/${next.java.version}"
+                       srcdir    = "${project.basedir}/src/main/java_${next.java.version}"
+                       includeAntRuntime = "false">
+
+                    <!-- TODO: use release attribute instead after next plugin release.
+                         https://issues.apache.org/jira/browse/MANTRUN-214 -->
+                    <compilerarg line="--release=${next.java.version} --module-path=${javax.measure:unit-api:jar} --patch-module tech.uom.seshat=${project.build.directory}/classes"/>
+                </javac>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.22.0</version>
       </plugin>
@@ -201,6 +226,7 @@
               <Specification-Version>${jsr.version}</Specification-Version>
               <Specification-Vendor>Java Community Process</Specification-Vendor>
               <Implementation-URL>https://github.com/unitsofmeasurement/seshat</Implementation-URL>
+              <Automatic-Module-Name>tech.uom.seshat</Automatic-Module-Name>
             </manifestEntries>
           </archive>
         </configuration>

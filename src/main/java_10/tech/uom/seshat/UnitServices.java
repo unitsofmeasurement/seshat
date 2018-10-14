@@ -15,15 +15,12 @@
  */
 package tech.uom.seshat;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.measure.Unit;
 import javax.measure.Quantity;
 import javax.measure.format.UnitFormat;
@@ -113,7 +110,7 @@ public class UnitServices extends ServiceProvider implements SystemOfUnitsServic
      */
     @Override
     public Collection<SystemOfUnits> getAvailableSystemsOfUnits() {
-        return Collections.unmodifiableList(Arrays.asList(systems));
+        return List.of(systems);
     }
 
     /**
@@ -175,7 +172,7 @@ public class UnitServices extends ServiceProvider implements SystemOfUnitsServic
             style = tech.uom.seshat.UnitFormat.Style.valueOf(name);
         } catch (IllegalArgumentException e) {
             // JSR-363 specification mandate that we return null.
-            Logger.getLogger("tech.uom.seshat").log(Level.FINE, e.toString(), e);
+            System.getLogger("tech.uom.seshat").log(System.Logger.Level.DEBUG, e);
             return null;
         }
         tech.uom.seshat.UnitFormat f = new tech.uom.seshat.UnitFormat(locale);
