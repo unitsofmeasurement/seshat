@@ -115,7 +115,7 @@ public final strictfp class UnitFormatTest {
         verify(declared, "GRAM",                "M",            "g",     "gram",                    Units.GRAM);
         verify(declared, "MOLE",                "N",            "mol",   "mole",                    Units.MOLE);
         verify(declared, "UNITY",               "",             "",       null,                     Units.UNITY);
-        verify(declared, "PERCENT",             "",             "%",     "percentage",              Units.PERCENT);
+        verify(declared, "PERCENT",             "",             "%",     "percent",                 Units.PERCENT);
         verify(declared, "PPM",                 "",             "ppm",   "parts per million",       Units.PPM);
         verify(declared, "PIXEL",               "",             "px",    "pixel",                   Units.PIXEL);
         assertTrue("Missing units in test:" + declared, declared.isEmpty());
