@@ -323,7 +323,7 @@ public final strictfp class UnitFormatTest {
     }
 
     /**
-     * Tests parsing of names.
+     * Tests parsing of names, for example {@code "meter"}.
      */
     @Test
     public void testParseName() {
@@ -385,6 +385,16 @@ public final strictfp class UnitFormatTest {
         }
         f.setLocale(Locale.FRANCE);
         assertSame(Units.CUBIC_METRE, f.parse("mètre cube"));
+    }
+
+    /**
+     * Tests parsing of names raised to some power, for example {@code "meter2"}.
+     */
+    @Test
+    public void testParseNameRaisedToPower() {
+        final UnitFormat f = new UnitFormat(Locale.UK);
+        assertSame(Units.SQUARE_METRE, f.parse("meter2"));
+        assertSame(Units.HERTZ,        f.parse("second-1"));
     }
 
     /**
@@ -456,6 +466,25 @@ public final strictfp class UnitFormatTest {
         assertSame(Units.CUBIC_METRE,       f.parse("m2.m"));
         assertSame(Units.METRES_PER_SECOND, f.parse("m∕s"));
         assertSame(Units.HERTZ,             f.parse("1/s"));
+    }
+
+    /**
+     * Tests parsing of symbols containing terms separated by spaces.
+     * This is valid only when using {@link UnitFormat#parse(CharSequence)}.
+     */
+    @Test
+    public void testParseTermsSeparatedBySpace() {
+        final UnitFormat f = new UnitFormat(Locale.UK);
+        assertSame(Units.METRES_PER_SECOND, f.parse("m s**-1"));
+        assertEqualsIgnoreSymbol(Units.KILOGRAM.divide(Units.SQUARE_METRE), f.parse("kg m**-2"));
+        try {
+            f.parse("degree minute");
+            fail("Should not accept unknown sentence even if each individual word is known.");
+        } catch (ParserException e) {
+            final String message = e.getMessage();
+            assertTrue(message, message.contains("degree"));
+            assertTrue(message, message.contains("minute"));
+        }
     }
 
     /**
@@ -695,7 +724,18 @@ public final strictfp class UnitFormatTest {
      * Asserts that the given units are equal, ignoring symbol.
      */
     private static void assertEqualsIgnoreSymbol(final Unit<?> actual, final Unit<?> expected) {
-        assertSame("systemUnit", actual.getSystemUnit(), expected.getSystemUnit());
-        // We should also check the 'toTarget' converter (skipped for now).
+        final Unit<?> systemUnit  = actual.getSystemUnit();
+        final Unit<?> expectedSys = expected.getSystemUnit();
+        if ((systemUnit.getSymbol() != null) == (expectedSys.getSymbol() != null)) {
+            assertSame("systemUnit", systemUnit, expectedSys);
+            // We should also check the 'toTarget' converter (skipped for now).
+        } else {
+            /*
+             * Current implementation of SystemUnit.equals(...) returns false
+             * if one instance has no pre-defined symbol. For now, workaround
+             * by formatting their symbols and comparing them.
+             */
+            assertEquals(systemUnit.toString(), expectedSys.toString());
+        }
     }
 }

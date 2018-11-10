@@ -240,6 +240,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
      * Units associated to a given label (in addition to the system-wide {@link UnitRegistry}).
      * This map is the converse of {@link #unitToLabel}. The {@link Unit} instances may differ from the ones
      * specified by user since {@link AbstractUnit#symbol} may have been set to the label specified by the user.
+     * The labels may contain some characters normally not allowed in unit symbols, like white spaces.
      *
      * @see #label(Unit, String)
      */
@@ -435,6 +436,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
      * for allowing the singleton {@link #INSTANCE} to parse symbols in a multi-threads environment.</p>
      *
      * @param  uom  the unit symbol, without leading or trailing spaces.
+     * @return the unit for the given name, or {@code null} if unknown.
      */
     private Unit<?> fromName(String uom) {
         /*
@@ -520,7 +522,26 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
                 "meters",  "meter"),
                 "metres",  "metre"),
                  DEGREES,  "degree").toString();
-        return map.get(uom);
+        /*
+         * Returns the unit with application of the power if it is part of the name.
+         * For example this method interprets "meter2" as "meter" raised to power 2.
+         */
+        Unit<?> unit = map.get(uom);
+appPow: if (unit == null) {
+            int s = uom.length();
+            if (--s > 0 && isDigit(uom.charAt(s))) {
+                do if (--s < 0) break appPow;
+                while (isDigit(uom.charAt(s)));
+                if (uom.charAt(s) == '-') {
+                    if (--s < 0) break appPow;
+                }
+                unit = map.get(uom.substring(0, ++s));
+                if (unit != null) {
+                    unit = unit.pow(Integer.parseInt(uom.substring(s)));
+                }
+            }
+        }
+        return unit;
     }
 
     /**
@@ -951,6 +972,33 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
     }
 
     /**
+     * Parse position when text to be parsed is expected to contain nothing else than a unit symbol.
+     * This is used for recording whether another term (separated from the previous term by a space)
+     * is allowed or not.
+     */
+    private static final class Position extends ParsePosition {
+        /** {@code true} if we do not expect any more content after the last term parsed. */
+        boolean finished;
+
+        /** Creates a new position initialized to the beginning of the text to parse. */
+        Position() {
+            super(0);
+        }
+    }
+
+    /**
+     * Reports that the parsing is finished and no more content should be parsed.
+     * This method is invoked when the last parsed term is possibly one or more words instead than unit symbols.
+     * The intent is to avoid trying to parse "degree minute" as "degree × minute". By contrast, this method is
+     * not invoked if the string to parse is "m kg**-2" because it can be interpreted as "m × kg**-2".
+     */
+    private static void finish(final ParsePosition pos) {
+        if (pos instanceof Position) {
+            ((Position) pos).finished = true;
+        }
+    }
+
+    /**
      * Parses the given text as an instance of {@code Unit}.
      * If the parse completes without reading the entire length of the text, an exception is thrown.
      *
@@ -959,9 +1007,18 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
      * The product operator can be either {@code '.'} (ASCII) or {@code '⋅'} (Unicode) character.
      * Exponent after symbol can be decimal digits as in “m2” or a superscript as in “m²”.</p>
      *
+     * <p>This method differs from {@link #parse(CharSequence, ParsePosition)} in the treatment of white spaces:
+     * that method with a {@link ParsePosition} argument stops parsing at the first white space,
+     * while this {@code parse(…)} method treats white spaces as multiplications.
+     * The reason for this difference is that white space is normally not a valid multiplication symbol;
+     * it could be followed by a text which is not part of the unit symbol.
+     * But in the case of this {@code parse(CharSequence)} method, the whole {@code CharSequence} shall be a unit symbol.
+     * In such case, white spaces are less ambiguous.</p>
+     *
      * <p>The default implementation delegates to
      * <code>{@linkplain #parse(CharSequence, ParsePosition) parse}(symbols, new ParsePosition(0))</code>
-     * and verifies that all non-white characters have been parsed.</p>
+     * and verifies that all non-white characters have been parsed.
+     * Units separated by spaces are multiplied; for example "kg m**-2" is parsed as kg/m².</p>
      *
      * @param  symbols  the unit symbols or URI to parse.
      * @return the unit parsed from the specified symbols.
@@ -971,15 +1028,19 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
      */
     @Override
     public Unit<?> parse(final CharSequence symbols) throws ParserException {
-        final ParsePosition position = new ParsePosition(0);
-        final Unit<?> unit = parse(symbols, position);
+        final Position position = new Position();
+        Unit<?> unit = parse(symbols, position);
         final int length = symbols.length();
-        final int unrecognized = CharSequences.skipLeadingWhitespaces(symbols, position.getIndex(), length);
-        if (unrecognized < length) {
-            throw new ParserException(Errors.format(Errors.Keys.UnexpectedCharactersAfter_2,
-                    CharSequences.trimWhitespaces(symbols, 0, unrecognized),
-                    CharSequences.trimWhitespaces(symbols, unrecognized, length)),
-                    symbols, unrecognized);
+        int unrecognized;
+        while ((unrecognized = CharSequences.skipLeadingWhitespaces(symbols, position.getIndex(), length)) < length) {
+            if (position.finished || !Character.isLetter(Character.codePointAt(symbols, unrecognized))) {
+                throw new ParserException(Errors.format(Errors.Keys.UnexpectedCharactersAfter_2,
+                        CharSequences.trimWhitespaces(symbols, 0, unrecognized),
+                        CharSequences.trimWhitespaces(symbols, unrecognized, length)),
+                        symbols, unrecognized);
+            }
+            position.setIndex(unrecognized);
+            unit = unit.multiply(parse(symbols, position));
         }
         return unit;
     }
@@ -1176,8 +1237,11 @@ search:     while ((i = CharSequences.skipTrailingWhitespaces(symbols, start, i)
                 i = end;                        // Restore the full length (until the first illegal character).
             }
         }
-        if (component == null) {
-            component = parseTerm(symbols, start, i, operation);
+        if (!(operation.finished = (component != null))) {
+            component = parseTerm(symbols, start, i, operation);            // May set 'operation.finished' flag.
+        }
+        if (operation.finished) {
+            finish(position);           // For preventing interpretation of "degree minute" as "degree × minute".
         }
         unit = operation.apply(unit, component, start);
         position.setIndex(i);
@@ -1206,6 +1270,14 @@ search:     while ((i = CharSequences.skipTrailingWhitespaces(symbols, start, i)
          * The symbols being parsed. Used only for formatting error message if needed.
          */
         private final CharSequence symbols;
+
+        /**
+         * {@code true} if the parsed terms may be one or more words, possibly containing white spaces.
+         * In such case, the parsing should not continue after those words.
+         *
+         * @see Position#finished
+         */
+        boolean finished;
 
         /**
          * Creates an operation initialized to {@link #NOOP}.
@@ -1269,8 +1341,7 @@ search:     while ((i = CharSequences.skipTrailingWhitespaces(symbols, start, i)
      * @param  symbols    the complete string specified by the user.
      * @param  lower      index where to begin parsing in the {@code symbols} string.
      * @param  upper      index after the last character to parse in the {@code symbols} string.
-     * @param  operation  if the term will be used as multiplier or divisor of another unit, the
-     *                    operation to be applied. Otherwise {@code null}.
+     * @param  operation  the operation to be applied (e.g. the term to be parsed is a multiplier or divisor of another unit).
      * @return the parsed unit symbol (never {@code null}).
      * @throws ParserException if a problem occurred while parsing the given symbols.
      */
@@ -1284,6 +1355,7 @@ search:     while ((i = CharSequences.skipTrailingWhitespaces(symbols, start, i)
          * symbols. If no explicit label was found, check for symbols and names known to this UnitFormat instance.
          */
         Unit<?> unit = labelToUnit.get(uom);
+        operation.finished = (unit != null);
         if (unit == null) {
             unit = Prefixes.getUnit(uom);
             if (unit == null) {
@@ -1310,8 +1382,9 @@ search:     while ((i = CharSequences.skipTrailingWhitespaces(symbols, start, i)
                             if (s >= 0) {
                                 final int next = CharSequences.skipLeadingWhitespaces(uom, s, length);
                                 if (next < length && AbstractUnit.isSymbolChar(uom.codePointAt(next))) {
+                                    operation.finished = true;  // For preventing attempt to continue parsing after "100 feet".
                                     multiplier = Double.parseDouble(uom.substring(0, s));
-                                    return parseTerm(uom, s, length, null).multiply(multiplier);
+                                    return parseTerm(uom, s, length, new Operation(uom)).multiply(multiplier);
                                 }
                             }
                             multiplier = parseMultiplicationFactor(uom);
@@ -1380,13 +1453,14 @@ search:     while ((i = CharSequences.skipTrailingWhitespaces(symbols, start, i)
                         }
                         final String symbol = uom.substring(CharSequences.skipLeadingWhitespaces(uom, 0, i), i);
                         unit = labelToUnit.get(symbol);
+                        operation.finished = (unit != null);
                         if (unit == null) {
                             unit = Prefixes.getUnit(symbol);
                         }
                         if (unit != null) {
                             int numerator   = power.numerator;
                             int denominator = power.denominator;
-                            if (numerator < 0 && operation != null && operation.invert()) {
+                            if (numerator < 0 && operation.invert()) {
                                 numerator = -numerator;
                             }
                             if (numerator   != 1) unit = unit.pow (numerator);
@@ -1399,6 +1473,7 @@ search:     while ((i = CharSequences.skipTrailingWhitespaces(symbols, start, i)
                  * At this point, we have determined that the label is not a known unit symbol.
                  * It may be a unit name, in which case the label is not case-sensitive anymore.
                  */
+                operation.finished = true;
                 unit = fromName(uom);
                 if (unit == null) {
                     if (CharSequences.regionMatches(symbols, lower, UNITY)) {
