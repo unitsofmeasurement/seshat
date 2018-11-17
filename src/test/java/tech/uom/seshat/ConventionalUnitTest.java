@@ -91,11 +91,11 @@ public final strictfp class ConventionalUnitTest {
     }
 
     /**
-     * Tests {@link SystemUnit#multiply(double)} and {@link SystemUnit#divide(double)}.
-     * Both are implemented by calls to {@link SystemUnit#transform(UnitConverter)}.
+     * Tests {@link SystemUnit#multiply(double)} and {@link SystemUnit#divide(double)} on fundamental units.
+     * All those methods are implemented by calls to {@link SystemUnit#transform(UnitConverter)}.
      */
     @Test
-    public void testTransformSystemUnit() {
+    public void testTransformFundamentalUnit() {
         assertSame(Units.METRE,      Units.METRE.multiply(   1));
         assertSame(Units.KILOMETRE,  Units.METRE.multiply(1000));
         assertSame(Units.MILLIMETRE, Units.METRE.divide  (1000));
@@ -105,6 +105,21 @@ public final strictfp class ConventionalUnitTest {
         verify    (Units.METRE,      Units.METRE.multiply( 100), "hm", 100);
         verify    (Units.METRE,      Units.METRE.multiply(  10), "dam", 10);
 
+        assertSame(Units.HOUR,        Units.SECOND.multiply(3600));
+        assertSame(Units.DEGREE,      Units.RADIAN.multiply(StrictMath.PI/180));
+        assertSame(Units.GRAD,        Units.RADIAN.multiply(StrictMath.PI/200));
+        assertSame(Units.ARC_SECOND,  Units.RADIAN.multiply(StrictMath.PI / (180*60*60)));
+        assertSame(Units.MICRORADIAN, Units.RADIAN.divide(1E6));
+    }
+
+    /**
+     * Tests the same methods than {@link #testTransformFundamentalUnit()}, but applied on other system units than the
+     * fundamental ones. All tested methods are implemented by calls to {@link SystemUnit#transform(UnitConverter)}.
+     *
+     * @see <a href="https://en.wikipedia.org/wiki/SI_derived_unit">Derived units on Wikipedia</a>
+     */
+    @Test
+    public void testTransformDerivedUnit() {
         assertSame(Units.METRES_PER_SECOND, Units.METRES_PER_SECOND.multiply(   1));
         verify    (Units.METRES_PER_SECOND, Units.METRES_PER_SECOND.multiply(1000), "km∕s", 1E+3);
         verify    (Units.METRES_PER_SECOND, Units.METRES_PER_SECOND.divide  (1000), "mm∕s", 1E-3);
@@ -114,15 +129,6 @@ public final strictfp class ConventionalUnitTest {
         assertSame(Units.CUBIC_METRE,  Units.CUBIC_METRE .multiply(   1));
         verify    (Units.CUBIC_METRE,  Units.CUBIC_METRE .multiply(1E+9), "km³", 1E+9);
         verify    (Units.CUBIC_METRE,  Units.CUBIC_METRE .divide  (1E+9), "mm³", 1E-9);
-
-        assertSame(Units.HOUR,        Units.SECOND.multiply(3600));
-        assertSame(Units.DEGREE,      Units.RADIAN.multiply(StrictMath.PI/180));
-        assertSame(Units.GRAD,        Units.RADIAN.multiply(StrictMath.PI/200));
-        assertSame(Units.ARC_SECOND,  Units.RADIAN.multiply(StrictMath.PI / (180*60*60)));
-        assertSame(Units.MICRORADIAN, Units.RADIAN.divide(1E6));
-
-        assertSame(Units.GRAM, Units.KILOGRAM.divide(1E+3));
-        verify(Units.KILOGRAM, Units.KILOGRAM.divide(1E+6), "mg", 1E-6);
     }
 
     /**
@@ -143,7 +149,7 @@ public final strictfp class ConventionalUnitTest {
     }
 
     /**
-     * Tests operation on kilogram.
+     * Tests operations on kilogram.
      * The management of SI prefixes need to make a special case for kilogram.
      *
      * @see <a href="https://issues.apache.org/jira/browse/SIS-382">SIS-382</a>
@@ -151,12 +157,24 @@ public final strictfp class ConventionalUnitTest {
      */
     @Test
     public void testKilogram() {
+        assertSame(Units.GRAM, Units.KILOGRAM.divide(1E+3));
+        verify(Units.KILOGRAM, Units.KILOGRAM.divide(1E+6), "mg", 1E-6);
+
         Unit<?> unit = Units.KILOGRAM.divide(1E+9);
         assertEquals("µg", unit.getSymbol());
         unit = unit.divide(Units.METRE);
         assertEquals("µg∕m", unit.getSymbol());
         unit = unit.multiply(1E+3);
         assertEquals("mg∕m", unit.getSymbol());
+    }
+
+    /**
+     * Tests operations on Celsius units.
+     */
+    @Test
+    public void testCelsius() {
+        assertSame(Units.CELSIUS, Units.KELVIN.shift(+273.15));
+        assertSame(Units.KELVIN, Units.CELSIUS.shift(-273.15));
     }
 
     /**
