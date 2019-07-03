@@ -193,6 +193,7 @@
                 <mkdir dir       = "${project.build.directory}/classes/META-INF/versions/${next.java.version}"/>
                 <javac destdir   = "${project.build.directory}/classes/META-INF/versions/${next.java.version}"
                        srcdir    = "${project.basedir}/src/main/java_${next.java.version}"
+                       encoding  = "${project.build.sourceEncoding}"
                        includeAntRuntime = "false">
 
                     <!-- TODO: use release attribute instead after next plugin release.
