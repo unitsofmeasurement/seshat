@@ -475,6 +475,7 @@ public final strictfp class UnitFormatTest {
         assertSame(Units.CUBIC_METRE,       f.parse("m⋅m⋅m"));
         assertSame(Units.CUBIC_METRE,       f.parse("m²⋅m"));
         assertSame(Units.CUBIC_METRE,       f.parse("m2.m"));
+        assertSame(Units.CUBIC_METRE,       f.parse("m^3"));
         assertSame(Units.METRES_PER_SECOND, f.parse("m∕s"));
         assertSame(Units.HERTZ,             f.parse("1/s"));
     }
@@ -688,7 +689,7 @@ public final strictfp class UnitFormatTest {
 
     /**
      * Reminder for units parsing and formatting that still need improvement.
-     * The "expected" values checked in this method are not really what we expect,
+     * The "expected" values checked in this method are not really whamt we expect,
      * but they reflect the current behavior of Seshat units library. We keep
      * those tests as a reminder of work to do, but they should be modified if Seshat
      * support of those units is improved in a future version.
