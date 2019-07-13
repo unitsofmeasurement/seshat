@@ -1,5 +1,6 @@
 # Seshat Units of Measurement Implementation
 
+[![CircleCI](https://circleci.com/gh/unitsofmeasurement/seshat.svg?style=svg)](https://circleci.com/gh/unitsofmeasurement/seshat)
 [![Stability: Experimental](https://masterminds.github.io/stability/experimental.svg)](https://masterminds.github.io/stability/experimental.html)
 [![License](https://img.shields.io/badge/license-Apache2-red.svg)](http://opensource.org/licenses/apache-2.0)
 
