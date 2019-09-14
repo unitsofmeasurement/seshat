@@ -200,6 +200,8 @@
                          https://issues.apache.org/jira/browse/MANTRUN-214 -->
                     <compilerarg line="--release=${next.java.version} --module-path=${javax.measure:unit-api:jar} --patch-module tech.uom.seshat=${project.build.directory}/classes"/>
                 </javac>
+                <move file="${project.build.directory}/classes/META-INF/versions/${next.java.version}/module-info.class"
+                    tofile="${project.build.directory}/classes/module-info.class"/>
               </target>
             </configuration>
           </execution>
