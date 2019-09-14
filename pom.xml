@@ -251,6 +251,10 @@
           <failOnError>true</failOnError>
           <additionalOptions>--add-stylesheet "${basedir}/src/main/javadoc/sis.css</additionalOptions>
           <verbose>false</verbose>
+          <links>
+            <link>http://unitsofmeasurement.github.io/unit-api/site/apidocs</link>
+          </links>
+          <excludePackageNames>tech.uom.seshat.*</excludePackageNames>
         </configuration>
       </plugin>
     </plugins>
