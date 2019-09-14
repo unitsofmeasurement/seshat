@@ -689,7 +689,7 @@ public final strictfp class UnitFormatTest {
 
     /**
      * Reminder for units parsing and formatting that still need improvement.
-     * The "expected" values checked in this method are not really whamt we expect,
+     * The "expected" values checked in this method are not really what we expect,
      * but they reflect the current behavior of Seshat units library. We keep
      * those tests as a reminder of work to do, but they should be modified if Seshat
      * support of those units is improved in a future version.
