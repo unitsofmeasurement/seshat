@@ -464,7 +464,7 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
                 if (inverse) c = c.inverse();
                 result = result.transform(c);
                 /*
-                 * If the system unit product is an Apache SIS implementation, try to infer a unit symbol
+                 * If the system unit product is Seshat implementation, try to infer a unit symbol
                  * to be given to our customized 'transform' method. Otherwise fallback on standard API.
                  */
                 result = inferSymbol(result, operation, other);

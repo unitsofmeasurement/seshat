@@ -83,6 +83,6 @@ final class DerivedIterator<S,E> implements Iterator<E> {
     }
 
     /*
-     * Remove operation available in Apache SIS is removed from this port to Seshat.
+     * The `remove` operation available in Apache SIS is removed from this port to Seshat.
      */
 }

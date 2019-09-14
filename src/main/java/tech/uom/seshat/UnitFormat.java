@@ -359,7 +359,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
      * {@linkplain Characters#isSubScript(int) subscripts}, {@linkplain Character#isSpaceChar(int) spaces}
      * (including non-breaking spaces but not CR/LF characters),
      * the degree sign (°) and a few other characters like underscore.
-     * The set of legal characters may be expanded in future Apache SIS versions,
+     * The set of legal characters may be expanded in future Seshat versions,
      * but the following restrictions are likely to remain:
      *
      * <ul>
