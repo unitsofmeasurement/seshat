@@ -15,8 +15,6 @@
  */
 package tech.uom.seshat;
 
-import java.util.List;
-import java.util.Collections;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Objects;
@@ -368,14 +366,6 @@ final class LinearConverter extends AbstractConverter {
             otherDivisor /= cf;
         }
         return create(otherScale, otherOffset, otherDivisor);
-    }
-
-    /**
-     * Returns the steps of fundamental converters making up this converter, which is only {@code this}.
-     */
-    @Override
-    public List<LinearConverter> getConversionSteps() {
-        return Collections.singletonList(this);
     }
 
     /**

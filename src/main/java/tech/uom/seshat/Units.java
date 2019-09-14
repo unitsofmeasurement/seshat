@@ -925,6 +925,11 @@ public final class Units {
     public static final Unit<Dimensionless> PPM;
 
     /**
+     * Sub-division of logarithm of ratio of the measured quantity to a reference quantity (dB).
+     */
+    public static final Unit<Dimensionless> DECIBEL;
+
+    /**
      * Dimensionless unit for pixels (px).
      * The unlocalized name is “pixel”.
      * This unity should not be confused with {@link #POINT}, which is approximately equal to 1/72 of inch.
@@ -1092,13 +1097,14 @@ public final class Units {
         /*
          * All Unit<Dimensionless>.
          */
+        ConventionalUnit<Dimensionless> bel;
         PIXEL   = add(Dimensionless.class, Scalar.Dimensionless::new, dimensionless, "px",  OTHER);
         PERCENT = add(one, centi,                                                    "%",   OTHER);
         PPM     = add(one, micro,                                                    "ppm", OTHER);
+        bel     = add(one, PowerOf10.belToOne(), "B", (byte) (ACCEPTED | PREFIXABLE));
+        DECIBEL = add(bel, Prefixes.converter('d'), "dB", ACCEPTED);
         UNITY   = UnitRegistry.init(one);  // Must be last in order to take precedence over all other units associated to UnitDimension.NONE.
 
-        UnitRegistry.alias(UNITY,       Short.valueOf((short) 9203));
-        UnitRegistry.alias(DEGREE,      Short.valueOf((short) 9122));
         UnitRegistry.alias(ARC_MINUTE,  "'");
         UnitRegistry.alias(ARC_SECOND, "\"");
         UnitRegistry.alias(KELVIN,      "K");       // Ordinary "K" letter (not the dedicated Unicode character).
@@ -1134,6 +1140,9 @@ public final class Units {
      * Invoked by {@code Units} static class initializer for registering SI conventional units.
      * This method shall be invoked in a single thread by the {@code Units} class initializer only.
      *
+     * <p>The {@code target} argument should be an instance of {@link SystemUnit}.
+     * The only exception is for creating the {@link DECIBEL} unit base on the bel conventional unit.</p>
+     *
      * <p>If the {@code target} unit holds a list of {@linkplain SystemUnit#related() related units}
      * (i.e. conventional units that can not be computed easily by appending a SI prefix), then the new
      * conventional unit is added to that list of related units. For example "foot" is related to "metre"
@@ -1141,7 +1150,7 @@ public final class Units {
      * because this relationship can be inferred automatically without the need of a {@code related} table.
      * The unrecorded units are all SI units related to {@code target} by a scale factor without offset.</p>
      */
-    private static <Q extends Quantity<Q>> ConventionalUnit<Q> add(SystemUnit<Q> target, UnitConverter toTarget, String symbol, byte scope) {
+    private static <Q extends Quantity<Q>> ConventionalUnit<Q> add(AbstractUnit<Q> target, UnitConverter toTarget, String symbol, byte scope) {
         final ConventionalUnit<Q> unit = UnitRegistry.init(new ConventionalUnit<>(target, toTarget, symbol, scope));
         final ConventionalUnit<Q>[] related = target.related();
         if (related != null && (unit.scope != UnitRegistry.SI || !toTarget.isLinear())) {

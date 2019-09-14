@@ -47,7 +47,7 @@ final class UnitRegistry implements SystemOfUnits, Serializable {
     /**
      * A bitmask specifying that the unit symbol can be combined with a SI prefix.
      * This is usually combined only with {@link #SI}, not {@link #ACCEPTED} except
-     * the litre unit (cL, mL, etc).
+     * the litre unit (cL, mL, etc) and bel (for creating the decibel unit).
      */
     static final byte PREFIXABLE = 1;
 
@@ -154,10 +154,9 @@ final class UnitRegistry implements SystemOfUnits, Serializable {
     }
 
     /**
-     * Adds an alias for the given unit. The given alias shall be either an instance of {@link String}
-     * (for a symbol alias).
+     * Adds an alias for the given unit.
      */
-    static void alias(final Unit<?> unit, final Comparable<?> alias) {
+    static void alias(final Unit<?> unit, final String alias) {
         assert !Units.initialized : unit;        // This assertion happens during Units initialization, but it is okay.
         if (HARD_CODED.put(alias, unit) != null) {
             throw new AssertionError(unit);      // Shall not map the same alias twice.

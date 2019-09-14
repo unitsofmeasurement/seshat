@@ -118,6 +118,7 @@ public final strictfp class UnitFormatTest {
         verify(declared, "PERCENT",             "",             "%",     "percent",                 Units.PERCENT);
         verify(declared, "PPM",                 "",             "ppm",   "parts per million",       Units.PPM);
         verify(declared, "PIXEL",               "",             "px",    "pixel",                   Units.PIXEL);
+        verify(declared, "DECIBEL",             "",             "dB",    "decibel",                 Units.DECIBEL);
         assertTrue("Missing units in test:" + declared, declared.isEmpty());
     }
 
