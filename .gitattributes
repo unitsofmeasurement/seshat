@@ -1,0 +1,4 @@
+# Convert line endings to native line endings on checkout.
+*.md   text
+*.xml  text
+*.html text
