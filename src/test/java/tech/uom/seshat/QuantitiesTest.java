@@ -74,8 +74,6 @@ public final strictfp class QuantitiesTest {
      * Tests operations on temperature. The values shall be converted to Kelvin before any operation.
      * This produces counter-intuitive result, but is the only way to get results that are consistent
      * with arithmetic rules like commutativity and associativity.
-     *
-     * @since 1.0
      */
     @Test
     public void testTemperature() {
@@ -105,5 +103,22 @@ public final strictfp class QuantitiesTest {
 
         r = q1.multiply(1);
         assertSame(q1, r);
+    }
+
+    /**
+     * Tests {@link Scalar#equals(Object)} and {@link Scalar#hashCode()}.
+     * This test uses a unit without specific {@link Scalar} subclass, in order to
+     * verify that tested methods work even though the {@link ScalarFallback} proxy.
+     */
+    @Test
+    public void testEqualsAndHashcode() {
+        Quantity<?> q1 = Quantities.create(2, Units.VOLT);
+        Quantity<?> q2 = Quantities.create(2, Units.VOLT);
+        Quantity<?> q3 = Quantities.create(3, Units.VOLT);
+        assertTrue (q1.hashCode() == q2.hashCode());
+        assertFalse(q1.hashCode() == q3.hashCode());
+        assertTrue (q1.hashCode() != 0);
+        assertTrue (q1.equals(q2));
+        assertFalse(q1.equals(q3));
     }
 }

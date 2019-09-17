@@ -66,7 +66,6 @@ import static tech.uom.seshat.UnitRegistry.PREFIXABLE;
  *
  * @author  Martin Desruisseaux (IRD, Geomatys)
  * @version 1.0
- * @since   1.0
  */
 public final class Units {
     /**

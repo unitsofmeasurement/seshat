@@ -20,7 +20,6 @@
  *
  * @author  Martin Desruisseaux (MPO, IRD, Geomatys)
  * @version 1.0
- * @since   1.0
  */
 module tech.uom.seshat {
     requires unit.api;          // Temporary name, to be renamed after JSR-385 is released.
