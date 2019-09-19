@@ -39,11 +39,6 @@ final class LinearConverter extends AbstractConverter {
     private static final long serialVersionUID = -3759983642723729926L;
 
     /**
-     * The identity linear converter.
-     */
-    static final LinearConverter IDENTITY = new LinearConverter(1, 0, 1);
-
-    /**
      * The scale to apply for converting values, before division by {@link #divisor}.
      */
     private final double scale;
@@ -87,7 +82,7 @@ final class LinearConverter extends AbstractConverter {
      * Creates a linear converter from the given scale and offset, which may be {@link BigDecimal} instances.
      * This is the implementation of public {@link Units#converter(Number, Number)} method.
      */
-    static LinearConverter create(final Number scale, final Number offset) {
+    static AbstractConverter create(final Number scale, final Number offset) {
         final double numerator, divisor;
         double shift = (offset != null) ? doubleValue(offset) : 0;
         if (scale instanceof Fraction) {
@@ -98,18 +93,13 @@ final class LinearConverter extends AbstractConverter {
             numerator = (scale != null) ? doubleValue(scale) : 1;
             divisor   = 1;
         }
-        final LinearConverter c = create(numerator, shift, divisor);
+        if (shift == 0 && numerator == divisor) {
+            return IdentityConverter.INSTANCE;
+        }
+        final LinearConverter c = new LinearConverter(numerator, shift, divisor);
         if (scale  instanceof BigDecimal) c.scale10  = (BigDecimal) scale;
         if (offset instanceof BigDecimal) c.offset10 = (BigDecimal) offset;
         return c;
-    }
-
-    /**
-     * Returns a linear converter for the given scale and offset.
-     */
-    private static LinearConverter create(final double scale, final double offset, final double divisor) {
-        if (offset == 0 && scale == divisor) return IDENTITY;
-        return new LinearConverter(scale, offset, divisor);
     }
 
     /**
@@ -157,7 +147,7 @@ final class LinearConverter extends AbstractConverter {
             denominator = lc.divisor;
         } else {
             // Subtraction by convert(0) is a paranoiac safety.
-            numerator   = converter.convert(1.0) - converter.convert(0.0);
+            numerator   = converter.convert(1d) - converter.convert(0d);
             denominator = 1;
         }
         if (root) {
@@ -207,6 +197,13 @@ final class LinearConverter extends AbstractConverter {
     }
 
     /**
+     * Returns {@code true} if this converter is close to an identity converter.
+     */
+    final boolean almostIdentity() {
+        return epsilonEquals(scale, divisor) && epsilonEquals(offset, 0);
+    }
+
+    /**
      * Returns the inverse of this unit converter.
      * Given that the formula applied by this converter is:
      *
@@ -234,7 +231,7 @@ final class LinearConverter extends AbstractConverter {
      */
     @Override
     @SuppressWarnings("fallthrough")
-    Number[] coefficients() {
+    final Number[] coefficients() {
         final Number[] c = new Number[(scale != divisor) ? 2 : (offset != 0) ? 1 : 0];
         switch (c.length) {
             case 2: c[1] = ratio(scale,  divisor);
@@ -365,7 +362,10 @@ final class LinearConverter extends AbstractConverter {
             otherOffset  /= cf;
             otherDivisor /= cf;
         }
-        return create(otherScale, otherOffset, otherDivisor);
+        if (otherOffset == 0 && otherScale == otherDivisor) {
+            return IdentityConverter.INSTANCE;
+        }
+        return new LinearConverter(otherScale, otherOffset, otherDivisor);
     }
 
     /**
@@ -389,6 +389,9 @@ final class LinearConverter extends AbstractConverter {
                    MathFunctions.equals(offset,  o.offset) &&
                    MathFunctions.equals(divisor, o.divisor);
         }
+        if (other instanceof IdentityConverter) {
+            return isIdentity();
+        }
         return false;
     }
 
@@ -396,7 +399,7 @@ final class LinearConverter extends AbstractConverter {
      * Returns {@code true} if the given converter perform the same conversion than this converter,
      * except for rounding errors.
      */
-    boolean equivalent(final LinearConverter other) {
+    final boolean equivalent(final LinearConverter other) {
         return epsilonEquals(scale  * other.divisor, other.scale  * divisor) &&
                epsilonEquals(offset * other.divisor, other.offset * divisor);
     }

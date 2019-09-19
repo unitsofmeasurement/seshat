@@ -120,7 +120,7 @@ final class ConcatenatedConverter extends AbstractConverter {
     public UnitConverter concatenate(final UnitConverter converter) {
         Objects.requireNonNull(converter);
         if (equals(converter.inverse())) {
-            return LinearConverter.IDENTITY;
+            return IdentityConverter.INSTANCE;
         }
         // Delegate to c1 and c2 because they may provide more intelligent 'concatenate' implementations.
         return c2.concatenate(c1.concatenate(converter));

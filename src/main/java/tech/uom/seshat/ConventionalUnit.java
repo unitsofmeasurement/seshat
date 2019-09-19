@@ -304,7 +304,7 @@ final class ConventionalUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> {
     @Override
     public UnitConverter getConverterTo(final Unit<Q> that) throws UnconvertibleException {
         if (that == this) {
-            return LinearConverter.IDENTITY;
+            return IdentityConverter.INSTANCE;
         }
         Objects.requireNonNull(that);
         UnitConverter c = toTarget;
@@ -334,7 +334,7 @@ final class ConventionalUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> {
     @Override
     public UnitConverter getConverterToAny(final Unit<?> that) throws IncommensurableException {
         if (that == this) {
-            return LinearConverter.IDENTITY;
+            return IdentityConverter.INSTANCE;
         }
         Objects.requireNonNull(that);
         UnitConverter c = toTarget;

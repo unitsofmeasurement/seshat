@@ -135,7 +135,7 @@ abstract class AbstractConverter implements UnitConverter, Serializable {
     @Override
     public UnitConverter concatenate(final UnitConverter converter) {
         if (equals(converter.inverse())) {
-            return LinearConverter.IDENTITY;
+            return IdentityConverter.INSTANCE;
         }
         return new ConcatenatedConverter(converter, this);
     }
