@@ -131,7 +131,7 @@ public final class WeakHashSet<E> extends AbstractSet<E> {
             if (count < lowerCapacityThreshold(capacity)) {
                 final long currentTime = System.nanoTime();
                 if (currentTime - lastTimeNormalCapacity > REHASH_DELAY) {
-                    table = (Entry[]) WeakEntry.rehash(table, count, "remove");
+                    table = (Entry[]) WeakEntry.rehash(table, count);
                     lastTimeNormalCapacity = currentTime;
                     assert isValid();
                 }
@@ -286,7 +286,7 @@ public final class WeakHashSet<E> extends AbstractSet<E> {
                  */
                 if (++count >= lowerCapacityThreshold(table.length)) {
                     if (count > upperCapacityThreshold(table.length)) {
-                        this.table = table = (Entry[]) rehash(table, count, "add");
+                        this.table = table = (Entry[]) rehash(table, count);
                         index = hash % table.length;
                     }
                     lastTimeNormalCapacity = System.nanoTime();

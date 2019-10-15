@@ -125,12 +125,9 @@ abstract class WeakEntry<E> extends WeakReference<E> {
      *
      * @param  oldTable      the table to rehash.
      * @param  count         number of elements in the table (including chained elements).
-     * @param  callerMethod  the method invoking this one, for logging purpose only. The caller class
-     *         will be inferred from the enclosing class of the {@code oldTable} component type. This
-     *         uses the knowledge that all our implementations of {@code WeakEntry} are inner classes.
      * @return the new table array, or {@code oldTable} if no rehash were needed.
      */
-    static <E> WeakEntry<E>[] rehash(final WeakEntry<E>[] oldTable, final int count, final String callerMethod) {
+    static <E> WeakEntry<E>[] rehash(final WeakEntry<E>[] oldTable, final int count) {
         /*
          * Compute the capacity as twice the expected number of elements, then take
          * (if possible) the first prime number equals or greater to that value.
