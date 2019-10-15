@@ -60,6 +60,7 @@ final class ReferenceQueueConsumer extends Thread {
     private ReferenceQueueConsumer() {
         super("SeshatDisposer");
         setPriority(Thread.MAX_PRIORITY - 2);
+        setDaemon(true);
     }
 
     /**
@@ -93,7 +94,7 @@ final class ReferenceQueueConsumer extends Thread {
                     ((WeakEntry<?>) ref).dispose();
                 }
             } catch (Throwable exception) {
-                Logger.getLogger("tech.uom.seshat").log(Level.FINE, exception.toString(), exception);
+                Logger.getLogger("tech.uom.seshat").log(Level.WARNING, exception.toString(), exception);
             }
         }
         // Do not log anything at this point, since the loggers may be shutdown now.
