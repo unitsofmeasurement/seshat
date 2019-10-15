@@ -58,7 +58,7 @@ final class ReferenceQueueConsumer extends Thread {
      * the benefit of the rest of the system, since they make more resources available sooner.</p>
      */
     private ReferenceQueueConsumer() {
-        super("SeshatDisposer");
+        super(null, null, "Seshat disposer", 16*1024);        // Small (16 kb) stack size is sufficient.
         setPriority(Thread.MAX_PRIORITY - 2);
         setDaemon(true);
     }
