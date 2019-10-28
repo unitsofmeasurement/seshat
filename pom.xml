@@ -117,6 +117,22 @@
       <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>tech.units</groupId>
+      <artifactId>unit-tck</artifactId>
+      <version>1.1</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>     <!-- Avoid possible interference with the implementation under test -->
+          <groupId>tec.units</groupId>
+          <artifactId>unit-ri</artifactId>
+        </exclusion>
+        <exclusion>     <!-- MutabilityDetector uses an older version than the one inherited from JUnit. -->
+          <groupId>org.hamcrest</groupId>
+          <artifactId>hamcrest-core</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
   </dependencies>
 
   <properties>
@@ -212,6 +228,9 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.22.2</version>
+        <configuration>
+          <testNGArtifactName>none:none</testNGArtifactName>    <!-- Disable TestNG runner as we use JUnit instead. -->
+        </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
