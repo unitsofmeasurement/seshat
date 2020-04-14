@@ -3,6 +3,7 @@
   <head>
     <title>Seshat</title>
     <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="seshat.css">
   </head>
   <body>
     <h1>Seshat</h1>
@@ -13,6 +14,28 @@
       Seshat supports parsing and formatting of unit symbols,
       together with arithmetic operations on units and on quantities.
     </p>
+    <h2>Examples</h2>
+    <p>
+      A set of predefined units constants is provided in the <code>Units</code> class.
+      Using the <code>PASCAL</code> constants, one can easily create a kilopascal unit.
+      Note that the "kPa" symbol is inferred automatically:
+    </p>
+    <pre>Unit&lt;Pressure&gt; kilopascal = Units.PASCAL.multiply(1000);
+System.out.println(kilopascal);                                     // print "kPa"</pre>
+
+    <p>
+      More complex operations can be applied. in many cases, Seshat can still detect automatically
+      the resulting unit symbol and quantity type:
+    </p>
+    <pre>Force       force     =  Quantities.create(4, Units.NEWTON);
+Length      distance  =  Quantities.create(6, Units.MILLIMETRE);
+Time        duration  =  Quantities.create(3, Units.SECOND);
+Quantity&lt;?&gt; power     =  force.multiply(distance).divide(duration);
+
+System.out.println(power);                                              // print "8 mW"
+Power asTypeSafe = (Power) power;                                       // This cast is allowed in Seshat
+    </pre>
+
     <h2>Links</h2>
     <ul>
       <li><a href="https://github.com/unitsofmeasurement/seshat">Source code on GitHub</a>

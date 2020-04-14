@@ -1,0 +1,11 @@
+p {
+  text-align: justify;
+}
+
+pre {
+  margin-left:  40px;
+  margin-right: 40px;
+  border:       1px solid lightgray;
+  padding:      12px;
+  background-color: #f8f8f8;
+}
