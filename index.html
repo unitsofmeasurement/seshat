@@ -16,7 +16,8 @@
     </p>
     <h2>Examples</h2>
     <p>
-      A set of predefined units constants is provided in the <code>Units</code> class.
+      A set of predefined units constants is provided in the
+      <a href="api/tech/uom/seshat/Units.html"><code>Units</code></a> class.
       Using the <code>PASCAL</code> constants, one can easily create a kilopascal unit.
       Note that the "kPa" symbol is inferred automatically:
     </p>
@@ -36,8 +37,16 @@ System.out.println(power);                                              // print
 Power asTypeSafe = (Power) power;                                       // This cast is allowed in Seshat
     </pre>
 
+    <p>
+      Parsing and formatting use Unicode symbols by default, as in µg/m².
+      Parenthesis are recognized at parsing time and used for denominators at formatting time, as in kg/(m²⋅s).
+      While uncommon, Seshat accepts fractional powers as in m^⅔.
+      Some sentences like "100 feet", "square metre" and "degree Kelvin" are also recognized at parsing time.
+    </p>
+
     <h2>Links</h2>
     <ul>
+      <li><a href="api/index.html">Javadoc</a>
       <li><a href="https://github.com/unitsofmeasurement/seshat">Source code on GitHub</a>
     </ul>
   </body>
