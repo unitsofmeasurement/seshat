@@ -49,3 +49,7 @@ Some sentences like _"100 feet"_, _"square metre"_ and _"degree Kelvin"_
 are also recognized at parsing time.
 
 Seshat requires Java 10 and has no dependency other than JSR 363 and `java.base` module.
+
+## Links
+* [Javadoc](https://unitsofmeasurement.github.io/seshat/api/index.html)
+* [GitHub](https://github.com/unitsofmeasurement/seshat)
