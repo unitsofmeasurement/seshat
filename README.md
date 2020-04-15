@@ -79,5 +79,6 @@ Latest release can be used in a Maven project with following configuration:
 
 
 ## Links
-* [Javadoc](https://unitsofmeasurement.github.io/seshat/api/index.html)
+* [Web site](https://unitsofmeasurement.github.io/seshat/)
+* [Javadoc](https://unitsofmeasurement.github.io/seshat/api/)
 * [GitHub](https://github.com/unitsofmeasurement/seshat)
