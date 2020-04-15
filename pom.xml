@@ -281,4 +281,12 @@
       </plugin>
     </plugins>
   </build>
+
+  <distributionManagement>
+    <repository>
+      <id>bintray-unitsofmeasurement-maven</id>
+      <name>unitsofmeasurement-maven</name>
+      <url>https://api.bintray.com/maven/unitsofmeasurement/maven/tech.uom:seshat/;publish=1</url>
+    </repository>
+  </distributionManagement>
 </project>

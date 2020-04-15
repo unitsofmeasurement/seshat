@@ -50,6 +50,34 @@ are also recognized at parsing time.
 
 Seshat requires Java 10 and has no dependency other than JSR 363 and `java.base` module.
 
+
+## Maven dependency
+
+Latest release can be used in a Maven project with following configuration:
+
+```
+<project>
+  <dependencies>
+    <dependency>
+      <groupId>tech.uom</groupId>
+      <artifactId>seshat</artifactId>
+      <version>1.0</version>
+    </dependency>
+  </dependencies>
+  <repositories>
+    <repository>
+      <id>bintray-unitsofmeasurement-maven</id>
+      <name>bintray</name>
+      <url>https://dl.bintray.com/unitsofmeasurement/maven</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+</project>
+```
+
+
 ## Links
 * [Javadoc](https://unitsofmeasurement.github.io/seshat/api/index.html)
 * [GitHub](https://github.com/unitsofmeasurement/seshat)
