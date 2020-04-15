@@ -8,12 +8,21 @@
   <body>
     <h1>Seshat</h1>
     <p>
-      Seshat is a Java library implementing the Units of Measurement API defined by JSR-363.
-      Seshat is a subset of <a href="http://sis.apache.org">Apache Spatial Information System (SIS)</a> library
-      keeping only the classes required for JSR-363, with geospatial-specific functionalities omitted.
+      Seshat is a Java library implementing the Units of Measurement API defined by <abbr title="Java Specification Request">JSR</abbr>-363.
+      Seshat is a subset of <a href="http://sis.apache.org">Apache Spatial Information System (<abbr>SIS</abbr>)</a> library
+      keeping only the classes required for <abbr>JSR</abbr>-363, with geospatial-specific functionalities omitted.
       Seshat supports parsing and formatting of unit symbols,
       together with arithmetic operations on units and on quantities.
+      The <abbr title="Java Archive File">JAR</abbr> file size is 141 kb
+      and the public <abbr title="Application Programming Interface">API</abbr> is made of 5 classes
+      (not counting <abbr>JSR</abbr>-363 interfaces).
     </p>
+    <ul>
+      <li><a href="api/index.html">Browse Javadoc online</a>
+      <li><a href="https://github.com/unitsofmeasurement/seshat">Source code on GitHub</a>
+      <li><a href="#maven">Download with Maven</a>
+    </ul>
+
     <h2>Examples</h2>
     <p>
       A set of predefined units constants is provided in the
@@ -22,7 +31,7 @@
       Note that the "kPa" symbol is inferred automatically:
     </p>
     <pre>Unit&lt;Pressure&gt; kilopascal = Units.PASCAL.multiply(1000);
-System.out.println(kilopascal);                                     // print "kPa"</pre>
+System.out.println(kilopascal);                                         // print "kPa"</pre>
 
     <p>
       More complex operations can be applied. in many cases, Seshat can still detect automatically
@@ -44,10 +53,28 @@ Power asTypeSafe = (Power) power;                                       // This 
       Some sentences like "100 feet", "square metre" and "degree Kelvin" are also recognized at parsing time.
     </p>
 
-    <h2>Links</h2>
-    <ul>
-      <li><a href="api/index.html">Javadoc</a>
-      <li><a href="https://github.com/unitsofmeasurement/seshat">Source code on GitHub</a>
-    </ul>
-  </body>
+    <h2 id="maven">Download with Maven</h2>
+    <p>
+      Latest release can be used in a Maven project with following configuration:
+    </p>
+<pre>&lt;project&gt;
+  &lt;dependencies&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;tech.uom&lt;/groupId&gt;
+      &lt;artifactId&gt;seshat&lt;/artifactId&gt;
+      &lt;version&gt;1.0&lt;/version&gt;
+    &lt;/dependency&gt;
+  &lt;/dependencies&gt;
+  &lt;repositories&gt;
+    &lt;repository&gt;
+      &lt;id&gt;bintray-unitsofmeasurement-maven&lt;/id&gt;
+      &lt;name&gt;bintray&lt;/name&gt;
+      &lt;url&gt;https://dl.bintray.com/unitsofmeasurement/maven&lt;/url&gt;
+      &lt;snapshots&gt;
+        &lt;enabled&gt;false&lt;/enabled&gt;
+      &lt;/snapshots&gt;
+    &lt;/repository&gt;
+  &lt;/repositories&gt;
+&lt;/project&gt;</pre>
+</body>
 </html>
