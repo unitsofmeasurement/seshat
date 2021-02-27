@@ -48,7 +48,8 @@ While uncommon, Seshat accepts fractional powers as in m^⅔.
 Some sentences like _"100 feet"_, _"square metre"_ and _"degree Kelvin"_
 are also recognized at parsing time.
 
-Seshat requires Java 10 and has no dependency other than JSR 363 and `java.base` module.
+Seshat requires Java 8 at runtime (Java 10 at compile time)
+and has no dependency other than JSR 363 and `java.base` module.
 
 
 ## Maven dependency
@@ -64,16 +65,6 @@ Latest release can be used in a Maven project with following configuration:
       <version>1.0</version>
     </dependency>
   </dependencies>
-  <repositories>
-    <repository>
-      <id>bintray-unitsofmeasurement-maven</id>
-      <name>bintray</name>
-      <url>https://dl.bintray.com/unitsofmeasurement/maven</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 </project>
 ```
 
