@@ -16,6 +16,7 @@
 package tech.uom.seshat;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Collections;
 import java.io.Serializable;
 import javax.measure.UnitConverter;
@@ -26,7 +27,8 @@ import tech.uom.seshat.math.MathFunctions;
  * Base class of unit converters.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.0
+ * @version 1.1
+ * @since   1.0
  */
 abstract class AbstractConverter implements UnitConverter, Serializable {
     /**
@@ -134,6 +136,7 @@ abstract class AbstractConverter implements UnitConverter, Serializable {
      */
     @Override
     public UnitConverter concatenate(final UnitConverter converter) {
+        Objects.requireNonNull(converter);
         if (equals(converter.inverse())) {
             return IdentityConverter.INSTANCE;
         }

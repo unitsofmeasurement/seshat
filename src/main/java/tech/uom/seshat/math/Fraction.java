@@ -25,7 +25,8 @@ import tech.uom.seshat.util.WeakHashSet;
  * All {@code Fraction} instances are immutable and thus inherently thread-safe.
  *
  * @author  Martin Desruisseaux (MPO, Geomatys)
- * @version 1.0
+ * @version 1.1
+ * @since   1.0
  */
 public final class Fraction extends Number implements Comparable<Fraction>, Serializable {
     /**
@@ -102,10 +103,10 @@ public final class Fraction extends Number implements Comparable<Fraction>, Seri
      * This method fails if any argument value is {@link Long#MIN_VALUE} because that value can not be made positive.
      * However it should never happen. Even in the worst scenario:</p>
      *
-     * {@prefomat java
-     *     long n = Integer.MIN_VALUE * (long) Integer.MAX_VALUE;
+     * <pre>
+     *     long n = Math.multiplyFull(Integer.MIN_VALUE, Integer.MAX_VALUE);
      *     n += n;
-     * }
+     * </pre>
      *
      * Above result still slightly smaller in magnitude than {@code Long.MIN_VALUE}.
      */
@@ -519,8 +520,8 @@ public final class Fraction extends Number implements Comparable<Fraction>, Seri
                 case '⁄':
                 case '/':
                 case '∕': {
-                    numerator   = Integer.parseInt(s.substring(0, i));
-                    denominator = Integer.parseInt(s.substring(i+1, length));
+                    numerator   = Integer.parseInt(s.substring(0,i));
+                    denominator = Integer.parseInt(s.substring(i+1));
                     return;
                 }
             }

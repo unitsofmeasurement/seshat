@@ -15,6 +15,7 @@
  */
 package tech.uom.seshat;
 
+import java.util.OptionalInt;
 import javax.measure.Unit;
 import javax.measure.quantity.Angle;
 import javax.measure.quantity.Area;
@@ -40,6 +41,7 @@ import static org.junit.Assert.*;
  *
  * @author  Martin Desruisseaux (Geomatys)
  * @version 1.0
+ * @since   1.0
  */
 public final strictfp class UnitsTest {
     private static final double STRICT = 0;
@@ -241,6 +243,11 @@ public final strictfp class UnitsTest {
         assertSame(DEGREE,       valueOf("degrees_east"));
         assertSame(DEGREE,       valueOf("degrees_north"));
         assertSame(DEGREE,       valueOf("degrées_north"));
+        assertSame(DEGREE,       valueOf("degree_north"));
+        assertSame(DEGREE,       valueOf("degrees_N"));
+        assertSame(DEGREE,       valueOf("degree_N"));
+        assertSame(DEGREE,       valueOf("degreesN"));
+        assertSame(DEGREE,       valueOf("degreeN"));
         assertSame(DEGREE,       valueOf("decimal_degree"));
         assertSame(ARC_SECOND,   valueOf("arcsec"));
         assertSame(RADIAN,       valueOf("rad"));
@@ -302,5 +309,51 @@ public final strictfp class UnitsTest {
 
         // Potential vorticity surface
         assertEquals(KELVIN.multiply(SQUARE_METRE).divide(KILOGRAM.multiply(SECOND)), valueOf("K.m2.kg-1.s-1"));
+    }
+
+    /**
+     * Tests {@link Units#valueOfEPSG(int)} and {@link Units#valueOf(String)} with a {@code "EPSG:####"} syntax.
+     */
+    @Test
+    public void testValueOfEPSG() {
+        assertSame(METRE,          valueOfEPSG(9001));
+        assertSame(DEGREE,         valueOfEPSG(9102));
+        assertSame(DEGREE,         valueOfEPSG(9122));
+        assertSame(TROPICAL_YEAR,  valueOfEPSG(1029));
+        assertSame(SECOND,         valueOfEPSG(1040));
+        assertSame(FOOT,           valueOfEPSG(9002));
+        assertSame(US_SURVEY_FOOT, valueOfEPSG(9003));
+        assertSame(NAUTICAL_MILE,  valueOfEPSG(9030));
+        assertSame(KILOMETRE,      valueOfEPSG(9036));
+        assertSame(RADIAN,         valueOfEPSG(9101));
+        assertSame(ARC_MINUTE,     valueOfEPSG(9103));
+        assertSame(ARC_SECOND,     valueOfEPSG(9104));
+        assertSame(GRAD,           valueOfEPSG(9105));
+        assertSame(MICRORADIAN,    valueOfEPSG(9109));
+        assertSame(UNITY,          valueOfEPSG(9203));
+        assertSame(UNITY,          valueOfEPSG(9201));
+        assertSame(PPM,            valueOfEPSG(9202));
+    }
+
+    /**
+     * Tests {@link Units#getEpsgCode(Unit)}.
+     */
+    @Test
+    public void testGetEpsgCode() {
+        assertEquals(OptionalInt.of(9001), getEpsgCode(METRE));
+        assertEquals(OptionalInt.of(9102), getEpsgCode(DEGREE));
+        assertEquals(OptionalInt.of(1029), getEpsgCode(TROPICAL_YEAR));
+        assertEquals(OptionalInt.of(1040), getEpsgCode(SECOND));
+        assertEquals(OptionalInt.of(9002), getEpsgCode(FOOT));
+        assertEquals(OptionalInt.of(9003), getEpsgCode(US_SURVEY_FOOT));
+        assertEquals(OptionalInt.of(9030), getEpsgCode(NAUTICAL_MILE));
+        assertEquals(OptionalInt.of(9036), getEpsgCode(KILOMETRE));
+        assertEquals(OptionalInt.of(9101), getEpsgCode(RADIAN));
+        assertEquals(OptionalInt.of(9103), getEpsgCode(ARC_MINUTE));
+        assertEquals(OptionalInt.of(9104), getEpsgCode(ARC_SECOND));
+        assertEquals(OptionalInt.of(9105), getEpsgCode(GRAD));
+        assertEquals(OptionalInt.of(9109), getEpsgCode(MICRORADIAN));
+        assertEquals(OptionalInt.of(9201), getEpsgCode(UNITY));
+        assertEquals(OptionalInt.of(9202), getEpsgCode(PPM));
     }
 }

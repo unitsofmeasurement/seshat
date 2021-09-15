@@ -34,11 +34,13 @@ import java.util.Objects;
  * It is a design similar to {@code org.opengis.referencing.crs.DerivedCRS}</p>
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.0
+ * @version 1.1
  *
  * @param <Q>  the concrete subtype.
+ *
+ * @since 1.0
  */
-abstract class DerivedScalar<Q extends Quantity<Q>> extends Scalar<Q> {
+class DerivedScalar<Q extends Quantity<Q>> extends Scalar<Q> {
     /**
      * For cross-version compatibility.
      */
@@ -99,7 +101,10 @@ abstract class DerivedScalar<Q extends Quantity<Q>> extends Scalar<Q> {
      * }</pre>
      */
     @Override
-    abstract Quantity<Q> create(double newValue, Unit<Q> newUnit);
+    Quantity<Q> create(double newValue, Unit<Q> newUnit) {
+        assert newUnit == getSystemUnit() : newUnit;
+        return new DerivedScalar<>(this, newValue);
+    }
 
     /**
      * Returns the system unit of measurement.
@@ -151,10 +156,10 @@ abstract class DerivedScalar<Q extends Quantity<Q>> extends Scalar<Q> {
         }
         Objects.requireNonNull(newUnit);
         /*
-         * Do not invoke 'this.create(double, Unit)' because the contract in this subclass
+         * Do not invoke `this.create(double, Unit)` because the contract in this subclass
          * restricts the above method to cases where the given unit is the system unit.
-         * Furthermore we need to let 'Quantities.create(…)' re-evaluate whether we need
-         * a 'DerivedScalar' instance or whether 'Scalar' would be sufficient.
+         * Furthermore we need to let `Quantities.create(…)` re-evaluate whether we need
+         * a `DerivedScalar` instance or whether `Scalar` would be sufficient.
          */
         return Quantities.create(derivedUnit.getConverterTo(newUnit).convert(derivedValue), newUnit);
     }

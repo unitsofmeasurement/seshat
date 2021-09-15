@@ -27,6 +27,8 @@ import javax.measure.UnitConverter;
  * @version 1.0
  *
  * @param <Q>  the type of quantities created by this factory.
+ *
+ * @since 1.0
  */
 interface ScalarFactory<Q extends Quantity<Q>> {
     /**

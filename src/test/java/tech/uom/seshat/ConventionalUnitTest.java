@@ -31,6 +31,7 @@ import static org.junit.Assert.*;
  *
  * @author  Martin Desruisseaux (Geomatys)
  * @version 1.0
+ * @since   1.0
  */
 public final strictfp class ConventionalUnitTest {
     private static final double STRICT = 0;

@@ -29,6 +29,8 @@ import java.lang.reflect.Modifier;
  * @version 1.0
  *
  * @see IndexedResourceBundle#getKeyConstants()
+ *
+ * @since 1.0
  */
 class KeyConstants {
     /**

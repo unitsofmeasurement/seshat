@@ -15,9 +15,9 @@
  */
 package tech.uom.seshat;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.HashSet;
+import java.util.Arrays;
 import java.util.Locale;
 import javax.measure.Unit;
 import javax.measure.format.UnitFormat;
@@ -32,6 +32,7 @@ import static org.junit.Assert.*;
  *
  * @author  Martin Desruisseaux (Geomatys)
  * @version 1.0
+ * @since   1.0
  */
 public final strictfp class UnitServicesTest {
     /**

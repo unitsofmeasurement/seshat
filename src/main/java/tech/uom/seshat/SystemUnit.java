@@ -38,9 +38,11 @@ import tech.uom.seshat.resources.Errors;
  * without scale factor or offset.
  *
  * @author  Martin Desruisseaux (MPO, Geomatys)
- * @version 1.0
+ * @version 1.1
  *
  * @param <Q>  the kind of quantity to be measured using this units.
+ *
+ * @since 1.0
  */
 final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements QuantityFactory<Q> {
     /**
@@ -55,6 +57,8 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
 
     /**
      * The type of quantity that uses this unit, or {@code null} if unknown.
+     * This field should be null only when this unit is the result of an arithmetic
+     * operation and that result can not be mapped to a known {@link Quantity} subtype.
      */
     final Class<Q> quantity;
 
@@ -80,18 +84,19 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
     private transient ConventionalUnit<Q>[] related;
 
     /**
-     * Creates a new unit having the given symbol.
+     * Creates a new unit having the given symbol and EPSG code.
      *
      * @param  quantity   the type of quantity that uses this unit, or {@code null} if unknown.
      * @param  dimension  the unit dimension.
      * @param  symbol     the unit symbol, or {@code null} if this unit has no specific symbol.
      * @param  scope      {@link UnitRegistry#SI}, {@link UnitRegistry#ACCEPTED}, other constants or 0 if unknown.
+     * @param  epsg       the EPSG code, or 0 if this unit has no EPSG code.
      * @param  factory    the factory to use for creating quantities, or {@code null} if none.
      */
     SystemUnit(final Class<Q> quantity, final UnitDimension dimension, final String symbol,
-            final byte scope, final ScalarFactory<Q> factory)
+            final byte scope, final short epsg, final ScalarFactory<Q> factory)
     {
-        super(symbol, scope);
+        super(symbol, scope, epsg);
         this.quantity  = quantity;
         this.dimension = dimension;
         this.factory   = factory;
@@ -131,7 +136,7 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
         }
         /*
          * Try to create a unit symbol as the concatenation of the symbols of the two units,
-         * with the operation symbol between them. If we can not, 'symbol' will stay null.
+         * with the operation symbol between them. If we can not, `symbol` will stay null.
          */
         String symbol = null;
         if (operation != 0) {
@@ -151,7 +156,7 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
         if (newDimension == dimension && sameSymbol(symbol)) {
             return this;
         }
-        return new SystemUnit<>(null, newDimension, symbol, (byte) 0, null);
+        return new SystemUnit<>(null, newDimension, symbol, (byte) 0, (short) 0, null);
     }
 
     /**
@@ -212,8 +217,8 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
 
     /**
      * The converter for replacing the keys in the {@link SystemUnit#getBaseUnits()} map from {@link UnitDimension}
-     * instances to {@link SystemUnit} instances. We apply conversions on the fly instead than extracting the data in
-     * a new map once for all because the copy may fail if an entry contains a rational instead than an integer power.
+     * instances to {@link SystemUnit} instances. We apply conversions on the fly instead of extracting the data in
+     * a new map once for all because the copy may fail if an entry contains a rational instead of an integer power.
      * With on-the-fly conversions, the operation will not fail if the user never ask for that particular value.
      */
     private static final class DimToUnit implements Function<UnitDimension, SystemUnit<?>> {
@@ -269,7 +274,7 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
          */
         SystemUnit<T> unit = Units.get(type);
         if (unit == null) {
-            unit = new SystemUnit<>(type, dimension, null, (byte) 0, null);  // Intentionally no symbol.
+            unit = new SystemUnit<>(type, dimension, null, (byte) 0, (short) 0, null);  // Intentionally no symbol.
         }
         if (!dimension.equals(unit.dimension)) {
             throw new ClassCastException(Errors.format(Errors.Keys.IncompatibleUnitDimension_5, new Object[] {
@@ -325,7 +330,7 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
         }
         /*
          * At this point we know that the given units is not a system unit. Ask the conversion
-         * FROM the given units (before to inverse it) instead than TO the given units because
+         * FROM the given units (before to inverse it) instead of TO the given units because
          * in Seshat implementation, the former returns directly ConventionalUnit.toTarget
          * while the later implies a recursive call to this method.
          */
@@ -384,11 +389,11 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
         if (symbol.equals(getSymbol())) {
             return this;
         }
-        final SystemUnit<Q> alt = new SystemUnit<>(quantity, dimension, symbol, (byte) 0, factory);
+        final SystemUnit<Q> alt = new SystemUnit<>(quantity, dimension, symbol, (byte) 0, (short) 0, factory);
         if (quantity != null) {
             /*
              * Use the cache only if this unit has a non-null quantity type. Do not use the cache even
-             * in read-only mode when 'quantity' is null because we would be unable to guarantee that
+             * in read-only mode when `quantity` is null because we would be unable to guarantee that
              * the parameterized type <Q> is correct.
              */
             final Object existing = UnitRegistry.putIfAbsent(symbol, alt);
@@ -402,7 +407,7 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
                 throw new IllegalArgumentException(Errors.format(Errors.Keys.ElementAlreadyPresent_1, symbol));
             }
             /*
-             * This method may be invoked for a new quantity, after a call to 'asType(Class)'.
+             * This method may be invoked for a new quantity, after a call to `asType(Class)`.
              * Try to register the new unit for that Quantity. But if another unit is already
              * registered for that Quantity, this is not necessarily an error.
              */
@@ -420,7 +425,7 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
     @Override
     public Unit<?> multiply(final Unit<?> multiplier) {
         Objects.requireNonNull(multiplier);
-        if (multiplier == this) return pow(2);                      // For formating e.g. "K²" instead than "K⋅K".
+        if (multiplier == this) return pow(2);                      // For formating e.g. "K²" instead of "K⋅K".
         return product(multiplier, false);
     }
 
@@ -465,7 +470,7 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
                 result = result.transform(c);
                 /*
                  * If the system unit product is a Seshat implementation, try to infer a unit symbol
-                 * to be given to our customized 'transform' method. Otherwise fallback on standard API.
+                 * to be given to our customized `transform` method. Otherwise fallback on standard API.
                  */
                 result = inferSymbol(result, operation, other);
             }
@@ -583,11 +588,15 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
      */
     @Override
     public Quantity<Q> create(final Number value, final Unit<Q> unit) {
+        Objects.requireNonNull(value);
+        Objects.requireNonNull(unit);
         final double v = AbstractConverter.doubleValue(value);
         if (factory != null) {
             return factory.create(v, unit);
-        } else {
+        } else if (quantity != null) {
             return ScalarFallback.factory(v, unit, quantity);
+        } else {
+            return new Scalar<>(v, unit);
         }
     }
 }

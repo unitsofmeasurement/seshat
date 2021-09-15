@@ -37,7 +37,7 @@ import static org.junit.Assert.*;
  *
  * @author  Martin Desruisseaux (Geomatys)
  * @version 1.0
- * @module
+ * @since   1.0
  */
 public final strictfp class SystemUnitTest {
     /**
@@ -154,7 +154,7 @@ public final strictfp class SystemUnitTest {
 
     /**
      * Verifies that the test for equality between two units produce the expected result.
-     * This method expects {@link Unit} instances instead than {@link Unit} for convenience,
+     * This method expects {@link Unit} instances instead of {@link Unit} for convenience,
      * but only the units will be compared.
      *
      * @param message   the message to show in case of failure.
@@ -278,8 +278,8 @@ public final strictfp class SystemUnitTest {
         /*
          * Test with units outside the pre-defined constants in the Units class.
          */
-        final Unit<Length> anonymous = new SystemUnit<>(Length.class, (UnitDimension) Units.METRE.getDimension(), null,  UnitRegistry.OTHER, null);
-        final Unit<Length> otherName = new SystemUnit<>(Length.class, (UnitDimension) Units.METRE.getDimension(), "Foo", UnitRegistry.OTHER, null);
+        final Unit<Length> anonymous = new SystemUnit<>(Length.class, (UnitDimension) Units.METRE.getDimension(), null,  UnitRegistry.OTHER, (short) 0, null);
+        final Unit<Length> otherName = new SystemUnit<>(Length.class, (UnitDimension) Units.METRE.getDimension(), "Foo", UnitRegistry.OTHER, (short) 0, null);
         assertSame(Units.METRE, anonymous.asType(Length.class));
         assertSame(otherName,   otherName.asType(Length.class));
         /*
@@ -304,7 +304,7 @@ public final strictfp class SystemUnitTest {
     public void testAsTypeForNewQuantity() {
         /*
          * Tests with a new quantity type unknown to Seshat.
-         * Seshat can not proof that the type is wrong, so it should accept it.
+         * Seshat can not prove that the type is wrong, so it should accept it.
          */
         final Unit<Strange> strange = Units.METRE.asType(Strange.class);
         final Unit<Strange> named   = strange.alternate("strange");

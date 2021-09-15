@@ -23,11 +23,11 @@ import static java.lang.Character.*;
 /**
  * Static methods working on {@link StringBuilder} instances. Some methods defined in this
  * class duplicate the functionalities provided in the {@link CharSequences} class, but
- * modify directly the content of the provided {@code StringBuilder} instead than creating
+ * modify directly the content of the provided {@code StringBuilder} instead of creating
  * new objects.
  *
  * <div class="section">Unicode support</div>
- * Every methods defined in this class work on <cite>code points</cite> instead than characters
+ * Every methods defined in this class work on <cite>code points</cite> instead of characters
  * when appropriate. Consequently those methods should behave correctly with characters outside
  * the <cite>Basic Multilingual Plane</cite> (BMP).
  *

@@ -18,6 +18,7 @@ package tech.uom.seshat;
 import java.util.Objects;
 import javax.measure.Unit;
 import javax.measure.Quantity;
+import javax.measure.UnconvertibleException;
 import javax.measure.UnitConverter;
 import javax.measure.quantity.Time;
 import javax.measure.quantity.Angle;
@@ -37,7 +38,8 @@ import tech.uom.seshat.resources.Errors;
  * </ul>
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.0
+ * @version 1.1
+ * @since   1.0
  */
 public final class Quantities {
     /**
@@ -68,6 +70,8 @@ public final class Quantities {
      * @param  unit   the unit of measurement associated to the given value.
      * @return a quantity of the given type for the given value and unit of measurement.
      * @throws IllegalArgumentException if the given unit class is not a supported implementation.
+     *
+     * @see UnitServices#getQuantityFactory(Class)
      */
     public static <Q extends Quantity<Q>> Q create(final double value, final Unit<Q> unit) {
         Objects.requireNonNull(unit);
@@ -84,12 +88,24 @@ public final class Quantities {
                  * even if we skip the conversion to system unit.  Since the vast majority of units fall in this
                  * category, it is worth to do this optimization.
                  *
-                 * (Note: despite its name, above 'isLinear()' method actually has an 'isScale()' behavior).
+                 * (Note: despite its name, above `isLinear()` method actually has an `isScale()` behavior).
                  */
                 if (factory != null) {
                     return factory.create(value, unit);
                 } else {
-                    return ScalarFallback.factory(value, unit, ((SystemUnit<Q>) system).quantity);
+                    final Class<Q> type = ((SystemUnit<Q>) system).quantity;
+                    if (type != null) {
+                        return ScalarFallback.factory(value, unit, type);
+                    } else {
+                        /*
+                         * This cast should be safe because `type` should be null only in contexts where the user
+                         * can not expect a more specific type. For example it may be the result of an arithmetic
+                         * operation, in which case the return value in method signature is `Quantity<?>`.
+                         */
+                        @SuppressWarnings("unchecked")
+                        final Q quantity = (Q) new Scalar<>(value, unit);
+                        return quantity;
+                    }
                 }
             }
             /*
@@ -103,7 +119,14 @@ public final class Quantities {
                     return quantity;
                 }
             }
-            return DerivedScalar.Fallback.factory(value, unit, system, c, ((SystemUnit<Q>) system).quantity);
+            final Class<Q> type = ((SystemUnit<Q>) system).quantity;
+            if (type != null) {
+                return DerivedScalar.Fallback.factory(value, unit, system, c, type);
+            } else {
+                @SuppressWarnings("unchecked")  // Same reason than for `new Scalar(…)`.
+                final Q quantity = (Q) new DerivedScalar<>(value, unit, system, c);
+                return quantity;
+            }
         } else {
             throw new IllegalArgumentException(Errors.format(Errors.Keys.UnsupportedImplementation_1, unit.getClass()));
         }
@@ -139,5 +162,83 @@ public final class Quantities {
             }
         }
         return (Q) quantity;
+    }
+
+    /**
+     * Returns the smallest of two quantities. Values are converted to {@linkplain Unit#getSystemUnit() system unit}
+     * before to be compared. If one of the two quantities is {@code null} or has NaN value, then the other quantity
+     * is returned. If the two quantities have equal converted values, then the first quantity is returned.
+     *
+     * @param  <Q>  type of quantities.
+     * @param  q1   the first quantity (can be {@code null}).
+     * @param  q2   the second quantity (can be {@code null}).
+     * @return the smallest of the two given quantities.
+     *
+     * @since 1.1
+     */
+    public static <Q extends Quantity<Q>> Quantity<Q> min(final Quantity<Q> q1, final Quantity<Q> q2) {
+        return minOrMax(q1, q2, false);
+    }
+
+    /**
+     * Returns the largest of two quantities. Values are converted to {@linkplain Unit#getSystemUnit() system unit}
+     * before to be compared. If one of the two quantities is {@code null} or has NaN value, then the other quantity
+     * is returned. If the two quantities have equal converted values, then the first quantity is returned.
+     *
+     * @param  <Q>  type of quantities.
+     * @param  q1   the first quantity (can be {@code null}).
+     * @param  q2   the second quantity (can be {@code null}).
+     * @return the largest of the two given quantities.
+     *
+     * @since 1.1
+     */
+    public static <Q extends Quantity<Q>> Quantity<Q> max(final Quantity<Q> q1, final Quantity<Q> q2) {
+        return minOrMax(q1, q2, true);
+    }
+
+    /**
+     * Implementation of {@link #min(Quantity, Quantity)} and {@link #max(Quantity, Quantity)}.
+     */
+    @SuppressWarnings("unchecked")      // For `((Comparable) v1).compareTo(v2)` which is checked by `if` statement.
+    private static <Q extends Quantity<Q>> Quantity<Q> minOrMax(final Quantity<Q> q1, final Quantity<Q> q2, final boolean max) {
+        if (q1 == null) return q2;
+        if (q2 == null) return q1;
+        final Unit<Q> u1 = q1.getUnit();
+        final Unit<Q> u2 = q2.getUnit();
+        final Unit<Q> s1 = u1.getSystemUnit();
+        final Unit<Q> s2 = u2.getSystemUnit();
+        if (!Objects.equals(s1, s2)) {
+            throw new UnconvertibleException((String) null);
+        }
+        Number v1 = u1.getConverterTo(s1).convert(q1.getValue());
+        Number v2 = u2.getConverterTo(s2).convert(q2.getValue());
+        if (isNaN(v2)) return q1;
+        if (isNaN(v1)) return q2;
+        final int c;
+        if (v1.getClass().isInstance(v2) && v1 instanceof Comparable<?>) {
+            c = ((Comparable) v1).compareTo(v2);
+        } else {
+            c = Double.compare(v1.doubleValue(), v2.doubleValue());
+        }
+        return (max ? c >= 0 : c <= 0) ? q1 : q2;
+    }
+
+    /**
+     * Returns {@code true} if the given number is null or NaN.
+     * Current implementation recognizes {@link Float} and {@link Double} types.
+     *
+     * @param  value  the number to test (may be {@code null}).
+     * @return {@code true} if the given number is null or NaN.
+     *
+     * @see Float#isNaN()
+     * @see Double#isNaN()
+     *
+     * @since 1.1
+     */
+    private static boolean isNaN(final Number value) {
+        if (value == null) return true;
+        if (value instanceof Double) return ((Double) value).isNaN();
+        if (value instanceof Float)  return ((Float)  value).isNaN();
+        return false;
     }
 }

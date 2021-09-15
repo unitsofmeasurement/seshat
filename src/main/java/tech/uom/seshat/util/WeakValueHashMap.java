@@ -57,7 +57,7 @@ import static tech.uom.seshat.util.WeakEntry.*;
  * statement blocking all other access to the map. This is okay if that particular {@code WeakValueHashMap} instance
  * is not expected to be used in a highly concurrent environment.
  *
- * <div class="section">Thread safety</div>
+ * <h2>Thread safety</h2>
  * The same {@code WeakValueHashMap} instance can be safely used by many threads without synchronization on the part
  * of the caller. But if a sequence of two or more method calls need to appear atomic from other threads perspective,
  * then the caller can synchronize on {@code this}.
@@ -70,6 +70,8 @@ import static tech.uom.seshat.util.WeakEntry.*;
  *
  * @see java.util.WeakHashMap
  * @see WeakHashSet
+ *
+ * @since 1.0
  */
 public class WeakValueHashMap<K,V> extends AbstractMap<K,V> {
     /*
@@ -169,7 +171,8 @@ public class WeakValueHashMap<K,V> extends AbstractMap<K,V> {
     private Entry[] table;
 
     /**
-     * Number of non-null elements in {@link #table}.
+     * Number of non-null elements in {@link #table}. This is used for determining
+     * when {@link WeakEntry#rehash(WeakEntry[], int)} needs to be invoked.
      */
     private int count;
 
@@ -212,6 +215,8 @@ public class WeakValueHashMap<K,V> extends AbstractMap<K,V> {
     /**
      * Invoked by {@link Entry} when an element has been collected by the garbage
      * collector. This method removes the weak reference from the {@link #table}.
+     *
+     * @param  toRemove  the entry to remove from this map.
      */
     @SuppressWarnings("unchecked")
     private synchronized void removeEntry(final Entry toRemove) {
@@ -234,6 +239,8 @@ public class WeakValueHashMap<K,V> extends AbstractMap<K,V> {
     /**
      * Checks if this {@code WeakValueHashMap} is valid. This method counts the number of elements
      * and compares it to {@link #count}. This method is invoked in assertions only.
+     *
+     * @return whether {@link #count} matches the expected value.
      */
     final boolean isValid() {
         if (!Thread.holdsLock(this)) {
@@ -349,6 +356,8 @@ public class WeakValueHashMap<K,V> extends AbstractMap<K,V> {
      * @param  key    key with which the specified value is to be associated.
      * @param  value  value to be associated with the specified key.
      * @return the previous value associated with specified key, or {@code null} if there was no mapping for key.
+     *
+     * @throws NullPointerException if the key or the value is {@code null}.
      */
     @Override
     public V put(final K key, final V value) {
@@ -367,6 +376,8 @@ public class WeakValueHashMap<K,V> extends AbstractMap<K,V> {
      * @param  key    key with which the specified value is to be associated.
      * @param  value  value to be associated with the specified key.
      * @return the current value associated with specified key, or {@code null} if there was no mapping for key.
+     *
+     * @throws NullPointerException if the key or the value is {@code null}.
      */
     @Override
     public V putIfAbsent(final K key, final V value) {

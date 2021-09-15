@@ -30,11 +30,13 @@ import tech.uom.seshat.util.StringBuilders;
  * Instances of this class are unmodifiable.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.0
+ * @version 1.1
  *
  * @param <Q>  the concrete subtype.
+ *
+ * @since 1.0
  */
-abstract class Scalar<Q extends Quantity<Q>> extends Number implements Quantity<Q>, Comparable<Q> {
+class Scalar<Q extends Quantity<Q>> extends Number implements Quantity<Q>, Comparable<Q> {
     /**
      * For cross-version compatibility.
      */
@@ -52,6 +54,7 @@ abstract class Scalar<Q extends Quantity<Q>> extends Number implements Quantity<
 
     /**
      * Creates a new scalar for the given value.
+     * Callers should ensure that the unit argument is non-null.
      */
     Scalar(final double value, final Unit<Q> unit) {
         this.value = value;
@@ -77,7 +80,9 @@ abstract class Scalar<Q extends Quantity<Q>> extends Number implements Quantity<
      *
      * @see Quantities#create(double, Unit)
      */
-    abstract Quantity<Q> create(double newValue, Unit<Q> newUnit);
+    Quantity<Q> create(double newValue, Unit<Q> newUnit) {
+        return new Scalar<>(newValue, newUnit);
+    }
 
     /**
      * Returns a quantity quantity of same type than this quantity but with a different value and/or unit.
@@ -213,7 +218,7 @@ abstract class Scalar<Q extends Quantity<Q>> extends Number implements Quantity<
              * Conversion from this quantity to system unit was a scale factor (see assumption documented
              * in this method javadoc) and given conversion is also a scale factor. Consequently conversion
              * from the new quantity unit to system unit will still be a scale factor, in which case this
-             * 'Scalar' class is still appropriate.
+             * `Scalar` class is still appropriate.
              */
             return create(newValue, newUnit);
         } else {
@@ -312,7 +317,7 @@ abstract class Scalar<Q extends Quantity<Q>> extends Number implements Quantity<
         /*
          * We require the Scalar implementation rather than accepting arbitrary Quantity<?> instance
          * for making sure that we obey to Object.equals(Object) contract (e.g. symmetric, transitive,
-         * etc.). But we invoke the getter methods instead than accessing directly the fields because
+         * etc.). But we invoke the getter methods instead of accessing directly the fields because
          * DerivedScalar override them.
          */
         final Scalar<?> that = (Scalar<?>) other;
@@ -339,7 +344,7 @@ abstract class Scalar<Q extends Quantity<Q>> extends Number implements Quantity<
         StringBuilders.trimFractionalPart(buffer);
         final String symbol = getUnit().toString();
         if (symbol != null && !symbol.isEmpty()) {
-            buffer.append(' ').append(symbol);
+            buffer.append('\u202F').append(symbol);
         }
         return buffer.toString();
     }

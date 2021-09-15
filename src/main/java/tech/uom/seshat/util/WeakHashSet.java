@@ -36,22 +36,24 @@ import static tech.uom.seshat.util.WeakEntry.*;
  * the static {@code hashCode(a)} and {@code equals(a1, a2)} methods defined in the {@link Arrays}
  * class.</p>
  *
- * <p>The {@code WeakHashSet} class has a {@link #get(Object)} method that is not part of the
+ * <h2>Optimizing memory use in factory implementations</h2>
+ * The {@code WeakHashSet} class has a {@link #get(Object)} method that is not part of the
  * {@link java.util.Set} interface. This {@code get} method retrieves an entry from this set
  * that is equals to the supplied object. The {@link #unique(Object)} method combines a
  * {@code get} followed by a {@code add} operation if the specified object was not in the set.
- * This is similar in spirit to the {@link String#intern()} method.</p>
+ * This is similar in spirit to the {@link String#intern()} method.
  *
- * <p>The same {@code WeakHashSet} instance can be safely used by many threads without synchronization on the part of
+ * <h2>Thread safety</h2>
+ * The same {@code WeakHashSet} instance can be safely used by many threads without synchronization on the part of
  * the caller. But if a sequence of two or more method calls need to appear atomic from other threads perspective,
- * then the caller can synchronize on {@code this}.</p>
+ * then the caller can synchronize on {@code this}.
  *
  * @author  Martin Desruisseaux (MPO, IRD, Geomatys)
  * @version 1.0
  *
  * @param <E>  the type of elements in the set.
  *
- * @see java.util.WeakHashMap
+ * @since 1.0
  */
 public final class WeakHashSet<E> extends AbstractSet<E> {
     /**
@@ -83,7 +85,8 @@ public final class WeakHashSet<E> extends AbstractSet<E> {
     private Entry[] table;
 
     /**
-     * Number of non-null elements in {@link #table}.
+     * Number of non-null elements in {@link #table}. This is used for determining
+     * when {@link WeakEntry#rehash(WeakEntry[], int)} needs to be invoked.
      */
     private int count;
 
@@ -121,6 +124,8 @@ public final class WeakHashSet<E> extends AbstractSet<E> {
     /**
      * Invoked by {@link Entry} when an element has been collected by the garbage
      * collector. This method removes the weak reference from the {@link #table}.
+     *
+     * @param  toRemove  the entry to remove from this map.
      */
     private synchronized void removeEntry(final Entry toRemove) {
         assert isValid();
@@ -142,6 +147,8 @@ public final class WeakHashSet<E> extends AbstractSet<E> {
     /**
      * Checks if this {@code WeakHashSet} is valid. This method counts the number of elements and
      * compares it to {@link #count}. This method is invoked in assertions only.
+     *
+     * @return whether {@link #count} matches the expected value.
      */
     private boolean isValid() {
         if (!Thread.holdsLock(this)) {
@@ -171,6 +178,7 @@ public final class WeakHashSet<E> extends AbstractSet<E> {
      *
      * @param  element  element to be added to this set.
      * @return {@code true} if this set did not already contain the specified element.
+     * @throws NullPointerException if the given object is {@code null}.
      */
     @Override
     public synchronized boolean add(final E element) {

@@ -28,7 +28,8 @@ import static org.junit.Assert.*;
  * Tests {@link Quantities}.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.0
+ * @version 1.1
+ * @since   1.0
  */
 public final strictfp class QuantitiesTest {
     private static final double STRICT = 0;
@@ -106,6 +107,18 @@ public final strictfp class QuantitiesTest {
     }
 
     /**
+     * Tests a multiply operation that result in a quantity for which we have no specialized sub-interface.
+     *
+     * @since 1.1
+     */
+    @Test
+    public void testUnspecialized() {
+        final Quantity<?> quantity = Quantities.create(3, Units.CENTIMETRE).multiply(Quantities.create(4, Units.SECOND));
+        assertEquals("value", 12, quantity.getValue().doubleValue(), STRICT);
+        assertEquals("unit", "cm⋅s", quantity.getUnit().toString());
+    }
+
+    /**
      * Tests {@link Scalar#equals(Object)} and {@link Scalar#hashCode()}.
      * This test uses a unit without specific {@link Scalar} subclass, in order to
      * verify that tested methods work even though the {@link ScalarFallback} proxy.
@@ -120,5 +133,21 @@ public final strictfp class QuantitiesTest {
         assertTrue (q1.hashCode() != 0);
         assertTrue (q1.equals(q2));
         assertFalse(q1.equals(q3));
+    }
+
+    /**
+     * Tests {@link Quantities#min(Quantity, Quantity)} and {@link Quantities#max(Quantity, Quantity)}.
+     *
+     * @since 1.1
+     */
+    @Test
+    public void testMinAndMax() {
+        Quantity<Length> q1 = Quantities.create(5,      Units.KILOMETRE);
+        Quantity<Length> q2 = Quantities.create(600,    Units.METRE);
+        Quantity<Length> q3 = Quantities.create(700000, Units.CENTIMETRE);
+        assertSame(q2, Quantities.min(q1, q2));
+        assertSame(q1, Quantities.max(q1, q2));
+        assertSame(q1, Quantities.min(q1, q3));
+        assertSame(q3, Quantities.max(q1, q3));
     }
 }

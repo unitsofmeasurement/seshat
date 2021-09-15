@@ -47,13 +47,14 @@ import java.util.logging.Logger;
  *   <li>{@link Class} and {@link Throwable} instances are summarized.</li>
  * </ul>
  *
- * <div class="section">Thread safety</div>
+ * <h2>Thread safety</h2>
  * The same {@code IndexedResourceBundle} instance can be safely used by many threads without synchronization
  * on the part of the caller. Subclasses should make sure that any overridden methods remain safe to call from
  * multiple threads.
  *
  * @author  Martin Desruisseaux (IRD, Geomatys)
  * @version 1.0
+ * @since   1.0
  */
 public abstract class IndexedResourceBundle extends ResourceBundle {
     /**
@@ -317,11 +318,11 @@ public abstract class IndexedResourceBundle extends ResourceBundle {
                 /*
                  * Constructs a new MessageFormat for formatting the arguments.
                  */
-                format = new MessageFormat(pattern, getLocale());
+                format  = new MessageFormat(pattern, getLocale());
                 lastKey = key;
             } else if (key != lastKey) {
                 /*
-                 * Method MessageFormat.applyPattern(...) is costly! We will avoid
+                 * Method MessageFormat.applyPattern(…) is costly! We will avoid
                  * calling it again if the format already has the right pattern.
                  */
                 format.applyPattern(pattern);
@@ -332,7 +333,7 @@ public abstract class IndexedResourceBundle extends ResourceBundle {
             } catch (RuntimeException e) {
                 /*
                  * Safety against badly implemented toString() method
-                 * in libraries that we don't control.
+                 * in libraries that we do not control.
                  */
                 return "[Unformattable message: " + e + ']';
             }

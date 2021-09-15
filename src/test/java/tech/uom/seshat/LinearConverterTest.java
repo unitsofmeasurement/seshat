@@ -28,6 +28,7 @@ import static org.junit.Assert.*;
  *
  * @author  Martin Desruisseaux (Geomatys)
  * @version 1.0
+ * @since   1.0
  */
 public final strictfp class LinearConverterTest {
     private static final double STRICT = 0;
@@ -102,7 +103,7 @@ public final strictfp class LinearConverterTest {
 
     /**
      * Tests {@link LinearConverter#convert(double)}. This method tests also the pertinence of
-     * representing the conversion factor by a ratio instead than a single {@code double} value.
+     * representing the conversion factor by a ratio instead of a single {@code double} value.
      */
     @Test
     public void testConvertDouble() {

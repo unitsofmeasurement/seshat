@@ -21,10 +21,10 @@ import static java.lang.Character.*;
 /**
  * Static methods working with {@link CharSequence} instances. Some methods defined in this
  * class duplicate the functionalities already provided in the standard {@link String} class,
- * but works on a generic {@code CharSequence} instance instead than {@code String}.
+ * but works on a generic {@code CharSequence} instance instead of {@code String}.
  *
  * <div class="section">Unicode support</div>
- * Every methods defined in this class work on <cite>code points</cite> instead than characters
+ * Every methods defined in this class work on <cite>code points</cite> instead of characters
  * when appropriate. Consequently those methods should behave correctly with characters outside
  * the <cite>Basic Multilingual Plane</cite> (BMP).
  *
@@ -86,7 +86,7 @@ public final class CharSequences {
     /**
      * Returns the index within the given strings of the first occurrence of the specified part,
      * starting at the specified index. This method is equivalent to the following method call,
-     * except that this method works on arbitrary {@link CharSequence} objects instead than
+     * except that this method works on arbitrary {@link CharSequence} objects instead of
      * {@link String}s only, and that the upper limit can be specified:
      *
      * <pre>{@code return text.indexOf(part, fromIndex);}</pre>
@@ -285,7 +285,7 @@ search:     for (; fromIndex <= toIndex; fromIndex++) {
     /**
      * Returns {@code true} if the given text at the given offset contains the given part,
      * optionally in a case-insensitive way. This method is equivalent to the following code,
-     * except that this method works on arbitrary {@link CharSequence} objects instead than
+     * except that this method works on arbitrary {@link CharSequence} objects instead of
      * {@link String}s only:
      *
      * <pre>{@code return text.regionMatches(ignoreCase, offset, part, 0, part.length());}</pre>

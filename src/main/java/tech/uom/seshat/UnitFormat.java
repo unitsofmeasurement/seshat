@@ -30,6 +30,7 @@ import java.util.ResourceBundle;
 import java.util.MissingResourceException;
 import java.util.ConcurrentModificationException;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import javax.measure.Dimension;
 import javax.measure.Unit;
 import javax.measure.format.ParserException;
@@ -47,7 +48,7 @@ import tech.uom.seshat.util.WeakValueHashMap;
  * In addition to the symbols of the <cite>Système international</cite> (SI), this class is also capable to handle
  * some symbols found in <cite>Well Known Text</cite> (WKT) definitions or in XML files.
  *
- * <div class="section">Multi-threading</div>
+ * <h2>Multi-threading</h2>
  * {@code UnitFormat} is generally not thread-safe. If units need to be parsed or formatted in different threads,
  * each thread should have its own {@code UnitFormat} instance.
  *
@@ -55,6 +56,8 @@ import tech.uom.seshat.util.WeakValueHashMap;
  * @version 1.0
  *
  * @see Units#valueOf(String)
+ *
+ * @since 1.0
  */
 public class UnitFormat extends Format implements javax.measure.format.UnitFormat {
     /**
@@ -108,6 +111,8 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
      * </ul>
      *
      * @author  Martin Desruisseaux (Geomatys)
+     * @version 1.0
+     * @since   1.0
      */
     public enum Style {
         /**
@@ -125,7 +130,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
          * Format unit symbols using a syntax close to the Unified Code for Units of Measure (UCUM) one.
          * The character set is restricted to ASCII. The multiplication operator is the period (“.”).
          *
-         * <div class="section">Modification to UCUM syntax rules</div>
+         * <h4>Modification to UCUM syntax rules</h4>
          * UCUM does not allow floating point numbers in unit terms, so the use of period as an operator
          * should not be ambiguous. However Seshat relaxes this restriction in order to support the
          * scale factors commonly found in angular units (e.g. π/180). The meaning of a period in a string
@@ -309,6 +314,8 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
      * instructs this formatter to use the “meter” spelling instead of “metre”.
      *
      * @param  locale  the new locale for this {@code UnitFormat}.
+     *
+     * @see UnitServices#getUnitFormat(String)
      */
     public void setLocale(final Locale locale) {
         Objects.requireNonNull(locale);
@@ -354,7 +361,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
      * depending on the {@linkplain #getStyle() format style}.
      * If the specified label is already associated to another unit, then the previous association is discarded.
      *
-     * <div class="section">Restriction on character set</div>
+     * <h4>Restriction on character set</h4>
      * Current implementation accepts only {@linkplain Character#isLetter(int) letters},
      * {@linkplain Characters#isSubScript(int) subscripts}, {@linkplain Character#isSpaceChar(int) spaces}
      * (including non-breaking spaces but not CR/LF characters),
@@ -855,7 +862,7 @@ appPow: if (unit == null) {
      *
      * @param  unit        the unit to format.
      * @param  toAppendTo  where to format the unit.
-     * @param  pos         where to store the position of a formatted field.
+     * @param  pos         where to store the position of a formatted field, or {@code null} if none.
      * @return the given {@code toAppendTo} argument, for method calls chaining.
      */
     @Override
@@ -863,7 +870,7 @@ appPow: if (unit == null) {
         try {
             return (StringBuffer) format((Unit<?>) unit, toAppendTo);
         } catch (IOException e) {
-            throw new AssertionError(e);      // Should never happen since we are writting to a StringBuffer.
+            throw new UncheckedIOException(e);          // Should never happen since we are writting to a StringBuffer.
         }
     }
 
@@ -879,13 +886,13 @@ appPow: if (unit == null) {
         try {
             return format(unit, new StringBuilder()).toString();
         } catch (IOException e) {
-            throw new AssertionError(e);      // Should never happen since we are writting to a StringBuilder.
+            throw new UncheckedIOException(e);      // Should never happen since we are writting to a StringBuilder.
         }
     }
 
     /**
      * Returns {@code 0} or {@code 1} if the {@code '*'} character at the given index stands for exponentiation
-     * instead than multiplication, or a negative value if the character stands for multiplication. This check
+     * instead of multiplication, or a negative value if the character stands for multiplication. This check
      * is used for heuristic rules at parsing time. Current implementation applies the following rules:
      *
      * <ul>
@@ -988,7 +995,7 @@ appPow: if (unit == null) {
 
     /**
      * Reports that the parsing is finished and no more content should be parsed.
-     * This method is invoked when the last parsed term is possibly one or more words instead than unit symbols.
+     * This method is invoked when the last parsed term is possibly one or more words instead of unit symbols.
      * The intent is to avoid trying to parse "degree minute" as "degree × minute". By contrast, this method is
      * not invoked if the string to parse is "m kg**-2" because it can be interpreted as "m × kg**-2".
      */
@@ -1099,7 +1106,7 @@ scan:   for (int n; i < end; i += n) {
                     // else fall through.
                 }
                 /*
-                 * For any character that are is not an operator or parenthesis, either continue the scanning of
+                 * For any character that is not an operator or parenthesis, either continue the scanning of
                  * characters or stop it, depending on whether the character is valid for a unit symbol or not.
                  * In the later case, we consider that we reached the end of a unit symbol.
                  */

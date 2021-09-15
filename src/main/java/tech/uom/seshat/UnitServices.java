@@ -42,7 +42,8 @@ import javax.measure.spi.UnitFormatService;
  * without direct dependency. A {@code UnitServices} instance can be obtained by call to {@link #current()}.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.0
+ * @version 1.1
+ * @since   1.0
  */
 public class UnitServices extends ServiceProvider implements SystemOfUnitsService, UnitFormatService {
     /**
@@ -228,19 +229,34 @@ public class UnitServices extends ServiceProvider implements SystemOfUnitsServic
      */
     @Override
     public <Q extends Quantity<Q>> QuantityFactory<Q> getQuantityFactory(final Class<Q> type) {
+        Objects.requireNonNull(type);
         QuantityFactory<Q> factory = Units.get(type);
         if (factory == null) {
-            factory = new QuantityFactory<Q>() {
-                @Override
-                public Quantity<Q> create(final Number value, final Unit<Q> unit) {
-                    return ScalarFallback.factory(AbstractConverter.doubleValue(value), unit, type);
-                }
+            if (type != null) {
+                factory = new QuantityFactory<Q>() {
+                    @Override
+                    public Quantity<Q> create(final Number value, final Unit<Q> unit) {
+                        return ScalarFallback.factory(AbstractConverter.doubleValue(value), unit, type);
+                    }
 
-                @Override
-                public Unit<Q> getSystemUnit() {
-                    return null;
-                }
-            };
+                    @Override
+                    public Unit<Q> getSystemUnit() {
+                        return null;
+                    }
+                };
+            } else {
+                factory = new QuantityFactory<Q>() {
+                    @Override
+                    public Quantity<Q> create(final Number value, final Unit<Q> unit) {
+                        return new Scalar<>(AbstractConverter.doubleValue(value), unit);
+                    }
+
+                    @Override
+                    public Unit<Q> getSystemUnit() {
+                        return null;
+                    }
+                };
+            }
         }
         return factory;
     }

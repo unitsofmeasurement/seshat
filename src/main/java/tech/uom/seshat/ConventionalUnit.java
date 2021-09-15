@@ -32,7 +32,8 @@ import tech.uom.seshat.resources.Errors;
  * A unit of measure which is related to a base or derived unit through a conversion formula.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.0
+ * @version 1.1
+ * @since   1.0
  */
 final class ConventionalUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> {
     /**
@@ -54,15 +55,16 @@ final class ConventionalUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> {
     final UnitConverter toTarget;
 
     /**
-     * Creates a new unit having the given symbol.
+     * Creates a new unit having the given symbol and EPSG code.
      *
      * @param  target    the base or derived units to which this {@code ConventionalUnit} is related.
      * @param  toTarget  the conversion from this unit to the {@code target} unit.
      * @param  symbol    the unit symbol, or {@code null} if this unit has no specific symbol.
      * @param  scope     {@link UnitRegistry#SI}, {@link UnitRegistry#ACCEPTED}, other constants or 0 if unknown.
+     * @param  epsg      the EPSG code, or 0 if this unit has no EPSG code.
      */
-    ConventionalUnit(final AbstractUnit<Q> target, final UnitConverter toTarget, final String symbol, final byte scope) {
-        super(symbol, scope);
+    ConventionalUnit(final AbstractUnit<Q> target, final UnitConverter toTarget, final String symbol, final byte scope, final short epsg) {
+        super(symbol, scope, epsg);
         this.target   = target;
         this.toTarget = toTarget;
     }
@@ -114,9 +116,9 @@ final class ConventionalUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> {
          * Create the unit, but we may discard it later if an equivalent unit already exists in the cache.
          * The use of the cache is not only for sharing instances, but also because existing instances may
          * have more information.  For example instances provided by Units static constants may contain an
-         * alternative symbol (e.g. “hm²” will be replaced by “ha” for hectare).
+         * EPSG code, or even an alternative symbol (e.g. “hm²” will be replaced by “ha” for hectare).
          */
-        ConventionalUnit<Q> unit = new ConventionalUnit<>(target, toTarget, symbol, (byte) 0);
+        ConventionalUnit<Q> unit = new ConventionalUnit<>(target, toTarget, symbol, (byte) 0, (short) 0);
         if (symbol != null) {
             unit = unit.unique(symbol);
         }
@@ -358,7 +360,7 @@ final class ConventionalUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> {
         if (symbol.equals(getSymbol())) {
             return this;
         }
-        return new ConventionalUnit<>(target, toTarget, symbol, scope);
+        return new ConventionalUnit<>(target, toTarget, symbol, scope, epsg);
     }
 
     /**
@@ -451,7 +453,7 @@ final class ConventionalUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> {
         if (result instanceof SystemUnit<?>) {
             final String symbol = pow(getSymbol(), n, root);
             if (symbol != null) {
-                return new ConventionalUnit<>((SystemUnit<?>) result, operation, symbol, (byte) 0).unique(symbol);
+                return new ConventionalUnit<>((SystemUnit<?>) result, operation, symbol, (byte) 0, (short) 0).unique(symbol);
             }
         }
         return result.transform(operation);

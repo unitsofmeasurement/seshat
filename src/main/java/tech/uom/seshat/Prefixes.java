@@ -29,10 +29,11 @@ import tech.uom.seshat.math.MathFunctions;
  *
  * @author  Martin Desruisseaux (Geomatys)
  * @version 1.0
+ * @since   1.0
  */
 final class Prefixes {
     /**
-     * The SI “deca” prefix. This is the only SI prefix encoded on two letters instead than one.
+     * The SI “deca” prefix. This is the only SI prefix encoded on two letters instead of one.
      * It can be represented by the CJK compatibility character “㍲”, but use of those characters
      * is generally not recommended outside of Chinese, Japanese or Korean texts.
      */
@@ -175,7 +176,7 @@ final class Prefixes {
                             c = LinearConverter.pow(c, power, false);
                         }
                         symbol = Prefixes.concat(prefix, symbol);
-                        return new ConventionalUnit<>((AbstractUnit<?>) unit, c, symbol.intern(), (byte) 0);
+                        return new ConventionalUnit<>((AbstractUnit<?>) unit, c, symbol.intern(), (byte) 0, (short) 0);
                     }
                 }
             }
@@ -203,7 +204,7 @@ final class Prefixes {
                 {
                     symbol = symbol.substring(1);
                     UnitConverter c = converter('m');
-                    return new ConventionalUnit<>(unit, c, symbol, UnitRegistry.PREFIXABLE).unique(symbol);
+                    return new ConventionalUnit<>(unit, c, symbol, UnitRegistry.PREFIXABLE, (short) 0).unique(symbol);
                 }
             }
         }

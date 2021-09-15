@@ -21,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.function.Function;
 import java.io.Serializable;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.io.ObjectStreamException;
 import javax.measure.Dimension;
 import tech.uom.seshat.math.Fraction;
@@ -45,7 +46,7 @@ import tech.uom.seshat.util.DerivedMap;
  *
  * <ul>
  *   <li>Voltage noise density measured per √(Hz).</li>
- *   <li><a href="http://en.wikipedia.org/wiki/Specific_detectivity">Specific detectivity</a>
+ *   <li><a href="https://en.wikipedia.org/wiki/Specific_detectivity">Specific detectivity</a>
  *       as T^2.5 / (M⋅L) dimension.</li>
  * </ul>
  *
@@ -53,6 +54,7 @@ import tech.uom.seshat.util.DerivedMap;
  *
  * @author  Martin Desruisseaux (Geomatys)
  * @version 1.0
+ * @since   1.0
  */
 final class UnitDimension implements Dimension, Serializable {
     /**
@@ -386,7 +388,7 @@ final class UnitDimension implements Dimension, Serializable {
         try {
             UnitFormat.formatComponents(components, UnitFormat.Style.SYMBOL, buffer);
         } catch (IOException e) {
-            throw new AssertionError(e);      // Should never happen since we are writting to a StringBuilder.
+            throw new UncheckedIOException(e);      // Should never happen since we are writting to a StringBuilder.
         }
         return buffer.toString();
     }

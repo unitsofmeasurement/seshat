@@ -7,8 +7,8 @@
 Seshat (from the ancient Egyptian goddess of knowledge, writing and surveying)
 is an implementation of Units of Measurement API defined by JSR 363. Seshat is
 a subset of [Apache Spatial Information System (SIS)](http://sis.apache.org/)
-library keeping only the classes required for JSR 363, with geospatial-specific
-functionalities omitted.
+library keeping only the classes required for JSR 363,
+with some geospatial-specific functionalities omitted.
 Seshat supports arithmetic operations on units and on quantities.
 The unit (including SI prefix) and the quantity type resulting from
 those arithmetic operations are automatically inferred.

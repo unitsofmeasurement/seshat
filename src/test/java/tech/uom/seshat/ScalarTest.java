@@ -32,6 +32,7 @@ import static org.junit.Assert.*;
  *
  * @author  Martin Desruisseaux (Geomatys)
  * @version 1.0
+ * @since   1.0
  */
 public final strictfp class ScalarTest {
     private static final double STRICT = 0;
@@ -106,8 +107,8 @@ public final strictfp class ScalarTest {
      */
     @Test
     public void testToString() {
-        assertEquals("toString()", "24 km",   new Scalar.Length       (24.00, Units.KILOMETRE).toString());
-        assertEquals("toString()", "10.25 h", new Scalar.Time         (10.25, Units.HOUR)     .toString());
+        assertEquals("toString()", "24 km",   new Scalar.Length       (24.00, Units.KILOMETRE).toString());
+        assertEquals("toString()", "10.25 h", new Scalar.Time         (10.25, Units.HOUR)     .toString());
         assertEquals("toString()", "0.25",    new Scalar.Dimensionless( 0.25, Units.UNITY)    .toString());
     }
 
@@ -140,7 +141,7 @@ public final strictfp class ScalarTest {
         assertTrue("Dynamic proxy", q1 instanceof Length);
         assertSame  ("unit", Units.KILOMETRE, q1.getUnit());
         assertEquals("value", 24, q1.getValue().doubleValue(), STRICT);
-        assertEquals("toString()", "24 km", q1.toString());
+        assertEquals("toString()", "24 km", q1.toString());
 
         final Quantity<Length> q2 = ScalarFallback.factory(24, Units.KILOMETRE, Length.class);
         assertEquals("hashCode()", q1.hashCode(), q2.hashCode());
@@ -152,7 +153,7 @@ public final strictfp class ScalarTest {
         assertTrue("Dynamic proxy", q4 instanceof Length);
         assertSame  ("unit", Units.KILOMETRE, q4.getUnit());
         assertEquals("value", 25.5, q4.getValue().doubleValue(), STRICT);
-        assertEquals("toString()", "25.5 km", q4.toString());
+        assertEquals("toString()", "25.5 km", q4.toString());
 
         final Quantity<Length> q5 = q1.multiply(q3).divide(q2).asType(Length.class);
         assertSame  ("unit", Units.METRE, q5.getUnit());

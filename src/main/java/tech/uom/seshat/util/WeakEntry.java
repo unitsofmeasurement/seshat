@@ -29,6 +29,8 @@ import tech.uom.seshat.math.MathFunctions;
  * @version 1.0
  *
  * @param <E>  the type of elements in the collection.
+ *
+ * @since 1.0
  */
 abstract class WeakEntry<E> extends WeakReference<E> {
     /**
@@ -124,8 +126,8 @@ abstract class WeakEntry<E> extends WeakReference<E> {
     /**
      * Rehashes the given table.
      *
-     * @param  oldTable      the table to rehash.
-     * @param  count         number of elements in the table (including chained elements).
+     * @param  oldTable  the table to rehash.
+     * @param  count     number of elements in the table (including chained elements).
      * @return the new table array, or {@code oldTable} if no rehash were needed.
      */
     static <E> WeakEntry<E>[] rehash(final WeakEntry<E>[] oldTable, final int count) {

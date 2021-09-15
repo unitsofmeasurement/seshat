@@ -27,7 +27,8 @@ import java.util.Arrays;
  *
  * @author  Martin Desruisseaux (MPO, IRD, Geomatys)
  * @author  Johann Sorel (Geomatys)
- * @version 1.0
+ * @version 1.1
+ * @since   1.0
  */
 public final class MathFunctions {
     /**
@@ -44,23 +45,24 @@ public final class MathFunctions {
      *
      * @see Double#MIN_VALUE
      */
-    static final int EXPONENT_FOR_ZERO = -324;
+    private static final int EXPONENT_FOR_ZERO = -324;
 
     /**
      * The maximal exponent value such as {@code parseDouble("1E+308")} still a finite number.
      *
      * @see Double#MAX_VALUE
      */
-    static final int EXPONENT_FOR_MAX = 308;
+    private static final int EXPONENT_FOR_MAX = 308;
 
     /**
      * The highest prime number supported by the {@link #nextPrimeNumber(int)} method.
      * In the current implementation, this value is {@value}. However this limit may
      * change in any future Seshat version.
      *
-     * <p>The current value is the highest prime number representable as an unsigned 16 bits integer.
+     * <div class="note"><b>Note:</b>
+     * The current value is the highest prime number representable as an unsigned 16 bits integer.
      * This is enough for current needs because 16 bits prime numbers are sufficient for finding
-     * the divisors of any 32 bits integers.</p>
+     * the divisors of any 32 bits integers.</div>
      *
      * @see #nextPrimeNumber(int)
      */
@@ -72,8 +74,8 @@ public final class MathFunctions {
      *
      * @see #primeNumberAt(int)
      */
-    static final int PRIMES_LENGTH_15_BITS = 3512,
-                     PRIMES_LENGTH_16_BITS = 6542;
+    private static final int PRIMES_LENGTH_15_BITS = 3512,
+                             PRIMES_LENGTH_16_BITS = 6542;
 
     /**
      * The sequence of prime numbers computed so far. Will be expanded as needed.
@@ -123,7 +125,7 @@ public final class MathFunctions {
      *
      * @see java.math.BigInteger#isProbablePrime(int)
      */
-    static int primeNumberAt(final int index) throws IndexOutOfBoundsException {
+    private static int primeNumberAt(final int index) throws IndexOutOfBoundsException {
         if (index < 0 || index >= PRIMES_LENGTH_16_BITS) {
             throw new IndexOutOfBoundsException();
         }
@@ -214,7 +216,7 @@ testNextNumber:         while (true) {      // Simulate a "goto" statement (usua
      * for the range of {@code double} exponents. We do not put this method in public API because it
      * does not check the argument validity.
      *
-     * <div class="section">Arithmetic notes</div>
+     * <h4>Arithmetic notes</h4>
      * {@code toExp10(getExponent(10ⁿ))} returns <var>n</var> only for {@code n == 0}, and <var>n</var>-1 in all other
      * cases. This is because 10ⁿ == m × 2<sup>exp2</sup> where the <var>m</var> significand is always greater than 1,
      * which must be compensated by a smaller {@code exp2} value such as {@code toExp10(exp2) < n}. Note that if the
@@ -340,13 +342,5 @@ testNextNumber:         while (true) {      // Simulate a "goto" statement (usua
      */
     public static boolean equals(final double v1, final double v2) {
         return Double.doubleToLongBits(v1) == Double.doubleToLongBits(v2);
-    }
-
-    /**
-     * Returns {@code true} if the given floating point numbers are considered equal.
-     * The tolerance factor used in this method is arbitrary and may change in any future version.
-     */
-    static boolean epsilonEquals(final double expected, final double actual) {
-        return Math.abs(expected - actual) <= Math.scalb(Math.ulp(expected), 4);
     }
 }
