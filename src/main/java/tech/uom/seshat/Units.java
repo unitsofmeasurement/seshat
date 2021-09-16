@@ -1542,7 +1542,20 @@ public final class Units {
      * @since 1.1
      */
     public static Unit<?> valueOfEPSG(final int code) {
-        return (code > 0 && code <= Short.MAX_VALUE) ? (Unit<?>) UnitRegistry.get((short) code) : null;
+        /*
+         * The switch for the SexagesimalConverter cases are needed since we did not put those units
+         * in the UnitRegistry map for reducing a little bit class loading in the common cases where
+         * those units are not needed.
+         */
+        switch (code) {
+            case 9107: // Fall through
+            case 9108: return SexagesimalConverter.DMS_SCALED;
+            case 9110: return SexagesimalConverter.DMS;
+            case 9111: return SexagesimalConverter.DM;
+            default: {
+                return (code > 0 && code <= Short.MAX_VALUE) ? (Unit<?>) UnitRegistry.get((short) code) : null;
+            }
+        }
     }
 
     /**

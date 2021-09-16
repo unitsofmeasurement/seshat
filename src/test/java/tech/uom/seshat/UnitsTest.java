@@ -32,6 +32,7 @@ import javax.measure.quantity.Volume;
 import javax.measure.IncommensurableException;
 import org.junit.Test;
 
+import static tech.uom.seshat.SexagesimalConverter.*;
 import static tech.uom.seshat.Units.*;
 import static org.junit.Assert.*;
 
@@ -40,7 +41,7 @@ import static org.junit.Assert.*;
  * Test conversions using the units declared in {@link Units}.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.0
+ * @version 1.1
  * @since   1.0
  */
 public final strictfp class UnitsTest {
@@ -74,6 +75,8 @@ public final strictfp class UnitsTest {
         // Additional units
         assertFalse(isTemporal(PPM));
         assertTrue (isTemporal(MILLISECOND));
+        assertFalse(isTemporal(DMS));
+        assertFalse(isTemporal(DMS_SCALED));
     }
 
     /**
@@ -96,6 +99,8 @@ public final strictfp class UnitsTest {
         // Additional units
         assertFalse(isLinear(PPM));
         assertFalse(isLinear(MILLISECOND));
+        assertFalse(isLinear(DMS));
+        assertFalse(isLinear(DMS_SCALED));
     }
 
     /**
@@ -118,6 +123,8 @@ public final strictfp class UnitsTest {
         // Additional units
         assertFalse(isAngular(PPM));
         assertFalse(isAngular(MILLISECOND));
+        assertTrue (isAngular(DMS));
+        assertTrue (isAngular(DMS_SCALED));
     }
 
     /**
@@ -140,6 +147,8 @@ public final strictfp class UnitsTest {
         // Additional units
         assertTrue (isScale(PPM));
         assertFalse(isScale(MILLISECOND));
+        assertFalse(isScale(DMS));
+        assertFalse(isScale(DMS_SCALED));
     }
 
     /**
@@ -330,6 +339,10 @@ public final strictfp class UnitsTest {
         assertSame(ARC_SECOND,     valueOfEPSG(9104));
         assertSame(GRAD,           valueOfEPSG(9105));
         assertSame(MICRORADIAN,    valueOfEPSG(9109));
+        assertSame(DMS_SCALED,     valueOfEPSG(9107));
+        assertSame(DMS_SCALED,     valueOfEPSG(9108));
+        assertSame(DMS,            valueOfEPSG(9110));
+        assertSame(DM,             valueOfEPSG(9111));
         assertSame(UNITY,          valueOfEPSG(9203));
         assertSame(UNITY,          valueOfEPSG(9201));
         assertSame(PPM,            valueOfEPSG(9202));
@@ -342,6 +355,10 @@ public final strictfp class UnitsTest {
     public void testGetEpsgCode() {
         assertEquals(OptionalInt.of(9001), getEpsgCode(METRE));
         assertEquals(OptionalInt.of(9102), getEpsgCode(DEGREE));
+        assertEquals(OptionalInt.of(9110), getEpsgCode(DMS));
+        assertEquals(OptionalInt.of(9110), getEpsgCode(DMS));
+        assertEquals(OptionalInt.of(9107), getEpsgCode(DMS_SCALED));
+        assertEquals(OptionalInt.of(9111), getEpsgCode(DM));
         assertEquals(OptionalInt.of(1029), getEpsgCode(TROPICAL_YEAR));
         assertEquals(OptionalInt.of(1040), getEpsgCode(SECOND));
         assertEquals(OptionalInt.of(9002), getEpsgCode(FOOT));

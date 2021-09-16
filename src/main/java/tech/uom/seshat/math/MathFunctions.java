@@ -32,6 +32,12 @@ import java.util.Arrays;
  */
 public final class MathFunctions {
     /**
+     * Number of bits in the significand (mantissa) part of IEEE 754 {@code double} representation,
+     * <strong>not</strong> including the hidden bit.
+     */
+    public static final int SIGNIFICAND_SIZE = 52;
+
+    /**
      * Number of bits in the significand (mantissa) part of IEEE 754 {@code float} representation,
      * <strong>not</strong> including the hidden bit.
      */
