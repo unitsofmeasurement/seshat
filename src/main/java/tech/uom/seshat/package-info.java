@@ -84,9 +84,7 @@
  *
  * <div class="section">Source</div>
  * <p>Seshat is a subset of <a href="http://sis.apache.org/">Apache Spatial Information System (SIS)</a>
- * library keeping only the classes required for JSR 363, and with geospatial-specific functionalities omitted.
- * The omitted functionalities are {@code Salinity}, {@code AngularVelocity} and {@code ScaleRateOfChange}
- * quantities, sigma-level units, and sexagesimal units.</p>
+ * library keeping only the classes required for JSR 363 implementation.</p>
  *
  * @author  Martin Desruisseaux (MPO, IRD, Geomatys)
  * @version 1.0
