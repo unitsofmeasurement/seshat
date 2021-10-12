@@ -36,7 +36,7 @@
        ============================================================== -->
   <groupId>tech.uom</groupId>
   <artifactId>seshat</artifactId>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.1</version>
 
   <name>Seshat Units of Measurement Implementation</name>
   <url>https://github.com/unitsofmeasurement/seshat</url>
@@ -176,7 +176,7 @@
         <!-- Compile properties files into resources UTF files. -->
         <groupId>org.apache.sis.core</groupId>
         <artifactId>sis-build-helper</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
         <executions>
           <execution>
             <goals>
