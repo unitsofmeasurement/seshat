@@ -2,47 +2,39 @@
 #
 # Check https://circleci.com/docs/2.0/language-java/ for more details
 #
-version: 2
+version: 2.1
+
+# Define a job to be invoked later in a workflow.
+# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
   build:
+    # These next lines define a Docker executor: https://circleci.com/docs/2.0/executor-types/
+    # Docker image tag below shall match the openjdk version required in the pom.xml file.
+    # List of available images: https://circleci.com/developer/images/image/cimg/openjdk
     docker:
-      # specify the version you desire here
-      - image: circleci/openjdk:11.0.2
-      
-    working_directory: ~/repo
+      - image: cimg/openjdk:11.0
 
-    environment:
-      # Customize the JVM maximum heap limit
-      MAVEN_OPTS: -Xmx3200m
-    
+    # Add steps to the job.
+    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
+      # Checkout the code as the first step.
       - checkout
-        
-      # run tests!
+
+      # Build and run tests.
       - run: mvn --batch-mode test jacoco:report
+
   deployment:
     docker:
-      # specify the version you desire here
-      - image: circleci/openjdk:11.0.2
-      
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
+      - image: cimg/openjdk:11.0
 
-    working_directory: ~/repo
-
-    environment:
-      # Customize the JVM maximum heap limit
-      MAVEN_OPTS: -Xmx3200m
-    
     steps:
       - checkout
-        
-      # run deployment!
-      - run: mvn --batch-mode deploy -Dmaven.test.skip -DcreateDocs=true -s settings.xml
+      - run: mvn --batch-mode deploy --define createDocs=true --settings settings.xml
+
+
+# Invoke jobs via workflows
+# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  version: 2
   build_deploy:
     jobs:
       - build
