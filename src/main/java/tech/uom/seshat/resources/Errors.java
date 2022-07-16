@@ -81,6 +81,12 @@ public class Errors extends IndexedResourceBundle {
         public static final short IllegalCharacter_2 = 4;
 
         /**
+         * Sexagesimal angle {0,number} is illegal because the {1,choice,0#minutes|1#seconds} field can
+         * not take the {2,number} value.
+         */
+        public static final short IllegalSexagesimalField_3 = 19;
+
+        /**
          * The “{0}” unit of measurement has dimension of ‘{1}’ ({2}). It is incompatible with
          * dimension of ‘{3}’ ({4}).
          */

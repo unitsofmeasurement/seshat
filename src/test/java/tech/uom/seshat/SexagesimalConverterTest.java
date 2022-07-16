@@ -28,7 +28,7 @@ import static org.junit.Assert.*;
  * Test the {@link SexagesimalConverter} class.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.1
+ * @version 1.2
  * @since   1.1
  */
 public final strictfp class SexagesimalConverterTest {
@@ -89,6 +89,22 @@ public final strictfp class SexagesimalConverterTest {
         checkConversion(10.50,              Units.DEGREE, 103000,     DMS_SCALED);
         checkConversion(10.99,              Units.DEGREE, 105924,     DMS_SCALED);
         checkConversion(44.505590277777777, Units.DEGREE, 443020.125, DMS_SCALED);
+    }
+
+    /**
+     * Tests the error message on attempt to convert an illegal value.
+     */
+    @Test
+    public void testErrorMessage() {
+        final UnitConverter converter = DMS.getConverterTo(Units.DEGREE);
+        assertEquals(10.5, converter.convert(10.3), STRICT);
+        try {
+            converter.convert(10.7);
+            fail("Conversion of illegal value should not be allowed.");
+        } catch (IllegalArgumentException e) {
+            final String message = e.getMessage();
+            assertNotNull(message);     // Can not test message content because it is locale-sensitive.
+        }
     }
 
     /**
