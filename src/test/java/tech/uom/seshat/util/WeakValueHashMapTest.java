@@ -28,7 +28,7 @@ import static org.junit.Assert.*;
  * A standard {@link HashMap} object is used for comparison purpose.
  *
  * @author  Martin Desruisseaux (IRD, Geomatys)
- * @version 1.0
+ * @version 1.2
  */
 public final strictfp class WeakValueHashMapTest {
     /**
@@ -48,14 +48,14 @@ public final strictfp class WeakValueHashMapTest {
      */
     @Test
     public void testStrongReferences() {
-        final Map<Integer,Integer> weakMap = new WeakValueHashMap<>(Integer.class);
+        final Map<Integer,IntObject> weakMap = new WeakValueHashMap<>(Integer.class);
         final Random random = new Random();
         for (int pass=0; pass<NUM_RETRY; pass++) {
             weakMap.clear();
-            final HashMap<Integer,Integer> strongMap = new HashMap<>();
+            final HashMap<Integer,IntObject> strongMap = new HashMap<>();
             for (int i=0; i<SAMPLE_SIZE; i++) {
-                final Integer key   = random.nextInt(SAMPLE_SIZE);
-                final Integer value = random.nextInt(SAMPLE_SIZE);
+                final Integer   key   = random.nextInt(SAMPLE_SIZE);
+                final IntObject value = new IntObject(random.nextInt(SAMPLE_SIZE));
                 assertEquals("containsKey:",   strongMap.containsKey(key),     weakMap.containsKey(key));
                 assertEquals("containsValue:", strongMap.containsValue(value), weakMap.containsValue(value));
                 assertSame  ("get:",           strongMap.get(key),             weakMap.get(key));
@@ -78,23 +78,20 @@ public final strictfp class WeakValueHashMapTest {
      */
     @Test
     public void testWeakReferences() {
-        final Map<Integer,Integer> weakMap = new WeakValueHashMap<>(Integer.class);
+        final Map<Integer,IntObject> weakMap = new WeakValueHashMap<>(Integer.class);
         final Random random = new Random();
         for (int pass=0; pass<NUM_RETRY; pass++) {
             weakMap.clear();
-            final HashMap<Integer,Integer> strongMap = new HashMap<>();
+            final HashMap<Integer,IntObject> strongMap = new HashMap<>();
             for (int i=0; i<SAMPLE_SIZE; i++) {
-                /*
-                 * We really want new instances here.
-                 */
-                final Integer key   = new Integer(random.nextInt(SAMPLE_SIZE));
-                final Integer value = new Integer(random.nextInt(SAMPLE_SIZE));
+                final Integer   key   = random.nextInt(SAMPLE_SIZE);
+                final IntObject value = new IntObject(random.nextInt(SAMPLE_SIZE));     // Really need new instances.
                 if (random.nextBoolean()) {
                     /*
                      * Tests addition.
                      */
-                    final Integer   weakPrevious = weakMap  .put(key, value);
-                    final Integer strongPrevious = strongMap.put(key, value);
+                    final IntObject   weakPrevious = weakMap  .put(key, value);
+                    final IntObject strongPrevious = strongMap.put(key, value);
                     if (weakPrevious == null) {
                         /*
                          * The element was not in the WeakValueHashMap, possibly GC collected it.
@@ -117,8 +114,8 @@ public final strictfp class WeakValueHashMapTest {
                     /*
                      * Tests remove.
                      */
-                    final Integer   weakPrevious = weakMap.get(key);
-                    final Integer strongPrevious = strongMap.remove(key);
+                    final IntObject   weakPrevious = weakMap.get(key);
+                    final IntObject strongPrevious = strongMap.remove(key);
                     if (strongPrevious != null) {
                         assertSame("remove:", strongPrevious, weakPrevious);
                     }
@@ -126,5 +123,51 @@ public final strictfp class WeakValueHashMapTest {
                 assertTrue("containsAll:", weakMap.entrySet().containsAll(strongMap.entrySet()));
             }
         }
+    }
+
+    /**
+     * Tests {@code putIfAbsent(…)}, {@code replace(…)} and other optional methods.
+     */
+    @Test
+    public void testOptionalMethods() {
+        final WeakValueHashMap<Integer,Integer> weakMap = new WeakValueHashMap<>(Integer.class);
+        final HashMap<Integer,Integer> reference = new HashMap<>();
+        final Random random = new Random();
+        for (int i=0; i<100; i++) {
+            final Integer key   = random.nextInt(10);
+            final Integer value = random.nextInt(20);
+            switch (random.nextInt(7)) {
+                case 0: {
+                    assertEquals(reference.get(key), weakMap.get(key));
+                    break;
+                }
+                case 1: {
+                    assertEquals(reference.put(key, value), weakMap.put(key, value));
+                    break;
+                }
+                case 2: {
+                    assertEquals(reference.putIfAbsent(key, value), weakMap.putIfAbsent(key, value));
+                    break;
+                }
+                case 3: {
+                    assertEquals(reference.replace(key, value), weakMap.replace(key, value));
+                    break;
+                }
+                case 4: {
+                    final Integer condition = random.nextInt(20);
+                    assertEquals(reference.replace(key, condition, value), weakMap.replace(key, condition, value));
+                    break;
+                }
+                case 5: {
+                    assertEquals(reference.remove(key), weakMap.remove(key));
+                    break;
+                }
+                case 6: {
+                    assertEquals(reference.remove(key, value), weakMap.remove(key, value));
+                    break;
+                }
+            }
+        }
+        assertEquals(reference, weakMap);
     }
 }

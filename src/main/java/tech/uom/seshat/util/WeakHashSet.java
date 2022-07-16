@@ -39,7 +39,7 @@ import static tech.uom.seshat.util.WeakEntry.*;
  * <h2>Optimizing memory use in factory implementations</h2>
  * The {@code WeakHashSet} class has a {@link #get(Object)} method that is not part of the
  * {@link java.util.Set} interface. This {@code get} method retrieves an entry from this set
- * that is equals to the supplied object. The {@link #unique(Object)} method combines a
+ * that is equal to the supplied object. The {@link #unique(Object)} method combines a
  * {@code get} followed by a {@code add} operation if the specified object was not in the set.
  * This is similar in spirit to the {@link String#intern()} method.
  *
@@ -108,17 +108,11 @@ public final class WeakHashSet<E> extends AbstractSet<E> {
      *
      * @param  type  the type of the element to be included in this set.
      */
+    @SuppressWarnings({"rawtypes", "unchecked"})    // Generic array creation.
     public WeakHashSet(final Class<E> type) {
         elementType            = type;
         lastTimeNormalCapacity = System.nanoTime();
-        /*
-         * Workaround for the "generic array creation" compiler error.
-         * Otherwise we would use the commented-out line instead.
-         */
-        @SuppressWarnings("unchecked")
-        final Entry[] table = (Entry[]) Array.newInstance(Entry.class, MIN_CAPACITY);
-//      table = new Entry[size];
-        this.table = table;
+        table = new WeakHashSet.Entry[MIN_CAPACITY];
     }
 
     /**

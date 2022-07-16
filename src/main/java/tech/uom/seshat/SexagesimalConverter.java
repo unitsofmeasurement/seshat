@@ -301,7 +301,7 @@ class SexagesimalConverter extends AbstractConverter {
      * the value is negative.
      *
      * @param  value  the value to truncate.
-     * @return the largest in magnitude (further from zero) integer value which is equals
+     * @return the largest in magnitude (further from zero) integer value which is equal
      *         or less in magnitude than the given value.
      */
     private static double truncate(final double value) {

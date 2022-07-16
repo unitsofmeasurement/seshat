@@ -22,7 +22,6 @@ import java.util.AbstractSet;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Arrays;
-import java.lang.reflect.Array;
 import java.lang.ref.WeakReference;
 
 import static tech.uom.seshat.util.WeakEntry.*;
@@ -63,7 +62,7 @@ import static tech.uom.seshat.util.WeakEntry.*;
  * then the caller can synchronize on {@code this}.
  *
  * @author  Martin Desruisseaux (IRD, Geomatys)
- * @version 1.0
+ * @version 1.2
  *
  * @param <K>  the class of key elements.
  * @param <V>  the class of value elements.
@@ -199,17 +198,11 @@ public class WeakValueHashMap<K,V> extends AbstractMap<K,V> {
      *
      * @param  keyType  the type of keys in the map.
      */
+    @SuppressWarnings({"rawtypes", "unchecked"})    // Generic array creation.
     public WeakValueHashMap(final Class<K> keyType) {
         this.keyType = keyType;
         lastTimeNormalCapacity = System.nanoTime();
-        /*
-         * Workaround for the "generic array creation" compiler error.
-         * Otherwise we would use the commented-out line instead.
-         */
-        @SuppressWarnings("unchecked")
-        final Entry[] table = (Entry[]) Array.newInstance(Entry.class, MIN_CAPACITY);
-//      table = new Entry[size];
-        this.table = table;
+        table = new WeakValueHashMap.Entry[MIN_CAPACITY];
     }
 
     /**
@@ -312,13 +305,43 @@ public class WeakValueHashMap<K,V> extends AbstractMap<K,V> {
     }
 
     /**
-     * Implementation of {@link #put(Object, Object)} and {@link #remove(Object)} operations
+     * Wildcard for {@link #intern(Object, Object, Object)} condition meaning whether a key shall be associated
+     * to a value or not. Note that {@link #equals(Object)} and {@link #hashCode()} methods are inconsistent in
+     * this class; the {@code hashCode()} method should never be invoked.
+     */
+    @SuppressWarnings("overrides")
+    private static final class Wildcard {
+        static final Wildcard ANY_VALUE = new Wildcard(true);
+        static final Wildcard NO_VALUE  = new Wildcard(false);
+
+        /** Whether the key shall be associated to a value. */
+        private final boolean present;
+
+        /** Creates the {@link #ANY_VALUE} or {@link #NO_VALUE} constant. */
+        private Wildcard(final boolean present) {
+            this.present = present;
+        }
+
+        /** Tests for the {@link #ANY_VALUE} or {@link #NO_VALUE} condition. */
+        @Override public boolean equals(Object oldValue) {
+            return (oldValue != null) == present;
+        }
+    }
+
+    /**
+     * Implementation of {@link #put(Object, Object)}, {@link #putIfAbsent(Object, Object)}, {@link #remove(Object)},
+     * {@link #replace(Object, Object)} and {@link #replace(Object, Object, Object)} operations.
+     *
+     * @param  key        key with which the specified value is to be associated.
+     * @param  value      value to be associated with the specified key, or {@code null} for removing the entry.
+     * @param  condition  previous value that entry must have for doing the action, or {@code null} if no restriction.
+     * @return the previous value associated with specified key, or {@code null} if there was no mapping for the key.
      */
     @SuppressWarnings("unchecked")
-    private synchronized V intern(final Object key, final V value, final boolean replace) {
+    private synchronized V intern(final Object key, final V value, final Object condition) {
         assert isValid();
         /*
-         * If 'value' is already contained in this WeakValueHashMap, we need to clear it.
+         * If `value` is already contained in this WeakValueHashMap, we need to clear it.
          */
         V oldValue = null;
         Entry[] table = this.table;
@@ -327,15 +350,20 @@ public class WeakValueHashMap<K,V> extends AbstractMap<K,V> {
         for (Entry e = table[index]; e != null; e = (Entry) e.next) {
             if (key.equals(e.key)) {
                 oldValue = e.get();
-                if (oldValue != null && !replace) {
+                if (condition != null && !condition.equals(oldValue)) {
                     return oldValue;
                 }
                 e.dispose();
-                table = this.table; // May have changed.
+                table = this.table;             // May have changed.
                 index = hash % table.length;
             }
         }
-        if (value != null) {
+        /*
+         * If a value has been specified, add it after above removal of previous value except if
+         * this method is invoked from `replace(key, old)` (condition = `Wildcard.ANY_VALUE`) or
+         * `replace(key, old, new)` (condition = valid object) and no previous value was mapped.
+         */
+        if (value != null && (condition == null || condition == Wildcard.NO_VALUE || oldValue != null)) {
             if (++count >= lowerCapacityThreshold(table.length)) {
                 if (count > upperCapacityThreshold(table.length)) {
                     this.table = table = (Entry[]) rehash(table, count);
@@ -355,8 +383,7 @@ public class WeakValueHashMap<K,V> extends AbstractMap<K,V> {
      *
      * @param  key    key with which the specified value is to be associated.
      * @param  value  value to be associated with the specified key.
-     * @return the previous value associated with specified key, or {@code null} if there was no mapping for key.
-     *
+     * @return the previous value associated with specified key, or {@code null} if there was no mapping for the key.
      * @throws NullPointerException if the key or the value is {@code null}.
      */
     @Override
@@ -364,7 +391,7 @@ public class WeakValueHashMap<K,V> extends AbstractMap<K,V> {
         if (key == null || value == null) {
             throw new NullPointerException();
         }
-        return intern(key, value, true);
+        return intern(key, value, null);
     }
 
     /**
@@ -375,8 +402,7 @@ public class WeakValueHashMap<K,V> extends AbstractMap<K,V> {
      *
      * @param  key    key with which the specified value is to be associated.
      * @param  value  value to be associated with the specified key.
-     * @return the current value associated with specified key, or {@code null} if there was no mapping for key.
-     *
+     * @return the current value associated with specified key, or {@code null} if there was no mapping for the key.
      * @throws NullPointerException if the key or the value is {@code null}.
      */
     @Override
@@ -384,18 +410,85 @@ public class WeakValueHashMap<K,V> extends AbstractMap<K,V> {
         if (key == null || value == null) {
             throw new NullPointerException();
         }
-        return intern(key, value, false);
+        return intern(key, value, Wildcard.NO_VALUE);
+    }
+
+    /**
+     * Replaces the entry for the specified key only if it is currently mapped to some value.
+     *
+     * @param  key    key with which the specified value is to be associated.
+     * @param  value  value to be associated with the specified key.
+     * @return the previous value associated with specified key, or {@code null} if there was no mapping for the key.
+     * @throws NullPointerException if the value is {@code null}.
+     */
+    @Override
+    public V replace(final K key, final V value) {
+        if (value == null) {
+            throw new NullPointerException();
+        }
+        if (key == null) return null;
+        return intern(key, value, Wildcard.ANY_VALUE);
+    }
+
+    /**
+     * Replaces the entry for the specified key only if currently mapped to the specified value.
+     *
+     * @param  key       key with which the specified value is to be associated.
+     * @param  oldValue  value expected to be associated with the specified key.
+     * @param  newValue  value to be associated with the specified key.
+     * @return {@code true} if the value was replaced.
+     * @throws NullPointerException if the new value is {@code null}.
+     */
+    @Override
+    public boolean replace(final K key, final V oldValue, final V newValue) {
+        if (newValue == null) {
+            throw new NullPointerException();
+        }
+        return replaceOrRemove(key, oldValue, newValue);
     }
 
     /**
      * Removes the mapping for this key from this map if present.
      *
      * @param  key  key whose mapping is to be removed from the map.
-     * @return previous value associated with specified key, or {@code null} if there was no entry for key.
+     * @return previous value associated with specified key, or {@code null} if there was no entry for the key.
      */
     @Override
     public V remove(final Object key) {
-        return intern(key, null, true);
+        if (key == null) return null;
+        return intern(key, null, null);
+    }
+
+    /**
+     * Removes the entry for the specified key only if it is currently mapped to the specified value.
+     *
+     * @param  key    key whose mapping is to be removed from the map.
+     * @param  value  value expected to be associated with the specified key.
+     * @return {@code true} if the value was removed.
+     */
+    @Override
+    public boolean remove(final Object key, final Object value) {
+        return replaceOrRemove(key, value, null);
+    }
+
+    /**
+     * Implementation of {@link #replace(Object, Object, Object)} and {@link #remove(Object, Object)}.
+     * The replace action has a non-null {@code newValue} and the remove action has a null new value.
+     */
+    private boolean replaceOrRemove(final Object key, final Object oldValue, final V newValue) {
+        if (key == null || oldValue == null) {
+            return false;
+        }
+        @SuppressWarnings("overrides")
+        final class Observer {
+            boolean equals;
+
+            @Override public boolean equals(final Object other) {
+                return equals = oldValue.equals(other);
+            }
+        }
+        final Observer observer = new Observer();
+        return intern(key, newValue, observer) != null && observer.equals;
     }
 
     /**

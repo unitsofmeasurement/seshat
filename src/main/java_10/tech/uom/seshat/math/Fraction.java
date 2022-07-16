@@ -97,7 +97,7 @@ public final class Fraction extends Number implements Comparable<Fraction>, Seri
 
     /**
      * Returns a fraction equivalent to {@code num} / {@code den} after simplification.
-     * If the simplified fraction is equals to {@code this}, then this method returns {@code this}.
+     * If the simplified fraction is equal to {@code this}, then this method returns {@code this}.
      *
      * <p>The arguments given to this method are the results of multiplications and additions of {@code int} values.
      * This method fails if any argument value is {@link Long#MIN_VALUE} because that value can not be made positive.

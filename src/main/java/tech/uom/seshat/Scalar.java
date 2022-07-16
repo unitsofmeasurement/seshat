@@ -30,7 +30,8 @@ import tech.uom.seshat.util.StringBuilders;
  * Instances of this class are unmodifiable.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.1
+ * @author  Alexis Manin (Geomatys)
+ * @version 1.2
  *
  * @param <Q>  the concrete subtype.
  *
@@ -74,7 +75,7 @@ class Scalar<Q extends Quantity<Q>> extends Number implements Quantity<Q>, Compa
      *       is only a scale factor.</li>
      * </ul>
      *
-     * {@link DerivedScalar} relies on the fact that there is no other situations where this method
+     * {@link DerivedScalar} relies on the fact that there are no other situations where this method
      * is invoked. If this assumption become not true anymore in a future Seshat version, then we need
      * to revisit {@code DerivedScalar}.
      *
@@ -344,7 +345,7 @@ class Scalar<Q extends Quantity<Q>> extends Number implements Quantity<Q>, Compa
         StringBuilders.trimFractionalPart(buffer);
         final String symbol = getUnit().toString();
         if (symbol != null && !symbol.isEmpty()) {
-            buffer.append('\u202F').append(symbol);
+            buffer.append(QuantityFormat.SEPARATOR).append(symbol);
         }
         return buffer.toString();
     }
@@ -450,6 +451,18 @@ class Scalar<Q extends Quantity<Q>> extends Number implements Quantity<Q>, Compa
         @Override
         Quantity<javax.measure.quantity.Speed> create(double value, Unit<javax.measure.quantity.Speed> unit) {
             return new Speed(value, unit);
+        }
+    }
+
+    static final class Acceleration extends Scalar<javax.measure.quantity.Acceleration>
+                                    implements     javax.measure.quantity.Acceleration
+    {
+        private static final long serialVersionUID = 8041442665100572880L;
+        Acceleration(double value, Unit<javax.measure.quantity.Acceleration> unit) {super(value, unit);}
+
+        @Override
+        Quantity<javax.measure.quantity.Acceleration> create(double value, Unit<javax.measure.quantity.Acceleration> unit) {
+            return new Acceleration(value, unit);
         }
     }
 

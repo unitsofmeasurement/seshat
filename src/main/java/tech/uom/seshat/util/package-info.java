@@ -21,7 +21,7 @@
  * to be used only for Seshat internal computations.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.0
+ * @version 1.2
  * @since   1.0
  */
 package tech.uom.seshat.util;

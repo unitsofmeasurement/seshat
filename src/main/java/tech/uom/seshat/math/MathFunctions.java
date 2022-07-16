@@ -44,7 +44,7 @@ public final class MathFunctions {
     private static final int SIGNIFICAND_SIZE_OF_FLOAT = 23;
 
     /**
-     * The greatest power of 10 such as {@code Math.pow(10, E10_FOR_ZERO) == 0}.
+     * The greatest power of 10 such as {@code Math.pow(10, EXPONENT_FOR_ZERO) == 0}.
      * This is the exponent in {@code parseDouble("1E-324")} &lt; {@link Double#MIN_VALUE},
      * which is stored as zero because non-representable as a {@code double} value.
      * The next power, {@code parseDouble("1E-323")}, is a non-zero {@code double} value.

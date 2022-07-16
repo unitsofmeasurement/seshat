@@ -18,7 +18,8 @@ package tech.uom.seshat.util;
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import static java.util.logging.Logger.getLogger;
 
 
 /**
@@ -53,9 +54,10 @@ final class ReferenceQueueConsumer extends Thread {
      * Constructs a new thread as a daemon thread. This thread will be sleeping most of the time.
      * It will run only only a few nanoseconds every time a new {@link Reference} is enqueued.
      *
-     * <p>We give to this thread a priority higher than the normal one since this thread shall
+     * <div class="note"><b>Note:</b>
+     * We give to this thread a priority higher than the normal one since this thread shall
      * execute only tasks to be completed very shortly. Quick execution of those tasks is at
-     * the benefit of the rest of the system, since they make more resources available sooner.</p>
+     * the benefit of the rest of the system, since they make more resources available sooner.</div>
      */
     private ReferenceQueueConsumer() {
         super(null, null, "Seshat disposer", 16*1024);        // Small (16 kb) stack size is sufficient.
@@ -87,14 +89,14 @@ final class ReferenceQueueConsumer extends Thread {
                 final Reference<?> ref = queue.remove();
                 if (ref != null) {
                     /*
-                     * If the reference does not implement the WeakEntry<?> class, we want the
+                     * If the reference does not extend the WeakEntry<?> class, we want the
                      * ClassCastException to be logged in the "catch" block since it would be
                      * a programming error that we want to know about.
                      */
                     ((WeakEntry<?>) ref).dispose();
                 }
             } catch (Throwable exception) {
-                Logger.getLogger("tech.uom.seshat").log(Level.WARNING, exception.toString(), exception);
+                getLogger("tech.uom.seshat").log(Level.WARNING, exception.toString(), exception);
             }
         }
         // Do not log anything at this point, since the loggers may be shutdown now.

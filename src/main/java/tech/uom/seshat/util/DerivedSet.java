@@ -24,7 +24,7 @@ import java.util.function.Function;
 /**
  * A set whose values are derived <cite>on-the-fly</cite> from an other set.
  *
- * <div class="section">Constraints</div>
+ * <h2>Constraints</h2>
  * <ul>
  *   <li>This set does not support {@code null} values, since {@code null} is used as a
  *       sentinel value when no mapping from {@linkplain #storage} to {@code this} exists.</li>
@@ -85,9 +85,7 @@ final class DerivedSet<S,E> extends AbstractSet<E> {
     }
 
     /**
-     * Returns the number of elements in this set. The default implementation counts the number of elements
-     * returned by the {@link #iterator() iterator}. Subclasses are encouraged to cache this value if they
-     * know that the underlying storage is immutable.
+     * Counts the number of elements returned by the {@linkplain #iterator() iterator}.
      *
      * @return the number of elements in this set.
      */

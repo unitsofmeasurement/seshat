@@ -19,6 +19,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.MissingResourceException;
+import java.util.logging.Level;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 import javax.measure.Unit;
@@ -26,6 +27,8 @@ import javax.measure.Quantity;
 import tech.uom.seshat.math.Fraction;
 import tech.uom.seshat.util.Characters;
 import tech.uom.seshat.resources.Errors;
+
+import static java.util.logging.Logger.getLogger;
 
 
 /**
@@ -293,6 +296,7 @@ abstract class AbstractUnit<Q extends Quantity<Q>> implements Unit<Q>, Serializa
         if (symbol != null) try {
             return UnitFormat.getBundle(Locale.getDefault()).getString(symbol);
         } catch (MissingResourceException e) {
+            getLogger("tech.uom.seshat").log(Level.FINE, e.toString(), e);
             // Ignore as per this method contract.
         }
         return null;
@@ -349,7 +353,7 @@ abstract class AbstractUnit<Q extends Quantity<Q>> implements Unit<Q>, Serializa
 
     /**
      * Returns the result of setting the origin of the scale of measurement to the given value.
-     * For example {@code CELSIUS = KELVIN.shift(273.15)} returns a unit where 0°C is equals to 273.15 K.
+     * For example {@code CELSIUS = KELVIN.shift(273.15)} returns a unit where 0°C is equal to 273.15 K.
      *
      * @param  offset  the value to add when converting from the new unit to this unit.
      * @return this unit offset by the specified value, or {@code this} if the given offset is zero.
@@ -373,7 +377,7 @@ abstract class AbstractUnit<Q extends Quantity<Q>> implements Unit<Q>, Serializa
 
     /**
      * Returns the result of multiplying this unit by the specified factor.
-     * For example {@code KILOMETRE = METRE.multiply(1000)} returns a unit where 1 km is equals to 1000 m.
+     * For example {@code KILOMETRE = METRE.multiply(1000)} returns a unit where 1 km is equal to 1000 m.
      *
      * @param  multiplier  the scale factor when converting from the new unit to this unit.
      * @return this unit scaled by the specified multiplier.
@@ -401,7 +405,7 @@ abstract class AbstractUnit<Q extends Quantity<Q>> implements Unit<Q>, Serializa
 
     /**
      * Returns the result of dividing this unit by an approximate divisor.
-     * For example {@code GRAM = KILOGRAM.divide(1000)} returns a unit where 1 g is equals to 0.001 kg.
+     * For example {@code GRAM = KILOGRAM.divide(1000)} returns a unit where 1 g is equal to 0.001 kg.
      *
      * @param  divisor  the inverse of the scale factor when converting from the new unit to this unit.
      * @return this unit divided by the specified divisor.
@@ -417,7 +421,7 @@ abstract class AbstractUnit<Q extends Quantity<Q>> implements Unit<Q>, Serializa
     /**
      * If the inverse of the given multiplier is an integer, returns that inverse. Otherwise returns 1.
      * This method is used for replacing e.g. {@code multiply(0.001)} calls by {@code divide(1000)} calls.
-     * The later allows more accurate operations because of the way {@link LinearConverter} is implemented.
+     * The latter allows more accurate operations because of the way {@link LinearConverter} is implemented.
      */
     private static double inverse(final double multiplier) {
         if (Math.abs(multiplier) < 1) {

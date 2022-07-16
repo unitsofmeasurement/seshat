@@ -32,7 +32,7 @@ import java.util.function.Function;
  *       obtain the derived values using the {@link #valueConverter}.</li>
  * </ul>
  *
- * <div class="section">Constraints</div>
+ * <h2>Constraints</h2>
  * <ul>
  *   <li>This map does not support {@code null} keys, since {@code null} is used as a
  *       sentinel value when no mapping from {@linkplain #storage} to {@code this} exists.</li>

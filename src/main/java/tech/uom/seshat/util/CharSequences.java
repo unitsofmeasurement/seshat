@@ -23,12 +23,12 @@ import static java.lang.Character.*;
  * class duplicate the functionalities already provided in the standard {@link String} class,
  * but works on a generic {@code CharSequence} instance instead of {@code String}.
  *
- * <div class="section">Unicode support</div>
+ * <h2>Unicode support</h2>
  * Every methods defined in this class work on <cite>code points</cite> instead of characters
  * when appropriate. Consequently those methods should behave correctly with characters outside
  * the <cite>Basic Multilingual Plane</cite> (BMP).
  *
- * <div class="section">Policy on space characters</div>
+ * <h2>Policy on space characters</h2>
  * Java defines two methods for testing if a character is a white space:
  * {@link Character#isWhitespace(int)} and {@link Character#isSpaceChar(int)}.
  * Those two methods differ in the way they handle no-break spaces, tabulations
@@ -55,13 +55,13 @@ import static java.lang.Character.*;
  * generally be avoided. That {@code trim()} method removes every ISO control characters without
  * distinction about whether the characters are space or not, and ignore all Unicode spaces.</p>
  *
- * <div class="section">Handling of null values</div>
+ * <h2>Handling of null values</h2>
  * Most methods in this class accept a {@code null} {@code CharSequence} argument. In such cases
  * the method return value is either a {@code null} {@code CharSequence}, an empty array, or a
  * {@code 0} or {@code false} primitive type calculated as if the input was an empty string.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.0
+ * @version 1.2
  *
  * @see StringBuilders
  */
@@ -147,7 +147,7 @@ search:     for (; fromIndex <= toIndex; fromIndex++) {
      * Returns the index of the first non-white character in the given range.
      * If the given range contains only space characters, then this method returns the index of the
      * first character after the given range, which is always equals or greater than {@code toIndex}.
-     * Note that this character may not exist if {@code toIndex} is equals to the text length.
+     * Note that this character may not exist if {@code toIndex} is equal to the text length.
      *
      * <p>Special cases:</p>
      * <ul>
@@ -173,9 +173,9 @@ search:     for (; fromIndex <= toIndex; fromIndex++) {
      */
     public static int skipLeadingWhitespaces(final CharSequence text, int fromIndex, final int toIndex) {
         while (fromIndex < toIndex) {
-            final int c = Character.codePointAt(text, fromIndex);
-            if (!Character.isWhitespace(c)) break;
-            fromIndex += Character.charCount(c);
+            final int c = codePointAt(text, fromIndex);
+            if (!isWhitespace(c)) break;
+            fromIndex += charCount(c);
         }
         return fromIndex;
     }
@@ -209,9 +209,9 @@ search:     for (; fromIndex <= toIndex; fromIndex++) {
      */
     public static int skipTrailingWhitespaces(final CharSequence text, final int fromIndex, int toIndex) {
         while (toIndex > fromIndex) {
-            final int c = Character.codePointBefore(text, toIndex);
-            if (!Character.isWhitespace(c)) break;
-            toIndex -= Character.charCount(c);
+            final int c = codePointBefore(text, toIndex);
+            if (!isWhitespace(c)) break;
+            toIndex -= charCount(c);
         }
         return toIndex;
     }
@@ -284,7 +284,7 @@ search:     for (; fromIndex <= toIndex; fromIndex++) {
 
     /**
      * Returns {@code true} if the given text at the given offset contains the given part,
-     * optionally in a case-insensitive way. This method is equivalent to the following code,
+     * in a case-insensitive comparison. This method is equivalent to the following code,
      * except that this method works on arbitrary {@link CharSequence} objects instead of
      * {@link String}s only:
      *
@@ -294,9 +294,9 @@ search:     for (; fromIndex <= toIndex; fromIndex++) {
      * {@code fromIndex < 0} or {@code fromIndex + part.length() > text.length()},
      * then this method returns {@code false}.
      *
-     * @param  text        the character sequence for which to tests for the presence of {@code part}.
-     * @param  fromIndex   the offset in {@code text} where to test for the presence of {@code part}.
-     * @param  part        the part which may be present in {@code text}.
+     * @param  text       the character sequence for which to tests for the presence of {@code part}.
+     * @param  fromIndex  the offset in {@code text} where to test for the presence of {@code part}.
+     * @param  part       the part which may be present in {@code text}.
      * @return {@code true} if {@code text} contains {@code part} at the given {@code offset}.
      * @throws NullPointerException if any of the arguments is null.
      *
@@ -331,12 +331,9 @@ search:     for (; fromIndex <= toIndex; fromIndex++) {
      * then this method returns the {@code text} unchanged.
      * Otherwise this method returns a new character sequence with all occurrences replaced by {@code replaceBy}.
      *
-     * <p>This method is similar to {@link String#replace(CharSequence, CharSequence)} except for the following:</p>
-     * <ul>
-     *   <li>This method accepts arbitrary {@code CharSequence} objects.</li>
-     *   <li>This method <strong>does not use regular expression</strong>.
-     *       The {@code toSearch} value is searched verbatim.</li>
-     * </ul>
+     * <p>This method is similar to {@link String#replace(CharSequence, CharSequence)} except that is accepts
+     * arbitrary {@code CharSequence} objects. As of Java 10, another difference is that this method does not
+     * create a new {@code String} if {@code toSearch} is equal to {@code replaceBy}.</p>
      *
      * @param  text       the character sequence in which to perform the replacements, or {@code null}.
      * @param  toSearch   the string to replace.
@@ -349,6 +346,9 @@ search:     for (; fromIndex <= toIndex; fromIndex++) {
      */
     public static CharSequence replace(final CharSequence text, final CharSequence toSearch, final CharSequence replaceBy) {
         if (text != null && !toSearch.equals(replaceBy)) {
+            if (text instanceof String) {
+                return ((String) text).replace(toSearch, replaceBy);
+            }
             final int length = text.length();
             int i = indexOf(text, toSearch, 0, length);
             if (i >= 0) {

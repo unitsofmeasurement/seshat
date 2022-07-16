@@ -38,7 +38,7 @@ import tech.uom.seshat.resources.Errors;
  * </ul>
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.1
+ * @version 1.2
  * @since   1.0
  */
 public final class Quantities {
@@ -199,7 +199,6 @@ public final class Quantities {
     /**
      * Implementation of {@link #min(Quantity, Quantity)} and {@link #max(Quantity, Quantity)}.
      */
-    @SuppressWarnings("unchecked")      // For `((Comparable) v1).compareTo(v2)` which is checked by `if` statement.
     private static <Q extends Quantity<Q>> Quantity<Q> minOrMax(final Quantity<Q> q1, final Quantity<Q> q2, final boolean max) {
         if (q1 == null) return q2;
         if (q2 == null) return q1;
@@ -214,13 +213,24 @@ public final class Quantities {
         Number v2 = u2.getConverterTo(s2).convert(q2.getValue());
         if (isNaN(v2)) return q1;
         if (isNaN(v1)) return q2;
-        final int c;
-        if (v1.getClass().isInstance(v2) && v1 instanceof Comparable<?>) {
-            c = ((Comparable) v1).compareTo(v2);
-        } else {
-            c = Double.compare(v1.doubleValue(), v2.doubleValue());
-        }
+        final int c = compare(v1, v2);
         return (max ? c >= 0 : c <= 0) ? q1 : q2;
+    }
+
+    /**
+     * Compares the two given number, without casting to {@code double} if we can avoid that cast.
+     * The intent is to avoid loosing precision for example by casting a {@code BigDecimal}.
+     */
+    @SuppressWarnings("unchecked")
+    private static int compare(final Number v1, final Number v2) {
+        if (v1 instanceof Comparable<?>) {
+            if (v1.getClass().isInstance(v2)) {
+                return ((Comparable) v1).compareTo(v2);
+            } else if (v2 instanceof Comparable<?> && v2.getClass().isInstance(v1)) {
+                return -((Comparable) v2).compareTo(v1);
+            }
+        }
+        return Double.compare(v1.doubleValue(), v2.doubleValue());
     }
 
     /**
@@ -232,8 +242,6 @@ public final class Quantities {
      *
      * @see Float#isNaN()
      * @see Double#isNaN()
-     *
-     * @since 1.1
      */
     private static boolean isNaN(final Number value) {
         if (value == null) return true;

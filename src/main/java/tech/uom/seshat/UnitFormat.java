@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.logging.Level;
 import java.text.Format;
 import java.text.FieldPosition;
 import java.text.ParsePosition;
@@ -29,6 +30,7 @@ import java.text.ParseException;
 import java.util.ResourceBundle;
 import java.util.MissingResourceException;
 import java.util.ConcurrentModificationException;
+import java.lang.reflect.InaccessibleObjectException;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import javax.measure.Dimension;
@@ -41,12 +43,19 @@ import tech.uom.seshat.util.Characters;
 import tech.uom.seshat.util.CharSequences;
 import tech.uom.seshat.util.WeakValueHashMap;
 
+import static java.util.logging.Logger.getLogger;
+
 
 /**
  * Parses and formats units of measurement as SI symbols, URI in OGC namespace or other symbols.
  * This class combines in a single class the API from {@link java.text} and the API from {@link javax.measure.format}.
  * In addition to the symbols of the <cite>Système international</cite> (SI), this class is also capable to handle
  * some symbols found in <cite>Well Known Text</cite> (WKT) definitions or in XML files.
+ *
+ * <h2>NetCDF unit symbols</h2>
+ * The attributes in netCDF files often merge the axis direction with the angular unit,
+ * as in {@code "degrees_east"}, {@code "degrees_north"} or {@code "Degrees North"}.
+ * This class ignores those suffixes and unconditionally returns {@link Units#DEGREE} for all axis directions.
  *
  * <h2>Multi-threading</h2>
  * {@code UnitFormat} is generally not thread-safe. If units need to be parsed or formatted in different threads,
@@ -239,7 +248,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
      *
      * @see #label(Unit, String)
      */
-    private Map<Unit<?>,String> unitToLabel;
+    private final Map<Unit<?>,String> unitToLabel;
 
     /**
      * Units associated to a given label (in addition to the system-wide {@link UnitRegistry}).
@@ -520,7 +529,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
             nameToUnit = map;
         }
         /*
-         * The 'nameToUnit' map contains plural forms (declared in UnitAliases.properties),
+         * The `nameToUnit` map contains plural forms (declared in UnitAliases.properties),
          * but we make a special case for "degrees", "metres" and "meters" because they
          * appear in numerous places.
          */
@@ -621,6 +630,7 @@ appPow: if (unit == null) {
                     try {
                         label = names.getString(label);
                     } catch (MissingResourceException e) {
+                        getLogger("tech.uom.seshat").log(Level.FINE, e.toString(), e);
                         // Name not found; use the symbol as a fallback.
                     }
                     return toAppendTo.append(label);
@@ -647,7 +657,7 @@ appPow: if (unit == null) {
          * have been created by SystemUnit.transform(…), in which case "Choice 3" above would have been executed.
          */
         final Unit<?> unscaled = unit.getSystemUnit();
-        @SuppressWarnings("unchecked")          // Both 'unit' and 'unscaled' are 'Unit<Q>'.
+        @SuppressWarnings("unchecked")          // Both `unit` and `unscaled` are `Unit<Q>`.
         final double scale = AbstractConverter.scale(unit.getConverterTo((Unit) unscaled));
         if (Double.isNaN(scale)) {
             throw new IllegalArgumentException(Errors.format(Errors.Keys.NonRatioUnit_1,
@@ -703,7 +713,7 @@ appPow: if (unit == null) {
          * Append the scale factor. If we can use a prefix (e.g. "km" instead of "1000⋅m"), we will do that.
          * Otherwise if the scale is a power of 10 and we are allowed to use Unicode symbols, we will write
          * for example 10⁵⋅m instead of 100000⋅m. If the scale is not a power of 10, or if we are requested
-         * to format UCUM symbol, then we fallback on the usual 'Double.toString(double)' representation.
+         * to format UCUM symbol, then we fallback on the usual `Double.toString(double)` representation.
          */
         if (scale != 1) {
             final char prefix = Prefixes.symbol(scale, prefixPower);
@@ -729,9 +739,9 @@ appPow: if (unit == null) {
                     toAppendTo.append(text, 0, length);
                 }
                 /*
-                 * The 'formatComponents' method appends division symbol only, no multiplication symbol.
+                 * The `formatComponents` method appends division symbol only, no multiplication symbol.
                  * If we have formatted a scale factor and there is at least one component to multiply,
-                 * we need to append the multiplication symbol ourselves. Note that 'formatComponents'
+                 * we need to append the multiplication symbol ourselves. Note that `formatComponents`
                  * put numerators before denominators, so we are sure that the first term after the
                  * multiplication symbol is a numerator.
                  */
@@ -776,7 +786,7 @@ appPow: if (unit == null) {
         /*
          * At this point, all numerators have been appended. Now append the denominators together.
          * For example pressure dimension is formatted as M∕(L⋅T²) no matter if 'M' was the first
-         * dimension in the given 'components' map or not.
+         * dimension in the given `components` map or not.
          */
         if (!deferred.isEmpty()) {
             toAppendTo.append(style.divide);
@@ -1081,7 +1091,7 @@ appPow: if (unit == null) {
          * Split the unit around the multiplication and division operators and parse each term individually.
          * Note that exponentation need to be kept as part of a single unit symbol.
          *
-         * The 'start' variable is the index of the first character of the next unit term to parse.
+         * The `start` variable is the index of the first character of the next unit term to parse.
          */
         final Operation operation = new Operation(symbols);    // Enumeration value: NOOP, IMPLICIT, MULTIPLY, DIVIDE.
         Unit<?> unit = null;
@@ -1108,7 +1118,7 @@ scan:   for (int n; i < end; i += n) {
                 /*
                  * For any character that is not an operator or parenthesis, either continue the scanning of
                  * characters or stop it, depending on whether the character is valid for a unit symbol or not.
-                 * In the later case, we consider that we reached the end of a unit symbol.
+                 * In the latter case, we consider that we reached the end of a unit symbol.
                  */
                 default:  {
                     if (AbstractUnit.isSymbolChar(c)) {
@@ -1175,7 +1185,7 @@ scan:   for (int n; i < end; i += n) {
                                symbols.subSequence(start, i), Style.CLOSE), symbols, start);
                     }
                     unit = operation.apply(unit, term, pos);
-                    operation.code = Operation.IMPLICIT;    // Default operation if there is no × or / symbols after parenthesis.
+                    operation.code = Operation.IMPLICIT;    // Default operation if there is no × or / symbol after parenthesis.
                     start = i + (n = 1);                    // Skip the number of characters in the '(' Unicode code point.
                     continue;
                 }
@@ -1196,7 +1206,7 @@ scan:   for (int n; i < end; i += n) {
              * between the previously parsed units and the next unit to parse. A special case is IMPLICIT, which is
              * a multiplication without explicit × symbol after the parenthesis. The implicit multiplication can be
              * overridden by an explicit × or / symbol, which is what happened if we reach this point (tip: look in
-             * the above 'switch' statement all cases that end with 'break', not 'break scan' or 'continue').
+             * the above `switch` statement all cases that end with `break`, not `break scan` or `continue`).
              */
             if (operation.code != Operation.IMPLICIT) {
                 unit = operation.apply(unit, parseTerm(symbols, start, i, operation), start);
@@ -1245,7 +1255,7 @@ search:     while ((i = CharSequences.skipTrailingWhitespaces(symbols, start, i)
             }
         }
         if (!(operation.finished = (component != null))) {
-            component = parseTerm(symbols, start, i, operation);            // May set 'operation.finished' flag.
+            component = parseTerm(symbols, start, i, operation);            // May set `operation.finished` flag.
         }
         if (operation.finished) {
             finish(position);           // For preventing interpretation of "degree minute" as "degree × minute".
@@ -1431,7 +1441,7 @@ search:     while ((i = CharSequences.skipTrailingWhitespaces(symbols, start, i)
                                 try {
                                     power = new Fraction(uom.substring(i));
                                 } catch (NumberFormatException e) {
-                                    // Should never happen unless the number is larger than 'int' capacity.
+                                    // Should never happen unless the number is larger than `int` capacity.
                                     throw (ParserException) new ParserException(Errors.format(
                                             Errors.Keys.UnknownUnit_1, uom), symbols, lower+i).initCause(e);
                                 }
@@ -1567,20 +1577,29 @@ search:     while ((i = CharSequences.skipTrailingWhitespaces(symbols, start, i)
     @Override
     public UnitFormat clone() {
         final UnitFormat f = (UnitFormat) super.clone();
-        f.unitToLabel = clone(f.unitToLabel);
+        try {
+            f.setFinalField("unitToLabel", unitToLabel);
+            f.setFinalField("labelToUnit", labelToUnit);
+        } catch (ReflectiveOperationException e) {
+            throw (InaccessibleObjectException) new InaccessibleObjectException().initCause(e);
+        }
         return f;
     }
 
     /**
      * Clones the given map, which can be either a {@link HashMap}
      * or the instance returned by {@link Collections#emptyMap()}.
+     * Then assigns the cloned map to the field of given name.
      */
-    @SuppressWarnings("unchecked")
-    private static <K,V> Map<K,V> clone(final Map<K,V> value) {
+    private void setFinalField(final String fieldName, final Map<?,?> value) throws ReflectiveOperationException {
+        final Object clone;
         if (value instanceof HashMap<?,?>) {
-            return (Map<K,V>) ((HashMap<?,?>) value).clone();
+            clone = ((HashMap<?,?>) value).clone();
         } else {
-            return new HashMap<>();
+            clone = new HashMap<>();
         }
+        final java.lang.reflect.Field f = UnitFormat.class.getDeclaredField(fieldName);
+        f.setAccessible(true);
+        f.set(this, clone);
     }
 }

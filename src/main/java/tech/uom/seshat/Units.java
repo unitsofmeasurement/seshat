@@ -26,6 +26,7 @@ import tech.uom.seshat.resources.Errors;
 
 import static tech.uom.seshat.UnitRegistry.SI;
 import static tech.uom.seshat.UnitRegistry.ACCEPTED;
+import static tech.uom.seshat.UnitRegistry.CGS;
 import static tech.uom.seshat.UnitRegistry.IMPERIAL;
 import static tech.uom.seshat.UnitRegistry.OTHER;
 import static tech.uom.seshat.UnitRegistry.PREFIXABLE;
@@ -68,7 +69,8 @@ import static tech.uom.seshat.UnitRegistry.PREFIXABLE;
  * </table>
  *
  * @author  Martin Desruisseaux (IRD, Geomatys)
- * @version 1.1
+ * @author  Alexis Manin (Geomatys)
+ * @version 1.2
  * @since   1.0
  */
 public final class Units {
@@ -562,6 +564,40 @@ public final class Units {
     public static final Unit<Speed> KILOMETRES_PER_HOUR;
 
     /**
+     * The SI derived unit for acceleration (m/s²).
+     * The unlocalized name is “metres per second squared”.
+     *
+     * <div class="note">
+     * <table class="compact" style="margin-left:30px; line-height:1.25">
+     *   <caption>Related units</caption>
+     *   <tr><td>SI acceleration units:</td> <td style="word-spacing:1em"><u><b>{@code METRES_PER_SECOND_SQUARED}</b></u>.</td></tr>
+     *   <tr><td>In other systems:</td>      <td style="word-spacing:1em">{@link #GAL}.</td></tr>
+     *   <tr><td>Components:</td>            <td style="word-spacing:0.5em">{@link #METRES_PER_SECOND} ∕ {@link #SECOND}</td></tr>
+     * </table></div>
+     *
+     * @since 1.2
+     */
+    public static final Unit<Acceleration> METRES_PER_SECOND_SQUARED;
+
+    /**
+     * Unit of measurement defined as 1/100 metres per second squared (1 cm/s²).
+     * This is a CGS unit (not a SI unit) used in geodesy and geophysics to express acceleration due to gravity.
+     * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #METRES_PER_SECOND_SQUARED},
+     * the symbol is "Gal" (upper-case first letter) and the unlocalized name is “gal” (lower-case letter).
+     *
+     * <div class="note">
+     * <table class="compact" style="margin-left:30px; line-height:1.25">
+     *   <caption>Related units</caption>
+     *   <tr><td>SI acceleration units:</td> <td style="word-spacing:1em"><u><b>{@link #METRES_PER_SECOND_SQUARED}</b></u>.</td></tr>
+     *   <tr><td>In other systems:</td>      <td style="word-spacing:1em">{@code GAL}.</td></tr>
+     *   <tr><td>Components:</td>            <td style="word-spacing:0.5em">{@link #CENTIMETRE} ∕ {@link #SECOND}²</td></tr>
+     * </table></div>
+     *
+     * @since 1.2
+     */
+    public static final Unit<Acceleration> GAL;
+
+    /**
      * The SI derived unit for pressure (Pa).
      * One pascal is equal to 1 N/m².
      * Pressures are often used for height measurements on a vertical axis.
@@ -973,6 +1009,7 @@ public final class Units {
         final UnitDimension frequency     = time.pow(-1);
         final UnitDimension area          = length.pow(2);
         final UnitDimension speed         = length.divide(time);
+        final UnitDimension acceleration  = speed.divide(time);
         final UnitDimension force         = mass.multiply(speed).divide(time);
         final UnitDimension energy        = force.multiply(length);
         final UnitDimension power         = energy.divide(time);
@@ -984,16 +1021,17 @@ public final class Units {
         /*
          * Base, derived or alternate units that we need to reuse more than once in this static initializer.
          */
-        final SystemUnit<Length>        m   = add(Length.class,        Scalar.Length::new,         length,        "m",   (byte) (SI | PREFIXABLE), (short) 9001);
-        final SystemUnit<Area>          m2  = add(Area.class,          Scalar.Area::new,           area,          "m²",  (byte) (SI | PREFIXABLE), (short) 0);
-        final SystemUnit<Volume>        m3  = add(Volume.class,        Scalar.Volume::new,         length.pow(3), "m³",  (byte) (SI | PREFIXABLE), (short) 0);
-        final SystemUnit<Time>          s   = add(Time.class,          Scalar.Time::new,           time,          "s",   (byte) (SI | PREFIXABLE), (short) 1040);
-        final SystemUnit<Temperature>   K   = add(Temperature.class,   Scalar.Temperature.FACTORY, temperature,   "K",   (byte) (SI | PREFIXABLE), (short) 0);
-        final SystemUnit<Speed>         mps = add(Speed.class,         Scalar.Speed::new,          speed,         "m∕s", (byte) (SI | PREFIXABLE), (short) 1026);
-        final SystemUnit<Pressure>      Pa  = add(Pressure.class,      Scalar.Pressure::new,       pressure,      "Pa",  (byte) (SI | PREFIXABLE), (short) 0);
-        final SystemUnit<Angle>         rad = add(Angle.class,         Scalar.Angle::new,          dimensionless, "rad", (byte) (SI | PREFIXABLE), (short) 9101);
-        final SystemUnit<Dimensionless> one = add(Dimensionless.class, Scalar.Dimensionless::new,  dimensionless, "",            SI,               (short) 9201);
-        final SystemUnit<Mass>          kg  = add(Mass.class,          Scalar.Mass::new,           mass,          "kg",          SI,               (short) 0);
+        final SystemUnit<Length>        m    = add(Length.class,        Scalar.Length::new,         length,        "m",    (byte) (SI | PREFIXABLE), (short) 9001);
+        final SystemUnit<Area>          m2   = add(Area.class,          Scalar.Area::new,           area,          "m²",   (byte) (SI | PREFIXABLE), (short) 0);
+        final SystemUnit<Volume>        m3   = add(Volume.class,        Scalar.Volume::new,         length.pow(3), "m³",   (byte) (SI | PREFIXABLE), (short) 0);
+        final SystemUnit<Time>          s    = add(Time.class,          Scalar.Time::new,           time,          "s",    (byte) (SI | PREFIXABLE), (short) 1040);
+        final SystemUnit<Temperature>   K    = add(Temperature.class,   Scalar.Temperature.FACTORY, temperature,   "K",    (byte) (SI | PREFIXABLE), (short) 0);
+        final SystemUnit<Speed>         mps  = add(Speed.class,         Scalar.Speed::new,          speed,         "m∕s",  (byte) (SI | PREFIXABLE), (short) 1026);
+        final SystemUnit<Acceleration>  mps2 = add(Acceleration.class,  Scalar.Acceleration::new,   acceleration,  "m∕s²", (byte) (SI | PREFIXABLE), (short) 0);
+        final SystemUnit<Pressure>      Pa   = add(Pressure.class,      Scalar.Pressure::new,       pressure,      "Pa",   (byte) (SI | PREFIXABLE), (short) 0);
+        final SystemUnit<Angle>         rad  = add(Angle.class,         Scalar.Angle::new,          dimensionless, "rad",  (byte) (SI | PREFIXABLE), (short) 9101);
+        final SystemUnit<Dimensionless> one  = add(Dimensionless.class, Scalar.Dimensionless::new,  dimensionless, "",             SI,               (short) 9201);
+        final SystemUnit<Mass>          kg   = add(Mass.class,          Scalar.Mass::new,           mass,          "kg",           SI,               (short) 0);
         /*
          * All SI prefix to be used below, with additional converters to be used more than once.
          */
@@ -1047,9 +1085,12 @@ public final class Units {
         /*
          * All Unit<Speed>.
          */
-        mps.related(1);
-        METRES_PER_SECOND   = mps;
-        KILOMETRES_PER_HOUR = add(mps, LinearConverter.scale(10, 36), "km∕h", ACCEPTED, (short) 0);
+        mps .related(1);
+        mps2.related(1);
+        METRES_PER_SECOND         = mps;
+        METRES_PER_SECOND_SQUARED = mps2;
+        KILOMETRES_PER_HOUR       = add(mps, LinearConverter.scale(10, 36),     "km∕h",  ACCEPTED, (short) 0);
+        GAL                       = add(mps2, centi, "Gal", (byte) (CGS | PREFIXABLE | ACCEPTED),  (short) 0);
         /*
          * All Unit<Pressure>.
          */
@@ -1119,6 +1160,7 @@ public final class Units {
         UnitRegistry.alias(CELSIUS,   "Cel");
         UnitRegistry.alias(FAHRENHEIT,  "℉");
         UnitRegistry.alias(GRAD,      "gon");
+        UnitRegistry.alias(GAL,     "cm∕s²");
         UnitRegistry.alias(HECTARE,   "hm²");
         UnitRegistry.alias(LITRE,       "l");
         UnitRegistry.alias(LITRE,       "ℓ");
@@ -1453,6 +1495,7 @@ public final class Units {
      *
      * @param  converter  the converter for which we want the derivative at a given point, or {@code null}.
      * @param  value      the point at which to compute the derivative.
+     *                    Ignored (can be {@link Double#NaN}) if the conversion is linear.
      * @return the derivative at the given point, or {@code NaN} if unknown.
      */
     public static double derivative(final UnitConverter converter, final double value) {
@@ -1464,6 +1507,11 @@ public final class Units {
      * {@link UnitFormat#parse(CharSequence)} on a shared locale-independent instance.
      * The list of symbols supported by this method is implementation-dependent
      * and may change in future Seshat versions.
+     *
+     * <h4>NetCDF unit symbols</h4>
+     * The attributes in netCDF files often merge the axis direction with the angular unit,
+     * as in {@code "degrees_east"} or {@code "degrees_north"}. This {@code valueOf} method
+     * ignores those suffixes and unconditionally returns {@link #DEGREE} for all axis directions.
      *
      * @param  uom  the symbol to parse, or {@code null}.
      * @return the parsed symbol, or {@code null} if {@code uom} was null.
@@ -1552,6 +1600,8 @@ public final class Units {
             case 9108: return SexagesimalConverter.DMS_SCALED;
             case 9110: return SexagesimalConverter.DMS;
             case 9111: return SexagesimalConverter.DM;
+            case 9203: // Fall through
+            case 9201: return UNITY;
             default: {
                 return (code > 0 && code <= Short.MAX_VALUE) ? (Unit<?>) UnitRegistry.get((short) code) : null;
             }

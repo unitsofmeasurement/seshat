@@ -148,7 +148,7 @@ search:     for (; fromIndex <= toIndex; fromIndex++) {
      * Returns the index of the first non-white character in the given range.
      * If the given range contains only space characters, then this method returns the index of the
      * first character after the given range, which is always equals or greater than {@code toIndex}.
-     * Note that this character may not exist if {@code toIndex} is equals to the text length.
+     * Note that this character may not exist if {@code toIndex} is equal to the text length.
      *
      * <p>Special cases:</p>
      * <ul>

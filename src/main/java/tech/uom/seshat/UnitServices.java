@@ -23,7 +23,6 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.measure.Unit;
 import javax.measure.Quantity;
 import javax.measure.format.UnitFormat;
@@ -32,6 +31,8 @@ import javax.measure.spi.ServiceProvider;
 import javax.measure.spi.SystemOfUnits;
 import javax.measure.spi.SystemOfUnitsService;
 import javax.measure.spi.UnitFormatService;
+
+import static java.util.logging.Logger.getLogger;
 
 
 /**
@@ -42,7 +43,7 @@ import javax.measure.spi.UnitFormatService;
  * without direct dependency. A {@code UnitServices} instance can be obtained by call to {@link #current()}.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.1
+ * @version 1.2
  * @since   1.0
  */
 public class UnitServices extends ServiceProvider implements SystemOfUnitsService, UnitFormatService {
@@ -62,6 +63,7 @@ public class UnitServices extends ServiceProvider implements SystemOfUnitsServic
             new UnitRegistry("SI",            UnitRegistry.SI),
             new UnitRegistry("SI + accepted", UnitRegistry.SI | UnitRegistry.ACCEPTED),
             new UnitRegistry("Imperial",      UnitRegistry.IMPERIAL),
+            new UnitRegistry("CGS",           UnitRegistry.CGS),
             new UnitRegistry("SI + other",    -1)                       // Must be last.
         };
     }
@@ -176,7 +178,7 @@ public class UnitServices extends ServiceProvider implements SystemOfUnitsServic
             style = tech.uom.seshat.UnitFormat.Style.valueOf(name);
         } catch (IllegalArgumentException e) {
             // JSR-363 specification mandate that we return null.
-            Logger.getLogger("tech.uom.seshat").log(Level.FINE, e.toString(), e);
+            getLogger("tech.uom.seshat").log(Level.FINE, e.toString(), e);
             return null;
         }
         tech.uom.seshat.UnitFormat f = new tech.uom.seshat.UnitFormat(locale);
@@ -223,7 +225,7 @@ public class UnitServices extends ServiceProvider implements SystemOfUnitsServic
      *
      * @param  <Q>   compile-time value of the {@code type} argument.
      * @param  type  type of the desired the quantity.
-     * @return the service to obtain {@link Quantity} instances, or {@code null} if none.
+     * @return the service to obtain {@link Quantity} instances.
      *
      * @see Quantities#create(double, Unit)
      */

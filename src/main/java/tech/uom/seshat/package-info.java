@@ -87,7 +87,7 @@
  * library keeping only the classes required for JSR 363 implementation.</p>
  *
  * @author  Martin Desruisseaux (MPO, IRD, Geomatys)
- * @version 1.0
+ * @version 1.2
  * @since   1.0
  */
 package tech.uom.seshat;
