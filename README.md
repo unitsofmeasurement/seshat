@@ -47,8 +47,7 @@ While uncommon, Seshat accepts fractional powers as in m^⅔.
 Some sentences like _"100 feet"_, _"square metre"_ and _"degree Kelvin"_
 are also recognized at parsing time.
 
-Seshat requires Java 8 at runtime (Java 10 at compile time)
-and has no dependency other than JSR 363 and `java.base` module.
+Seshat requires Java 11 and has no dependency other than JSR 363 and `java.base` module.
 
 
 ## Maven dependency

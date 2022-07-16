@@ -138,8 +138,8 @@
 
   <properties>
     <jsr.version>1.0</jsr.version>
-    <maven.compile.sourceLevel>8</maven.compile.sourceLevel>
-    <maven.compile.targetLevel>8</maven.compile.targetLevel>
+    <maven.compile.sourceLevel>11</maven.compile.sourceLevel>
+    <maven.compile.targetLevel>11</maven.compile.targetLevel>
     <maven.surefire.version>3.0.0-M5</maven.surefire.version>
     <next.java.version>10</next.java.version>
   </properties>
