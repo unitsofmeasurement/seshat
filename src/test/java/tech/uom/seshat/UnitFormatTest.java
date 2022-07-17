@@ -33,6 +33,7 @@ import static org.junit.Assert.*;
  * Tests the {@link UnitFormat} class.
  *
  * @author  Martin Desruisseaux (Geomatys)
+ * @author  Alexis Manin (Geomatys)
  * @version 1.2
  * @since   1.0
  */

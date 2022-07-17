@@ -26,7 +26,7 @@ import static tech.uom.seshat.util.CharSequences.*;
  *
  * @author  Martin Desruisseaux (Geomatys)
  * @author  Johann Sorel (Geomatys)
- * @version 1.0
+ * @version 1.2
  */
 public final strictfp class CharSequencesTest {
     /**

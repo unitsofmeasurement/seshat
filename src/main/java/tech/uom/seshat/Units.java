@@ -1508,10 +1508,15 @@ public final class Units {
      * The list of symbols supported by this method is implementation-dependent
      * and may change in future Seshat versions.
      *
-     * <h4>NetCDF unit symbols</h4>
-     * The attributes in netCDF files often merge the axis direction with the angular unit,
-     * as in {@code "degrees_east"} or {@code "degrees_north"}. This {@code valueOf} method
-     * ignores those suffixes and unconditionally returns {@link #DEGREE} for all axis directions.
+     * <h4>Parsing authority codes</h4>
+     * If the given {@code uom} arguments is of the form {@code "EPSG:####"}, {@code "urn:ogc:def:uom:EPSG:####"}
+     * or {@code "http://www.opengis.net/def/uom/EPSG/0/####"} (ignoring case and whitespaces around separators),
+     * then {@code "####"} is parsed as an integer and forwarded to the {@link #valueOfEPSG(int)} method.
+     *
+     * <h4>Note on netCDF unit symbols</h4>
+     * In netCDF files, values of "unit" attribute are concatenations of an angular unit with an axis direction,
+     * as in {@code "degrees_east"} or {@code "degrees_north"}. This {@code valueOf(…)} method ignores those suffixes
+     * and unconditionally returns {@link #DEGREE} for all axis directions.
      *
      * @param  uom  the symbol to parse, or {@code null}.
      * @return the parsed symbol, or {@code null} if {@code uom} was null.

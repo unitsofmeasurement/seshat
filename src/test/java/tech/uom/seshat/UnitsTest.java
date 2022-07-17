@@ -331,6 +331,16 @@ public final strictfp class UnitsTest {
     }
 
     /**
+     * Tests {@link Units#valueOf(String)} with a URN syntax.
+     */
+    @Test
+    public void testValueOfURN() {
+        assertSame(METRE,  valueOf("EPSG:9001"));
+        assertSame(DEGREE, valueOf(" epsg : 9102"));
+        assertSame(DEGREE, valueOf("urn:ogc:def:uom:EPSG::9102"));
+    }
+
+    /**
      * Tests {@link Units#valueOfEPSG(int)} and {@link Units#valueOf(String)} with a {@code "EPSG:####"} syntax.
      */
     @Test

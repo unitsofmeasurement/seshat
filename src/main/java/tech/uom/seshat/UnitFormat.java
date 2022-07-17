@@ -41,6 +41,7 @@ import tech.uom.seshat.math.MathFunctions;
 import tech.uom.seshat.resources.Errors;
 import tech.uom.seshat.util.Characters;
 import tech.uom.seshat.util.CharSequences;
+import tech.uom.seshat.util.DefinitionURI;
 import tech.uom.seshat.util.WeakValueHashMap;
 
 import static java.util.logging.Logger.getLogger;
@@ -52,17 +53,17 @@ import static java.util.logging.Logger.getLogger;
  * In addition to the symbols of the <cite>Système international</cite> (SI), this class is also capable to handle
  * some symbols found in <cite>Well Known Text</cite> (WKT) definitions or in XML files.
  *
- * <h2>NetCDF unit symbols</h2>
- * The attributes in netCDF files often merge the axis direction with the angular unit,
- * as in {@code "degrees_east"}, {@code "degrees_north"} or {@code "Degrees North"}.
- * This class ignores those suffixes and unconditionally returns {@link Units#DEGREE} for all axis directions.
+ * <h2>Note on netCDF unit symbols</h2>
+ * In netCDF files, values of "unit" attribute are concatenations of an angular unit with an axis direction,
+ * as in {@code "degrees_east"} or {@code "degrees_north"}. This class ignores those suffixes and unconditionally
+ * returns {@link Units#DEGREE} for all axis directions.
  *
  * <h2>Multi-threading</h2>
  * {@code UnitFormat} is generally not thread-safe. If units need to be parsed or formatted in different threads,
  * each thread should have its own {@code UnitFormat} instance.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.0
+ * @version 1.2
  *
  * @see Units#valueOf(String)
  *
@@ -73,6 +74,11 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
      * For cross-version compatibility.
      */
     private static final long serialVersionUID = -3064428584419360693L;
+
+    /**
+     * Whether the parsing of authority codes such as {@code "EPSG:9001"} is allowed.
+     */
+    private final boolean parseAuthorityCodes;
 
     /**
      * The unit name for degrees (not necessarily angular), to be handled in a special way.
@@ -293,6 +299,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
         style       = Style.SYMBOL;
         unitToLabel = Collections.emptyMap();
         labelToUnit = Collections.emptyMap();
+        parseAuthorityCodes = true;
     }
 
     /**
@@ -306,6 +313,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
         style       = Style.SYMBOL;
         unitToLabel = new HashMap<>();
         labelToUnit = new HashMap<>();
+        parseAuthorityCodes = false;
     }
 
     /**
@@ -1085,8 +1093,33 @@ appPow: if (unit == null) {
     public Unit<?> parse(CharSequence symbols, final ParsePosition position) throws ParserException {
         Objects.requireNonNull(symbols);
         Objects.requireNonNull(position);
+        /*
+         * Check for authority codes (currently only EPSG, but more could be added later).
+         * Example: "urn:ogc:def:uom:EPSG::9001". If the unit is not an authority code
+         * (which is the most common case), only then we will parse the unit symbols.
+         */
         int end   = symbols.length();
         int start = CharSequences.skipLeadingWhitespaces(symbols, position.getIndex(), end);
+        if (parseAuthorityCodes) {
+            final String uom = symbols.toString();
+            final String code = DefinitionURI.codeOf("EPSG", uom);
+            if (code != null) {
+                NumberFormatException failure = null;
+                try {
+                    final Unit<?> unit = Units.valueOfEPSG(Integer.parseInt(code));
+                    if (unit != null) {
+                        position.setIndex(end);
+                        finish(position);
+                        return unit;
+                    }
+                } catch (NumberFormatException e) {
+                    failure = e;
+                }
+                throw (ParserException) new ParserException(Errors.format(Errors.Keys.UnknownUnit_1,
+                        "EPSG" + DefinitionURI.SEPARATOR + code),
+                        symbols, start + Math.max(0, uom.lastIndexOf(code))).initCause(failure);
+            }
+        }
         /*
          * Split the unit around the multiplication and division operators and parse each term individually.
          * Note that exponentation need to be kept as part of a single unit symbol.
