@@ -30,7 +30,7 @@ import tech.uom.seshat.util.StringBuilders;
  * in the {@link #isLinear()} method inherited from JSR-363.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.0
+ * @version 1.2
  * @since   1.0
  */
 final class LinearConverter extends AbstractConverter {
@@ -261,7 +261,7 @@ final class LinearConverter extends AbstractConverter {
      */
     @Override
     public double convert(final double value) {
-        return (value * scale + offset) / divisor;
+        return Math.fma(value, scale, offset) / divisor;
     }
 
     /**

@@ -141,7 +141,6 @@
     <maven.compile.sourceLevel>11</maven.compile.sourceLevel>
     <maven.compile.targetLevel>11</maven.compile.targetLevel>
     <maven.surefire.version>3.0.0-M5</maven.surefire.version>
-    <next.java.version>10</next.java.version>
   </properties>
 
 
@@ -152,26 +151,6 @@
        ============================================================== -->
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-enforcer-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>enforce</id>
-            <configuration>
-              <rules>
-                <requireJavaVersion>
-                  <version>${next.java.version}</version>
-                </requireJavaVersion>
-                <dependencyConvergence/>
-              </rules>
-            </configuration>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
       <plugin>
         <!-- Compile properties files into resources UTF files. -->
         <groupId>org.apache.sis.core</groupId>
@@ -198,33 +177,6 @@
           <useIncrementalCompilation>false</useIncrementalCompilation> <!-- https://jira.codehaus.org/browse/MCOMPILER-209 -->
           <release>${maven.compile.targetLevel}</release>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>3.0.0</version>
-        <executions>
-          <execution>
-            <phase>prepare-package</phase>
-            <goals><goal>run</goal></goals>
-            <configuration>
-              <target>
-                <mkdir dir       = "${project.build.directory}/classes/META-INF/versions/${next.java.version}"/>
-                <javac destdir   = "${project.build.directory}/classes/META-INF/versions/${next.java.version}"
-                       srcdir    = "${project.basedir}/src/main/java_${next.java.version}"
-                       encoding  = "${project.build.sourceEncoding}"
-                       includeAntRuntime = "false">
-
-                    <!-- TODO: use release attribute instead after next plugin release.
-                         https://issues.apache.org/jira/browse/MANTRUN-214 -->
-                    <compilerarg line="--release=${next.java.version} --module-path=${javax.measure:unit-api:jar} --patch-module tech.uom.seshat=${project.build.directory}/classes"/>
-                </javac>
-                <move file="${project.build.directory}/classes/META-INF/versions/${next.java.version}/module-info.class"
-                    tofile="${project.build.directory}/classes/module-info.class"/>
-              </target>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

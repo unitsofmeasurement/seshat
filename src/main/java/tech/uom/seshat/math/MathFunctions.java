@@ -16,6 +16,7 @@
 package tech.uom.seshat.math;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 
 /**
@@ -27,7 +28,7 @@ import java.util.Arrays;
  *
  * @author  Martin Desruisseaux (MPO, IRD, Geomatys)
  * @author  Johann Sorel (Geomatys)
- * @version 1.1
+ * @version 1.2
  * @since   1.0
  */
 public final class MathFunctions {
@@ -132,9 +133,7 @@ public final class MathFunctions {
      * @see java.math.BigInteger#isProbablePrime(int)
      */
     private static int primeNumberAt(final int index) throws IndexOutOfBoundsException {
-        if (index < 0 || index >= PRIMES_LENGTH_16_BITS) {
-            throw new IndexOutOfBoundsException();
-        }
+        Objects.checkIndex(index, PRIMES_LENGTH_16_BITS);
         short[] primes = MathFunctions.primes;
         if (index >= primes.length) {
             synchronized (MathFunctions.class) {

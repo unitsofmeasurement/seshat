@@ -24,8 +24,6 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.NoSuchElementException;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 /**
@@ -53,7 +51,7 @@ import java.util.logging.Logger;
  * multiple threads.
  *
  * @author  Martin Desruisseaux (IRD, Geomatys)
- * @version 1.0
+ * @version 1.2
  * @since   1.0
  */
 public abstract class IndexedResourceBundle extends ResourceBundle {
@@ -117,7 +115,7 @@ public abstract class IndexedResourceBundle extends ResourceBundle {
             locale = Locale.getDefault();
         }
         // No caching; we rely on the one implemented in ResourceBundle.
-        return base.cast(getBundle(base.getName(), locale, base.getClassLoader()));
+        return base.cast(getBundle(base.getName(), locale, base.getModule()));
     }
 
     /**
@@ -248,7 +246,7 @@ public abstract class IndexedResourceBundle extends ResourceBundle {
                 keyID = getKeyConstants().getKeyValue(key);
             } catch (ReflectiveOperationException e) {
                 e.addSuppressed(exception);
-                Logger.getLogger("tech.uom.seshat").log(Level.FINE, e.toString(), e);
+                System.getLogger("tech.uom.seshat").log(System.Logger.Level.WARNING, e);
                 return null;                // This is okay as of 'handleGetObject' contract.
             }
         }

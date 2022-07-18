@@ -19,7 +19,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.MissingResourceException;
-import java.util.logging.Level;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 import javax.measure.Unit;
@@ -27,8 +26,6 @@ import javax.measure.Quantity;
 import tech.uom.seshat.math.Fraction;
 import tech.uom.seshat.util.Characters;
 import tech.uom.seshat.resources.Errors;
-
-import static java.util.logging.Logger.getLogger;
 
 
 /**
@@ -52,7 +49,7 @@ import static java.util.logging.Logger.getLogger;
  * All unit instances shall be immutable and thread-safe.
  *
  * @author  Martin Desruisseaux (MPO, Geomatys)
- * @version 1.1
+ * @version 1.2
  *
  * @param <Q>  the kind of quantity to be measured using this units.
  *
@@ -296,7 +293,7 @@ abstract class AbstractUnit<Q extends Quantity<Q>> implements Unit<Q>, Serializa
         if (symbol != null) try {
             return UnitFormat.getBundle(Locale.getDefault()).getString(symbol);
         } catch (MissingResourceException e) {
-            getLogger("tech.uom.seshat").log(Level.FINE, e.toString(), e);
+            System.getLogger("tech.uom.seshat").log(System.Logger.Level.DEBUG, e);
             // Ignore as per this method contract.
         }
         return null;

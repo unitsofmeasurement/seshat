@@ -15,6 +15,7 @@
  */
 package tech.uom.seshat.util;
 
+import java.util.Objects;
 import static java.lang.Character.*;
 
 
@@ -252,9 +253,7 @@ search:     for (; fromIndex <= toIndex; fromIndex++) {
      */
     public static CharSequence trimWhitespaces(CharSequence text, int lower, int upper) {
         final int length = length(text);
-        if (lower < 0 || lower > upper || upper > length) {
-            throw new IndexOutOfBoundsException();
-        }
+        Objects.checkFromToIndex(lower, upper, length);
         if (text != null) {
             lower = skipLeadingWhitespaces (text, lower, upper);
             upper = skipTrailingWhitespaces(text, lower, upper);

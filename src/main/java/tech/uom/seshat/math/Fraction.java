@@ -25,7 +25,7 @@ import tech.uom.seshat.util.WeakHashSet;
  * All {@code Fraction} instances are immutable and thus inherently thread-safe.
  *
  * @author  Martin Desruisseaux (MPO, Geomatys)
- * @version 1.1
+ * @version 1.2
  * @since   1.0
  */
 public final class Fraction extends Number implements Comparable<Fraction>, Serializable {
@@ -520,8 +520,8 @@ public final class Fraction extends Number implements Comparable<Fraction>, Seri
                 case '⁄':
                 case '/':
                 case '∕': {
-                    numerator   = Integer.parseInt(s.substring(0,i));
-                    denominator = Integer.parseInt(s.substring(i+1));
+                    numerator   = Integer.parseInt(s, 0, i, 10);
+                    denominator = Integer.parseInt(s, i+1, length, 10);
                     return;
                 }
             }

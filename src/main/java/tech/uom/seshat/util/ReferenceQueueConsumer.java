@@ -17,9 +17,6 @@ package tech.uom.seshat.util;
 
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
-import java.util.logging.Level;
-
-import static java.util.logging.Logger.getLogger;
 
 
 /**
@@ -29,7 +26,7 @@ import static java.util.logging.Logger.getLogger;
  * references enqueued by the garbage collector.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.0
+ * @version 1.2
  */
 final class ReferenceQueueConsumer extends Thread {
     /**
@@ -96,7 +93,7 @@ final class ReferenceQueueConsumer extends Thread {
                     ((WeakEntry<?>) ref).dispose();
                 }
             } catch (Throwable exception) {
-                getLogger("tech.uom.seshat").log(Level.WARNING, exception.toString(), exception);
+                System.getLogger("tech.uom.seshat").log(System.Logger.Level.WARNING, exception);
             }
         }
         // Do not log anything at this point, since the loggers may be shutdown now.

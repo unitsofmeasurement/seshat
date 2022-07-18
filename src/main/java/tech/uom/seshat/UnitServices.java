@@ -22,7 +22,6 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
-import java.util.logging.Level;
 import javax.measure.Unit;
 import javax.measure.Quantity;
 import javax.measure.format.UnitFormat;
@@ -31,8 +30,6 @@ import javax.measure.spi.ServiceProvider;
 import javax.measure.spi.SystemOfUnits;
 import javax.measure.spi.SystemOfUnitsService;
 import javax.measure.spi.UnitFormatService;
-
-import static java.util.logging.Logger.getLogger;
 
 
 /**
@@ -178,7 +175,7 @@ public class UnitServices extends ServiceProvider implements SystemOfUnitsServic
             style = tech.uom.seshat.UnitFormat.Style.valueOf(name);
         } catch (IllegalArgumentException e) {
             // JSR-363 specification mandate that we return null.
-            getLogger("tech.uom.seshat").log(Level.FINE, e.toString(), e);
+            System.getLogger("tech.uom.seshat").log(System.Logger.Level.DEBUG, e);
             return null;
         }
         tech.uom.seshat.UnitFormat f = new tech.uom.seshat.UnitFormat(locale);

@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.logging.Level;
 import java.text.Format;
 import java.text.FieldPosition;
 import java.text.ParsePosition;
@@ -43,8 +42,6 @@ import tech.uom.seshat.util.Characters;
 import tech.uom.seshat.util.CharSequences;
 import tech.uom.seshat.util.DefinitionURI;
 import tech.uom.seshat.util.WeakValueHashMap;
-
-import static java.util.logging.Logger.getLogger;
 
 
 /**
@@ -638,7 +635,7 @@ appPow: if (unit == null) {
                     try {
                         label = names.getString(label);
                     } catch (MissingResourceException e) {
-                        getLogger("tech.uom.seshat").log(Level.FINE, e.toString(), e);
+                        System.getLogger("tech.uom.seshat").log(System.Logger.Level.DEBUG, e);
                         // Name not found; use the symbol as a fallback.
                     }
                     return toAppendTo.append(label);
