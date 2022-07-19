@@ -15,7 +15,7 @@
  */
 
 /**
- * Implementation of Units of Measurement API defined by JSR 363.
+ * Implementation of Units of Measurement API defined by JSR 385.
  * The {@link tech.uom.seshat.Units} class provides static constants
  * for about 50 units of measurement including all the SI base units
  * ({@linkplain tech.uom.seshat.Units#METRE    metre},
@@ -84,7 +84,7 @@
  *
  * <div class="section">Source</div>
  * <p>Seshat is a subset of <a href="http://sis.apache.org/">Apache Spatial Information System (SIS)</a>
- * library keeping only the classes required for JSR 363 implementation.</p>
+ * library keeping only the classes required for JSR 385 implementation.</p>
  *
  * @author  Martin Desruisseaux (MPO, IRD, Geomatys)
  * @version 1.2

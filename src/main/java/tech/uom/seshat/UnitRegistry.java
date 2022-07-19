@@ -25,6 +25,7 @@ import java.io.Serializable;
 import javax.measure.Unit;
 import javax.measure.Quantity;
 import javax.measure.Dimension;
+import javax.measure.format.MeasurementParseException;
 import javax.measure.spi.SystemOfUnits;
 import tech.uom.seshat.math.Fraction;
 import tech.uom.seshat.util.WeakValueHashMap;
@@ -241,6 +242,24 @@ final class UnitRegistry implements SystemOfUnits, Serializable {
     @Override
     public <Q extends Quantity<Q>> Unit<Q> getUnit(final Class<Q> type) {
         return Units.get(type);
+    }
+
+    /**
+     * Returns a unit with the given string representation,
+     * or {@code null} if none is found in this unit system.
+     *
+     * @param  symbols  the string representation of a unit.
+     * @return the unit with the given string representation,
+     *         or {@code null} if the give symbols can not be parsed.
+     */
+    @Override
+    public Unit<?> getUnit(final String symbols) {
+        try {
+            return Units.valueOf(symbols);
+        } catch (MeasurementParseException e) {
+            System.getLogger("tech.uom.seshat").log(System.Logger.Level.DEBUG, e);
+            return null;
+        }
     }
 
     /**

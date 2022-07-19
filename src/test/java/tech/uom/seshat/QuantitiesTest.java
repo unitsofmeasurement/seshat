@@ -55,6 +55,7 @@ public final strictfp class QuantitiesTest {
         q = new Quantity<Length>() {
             @Override public Number           getValue()                         {return 8;}
             @Override public Unit<Length>     getUnit ()                         {return Units.CENTIMETRE;}
+            @Override public Scale            getScale()                         {return Scale.ABSOLUTE;}
             @Override public Quantity<Length> add     (Quantity<Length> ignored) {return null;}
             @Override public Quantity<Length> subtract(Quantity<Length> ignored) {return null;}
             @Override public Quantity<?>      multiply(Quantity<?>      ignored) {return null;}
@@ -62,7 +63,9 @@ public final strictfp class QuantitiesTest {
             @Override public Quantity<Length> multiply(Number           ignored) {return null;}
             @Override public Quantity<Length> divide  (Number           ignored) {return null;}
             @Override public Quantity<?>      inverse ()                         {return null;}
+            @Override public Quantity<Length> negate  ()                         {return null;}
             @Override public Quantity<Length> to      (Unit<Length>     ignored) {return null;}
+            @Override public boolean    isEquivalentTo(Quantity<Length> ignored) {return false;}
             @Override public <T extends Quantity<T>> Quantity<T> asType(Class<T> ignored) {return null;}
         };
         final Length c = Quantities.castOrCopy(q);

@@ -22,8 +22,11 @@ import java.text.FieldPosition;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
 import java.lang.reflect.InaccessibleObjectException;
+import java.io.IOException;
 import javax.measure.Quantity;
 import javax.measure.Unit;
+import javax.measure.format.MeasurementParseException;
+import tech.uom.seshat.resources.Errors;
 
 
 /**
@@ -38,7 +41,7 @@ import javax.measure.Unit;
  * @since 1.2
  * @module
  */
-public class QuantityFormat extends Format {
+public class QuantityFormat extends Format implements javax.measure.format.QuantityFormat {
     /**
      * For cross-version compatibility.
      */
@@ -85,8 +88,49 @@ public class QuantityFormat extends Format {
     }
 
     /**
+     * Returns whether this format depends on a {@code Locale} to perform its tasks.
+     * This is {@code true} in this {@code QuantityFormat} implementation.
+     *
+     * @return whether this format depends on the locale, which is true in this implementation.
+     */
+    @Override
+    public boolean isLocaleSensitive() {
+        return true;
+    }
+
+    /**
+     * Formats the specified quantity.
+     * The default implementation delegates to {@link #format(Object, StringBuffer, FieldPosition)}.
+     *
+     * @param  quantity  the quantity to format.
+     * @return the string representation of the given quantity.
+     */
+    @Override
+    public String format(final Quantity<?> quantity) {
+        return format(quantity, new StringBuffer(), null).toString();
+    }
+
+    /**
+     * Formats the specified quantity in the given destination.
+     * The default implementation delegates to {@link #format(Object, StringBuffer, FieldPosition)}.
+     *
+     * @param  quantity    the quantity to format.
+     * @param  toAppendTo  where to format the quantity.
+     * @return the given {@code toAppendTo} argument, for method calls chaining.
+     * @throws IOException if an I/O exception occurred.
+     */
+    @Override
+    public Appendable format(final Quantity<?> quantity, final Appendable toAppendTo) throws IOException {
+        if (toAppendTo instanceof StringBuffer) {
+            return format(quantity, (StringBuffer) toAppendTo, null);
+        } else {
+            return toAppendTo.append(format(quantity, new StringBuffer(), null));
+        }
+    }
+
+    /**
      * Formats the specified quantity in the given buffer.
-     * The given object shall be an {@link Quantity} instance.
+     * The given object shall be a {@link Quantity} instance.
      *
      * @param  quantity    the quantity to format.
      * @param  toAppendTo  where to format the quantity.
@@ -103,20 +147,79 @@ public class QuantityFormat extends Format {
     }
 
     /**
+     * Parses the specified text to produce a {@link Quantity}.
+     *
+     * @param  source  the text to parse.
+     * @return the quantity parsed from the specified text.
+     * @throws MeasurementParseException if the given text can not be parsed.
+     */
+    public Quantity<?> parse(final CharSequence source) throws MeasurementParseException {
+        return parse(source, new ParsePosition(0));
+    }
+
+    /**
+     * Parses a portion of the specified {@code CharSequence} from the specified position to produce a {@link Quantity}.
+     * If parsing succeeds, then the index of the {@code pos} argument is updated to the index after the last character used.
+     *
+     * @param  source  the text, part of which should be parsed.
+     * @param  pos     index and error index information.
+     * @return the quantity parsed from the specified character sub-sequence.
+     * @throws MeasurementParseException if the given text can not be parsed.
+     */
+    @Override
+    public Quantity<?> parse(final CharSequence source, final ParsePosition pos) throws MeasurementParseException {
+        final int start = pos.getIndex();
+        final int shift;
+        final String text;
+        if (start == 0 || source instanceof String) {
+            shift = 0;
+            text  = source.toString();
+        } else {
+            shift = start;
+            text  = source.subSequence(start, source.length()).toString();
+            pos.setIndex(0);
+        }
+        try {
+            final Number value = numberFormat.parse(text, pos);
+            if (value != null) {
+                final Unit<?> unit = unitFormat.parse(text, pos);
+                if (unit != null) {
+                    return Quantities.create(value.doubleValue(), unit);
+                }
+            }
+        } finally {
+            if (shift != 0) {
+                pos.setIndex(pos.getIndex() + shift);
+                final int i = pos.getErrorIndex();
+                if (i >= 0) {
+                    pos.setErrorIndex(i + shift);
+                }
+            }
+        }
+        throw new MeasurementParseException("Can not parse quantity.", source, pos.getErrorIndex());
+    }
+
+    /**
      * Parses text from a string to produce a quantity, or returns {@code null} if the parsing failed.
      *
      * @param  source  the text, part of which should be parsed.
      * @param  pos     index and error index information.
-     * @return a unit parsed from the string, or {@code null} in case of error.
+     * @return a quantity parsed from the string, or {@code null} in case of error.
      */
     @Override
     public Object parseObject(final String source, final ParsePosition pos) {
+        final int start = pos.getIndex();
         final Number value = numberFormat.parse(source, pos);
         if (value != null) {
-            final Unit<?> unit = unitFormat.parse(source, pos);
-            if (unit != null) {
-                return Quantities.create(value.doubleValue(), unit);
+            try {
+                final Unit<?> unit = unitFormat.parse(source, pos);
+                if (unit != null) {
+                    return Quantities.create(value.doubleValue(), unit);
+                }
+            } catch (MeasurementParseException e) {
+                Errors.getLogger().log(System.Logger.Level.DEBUG, e);
             }
+            pos.setIndex(start);        // By `Format.parseObject(…)` method contract.
         }
         return null;
     }

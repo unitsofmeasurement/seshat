@@ -246,7 +246,7 @@ public abstract class IndexedResourceBundle extends ResourceBundle {
                 keyID = getKeyConstants().getKeyValue(key);
             } catch (ReflectiveOperationException e) {
                 e.addSuppressed(exception);
-                System.getLogger("tech.uom.seshat").log(System.Logger.Level.WARNING, e);
+                getLogger().log(System.Logger.Level.WARNING, e);
                 return null;                // This is okay as of 'handleGetObject' contract.
             }
         }
@@ -364,5 +364,14 @@ public abstract class IndexedResourceBundle extends ResourceBundle {
     @Override
     public synchronized String toString() {
         return getClass().getSimpleName() + '[' + getLocale() + ']';
+    }
+
+    /**
+     * Returns the logger where to report non-fatal errors.
+     *
+     * @return the logger for non-fatal errors.
+     */
+    public static System.Logger getLogger() {
+        return System.getLogger("tech.uom.seshat");
     }
 }

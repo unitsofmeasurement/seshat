@@ -19,7 +19,7 @@ import java.util.OptionalInt;
 import javax.measure.Dimension;
 import javax.measure.Unit;
 import javax.measure.UnitConverter;
-import javax.measure.format.ParserException;
+import javax.measure.format.MeasurementParseException;
 import javax.measure.Quantity;
 import javax.measure.quantity.*;
 import tech.uom.seshat.resources.Errors;
@@ -1475,7 +1475,7 @@ public final class Units {
                 return new Number[0];
             }
             if (converter.isLinear()) {
-                final double offset = converter.convert(0);  // Should be zero as per JSR-363 specification, but we are paranoiac.
+                final double offset = converter.convert(0);  // Should be zero as per JSR-385 specification, but we are paranoiac.
                 final double scale  = converter.convert(1) - offset;
                 final Number[] c = new Number[(scale != 1) ? 2 : (offset != 0) ? 1 : 0];
                 switch (c.length) {
@@ -1520,11 +1520,11 @@ public final class Units {
      *
      * @param  uom  the symbol to parse, or {@code null}.
      * @return the parsed symbol, or {@code null} if {@code uom} was null.
-     * @throws ParserException if the given symbol can not be parsed.
+     * @throws MeasurementParseException if the given symbol can not be parsed.
      *
      * @see UnitFormat#parse(CharSequence)
      */
-    public static Unit<?> valueOf(String uom) throws ParserException {
+    public static Unit<?> valueOf(String uom) throws MeasurementParseException {
         return (uom != null) ? UnitFormat.INSTANCE.parse(uom) : null;
     }
 

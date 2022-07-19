@@ -23,14 +23,16 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 import java.util.Locale;
+import java.text.NumberFormat;
 import javax.measure.Unit;
+import javax.measure.Prefix;
 import javax.measure.Dimension;
 import javax.measure.Quantity;
 import javax.measure.UnitConverter;
 import javax.measure.spi.SystemOfUnits;
 import javax.measure.spi.ServiceProvider;
 import org.reflections.Reflections;
-import tec.units.tck.util.ServiceConfiguration;
+import tech.units.tck.util.ServiceConfiguration;
 
 import static org.junit.Assert.*;
 
@@ -39,9 +41,9 @@ import static org.junit.Assert.*;
  * Provides the implementations to be tested by the TCK.
  * The TCK will discover this class using {@link java.util.ServiceLoader}.
  *
- * @version 1.0
+ * @version 1.2
  *
- * @see <a href="https://github.com/unitsofmeasurement/unit-tck/tree/1.0">TCK 1.0</a>
+ * @see <a href="https://github.com/unitsofmeasurement/unit-tck/tree/2.1.1">TCK 2.1.1</a>
  */
 public final class TCK implements ServiceConfiguration {
     /**
@@ -86,6 +88,16 @@ public final class TCK implements ServiceConfiguration {
     public Collection<Class> getUnitClasses() {
         verifyImplementation();
         return Arrays.asList(SystemUnit.class, ConventionalUnit.class);
+    }
+
+    /**
+     * Returns all implementation classes of {@link Prefix}.
+     *
+     * @return {@link Prefix} implementations to be tested.
+     */
+    @Override
+    public Collection<Class> getPrefixClasses() {
+        return Collections.emptyList();
     }
 
     /**
@@ -219,5 +231,20 @@ public final class TCK implements ServiceConfiguration {
         final UnitFormat usingUCUM = new UnitFormat(Locale.US);
         usingUCUM.setStyle(UnitFormat.Style.UCUM);
         return Arrays.asList(usingUCUM, new UnitFormat(Locale.ENGLISH));
+    }
+
+    /**
+     * Returns {@link QuantityFormat} instances to be tested for requirements and recommendations.
+     *
+     * @return quantity formats to be tested.
+     */
+    @Override
+    public Collection<javax.measure.format.QuantityFormat> getQuantityFormats4Test() {
+        verifyImplementation();
+        final UnitFormat usingUCUM = new UnitFormat(Locale.US);
+        usingUCUM.setStyle(UnitFormat.Style.UCUM);
+        return Arrays.asList(
+                new QuantityFormat(NumberFormat.getInstance(Locale.ENGLISH), usingUCUM),
+                new QuantityFormat(Locale.ENGLISH));
     }
 }

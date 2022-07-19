@@ -16,13 +16,14 @@
 
 
 /**
- * Implementation of Units of Measurement API defined by JSR 363.
+ * Implementation of Units of Measurement API defined by JSR 385.
  *
  * @author  Martin Desruisseaux (MPO, IRD, Geomatys)
- * @version 1.0
+ * @version 1.2
+ * @since   1.2
  */
 module tech.uom.seshat {
-    requires unit.api;          // Temporary name, to be renamed after JSR-385 is released.
+    requires transitive java.measure;
 
     exports tech.uom.seshat;
     /*

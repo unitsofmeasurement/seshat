@@ -27,7 +27,7 @@ import tech.uom.seshat.util.StringBuilders;
 /**
  * Conversions between units that can be represented by a linear operation (scale or offset).
  * Note that the "linear" word in this class does not have the same meaning than the same word
- * in the {@link #isLinear()} method inherited from JSR-363.
+ * in the {@link #isLinear()} method inherited from JSR-385.
  *
  * @author  Martin Desruisseaux (Geomatys)
  * @version 1.2
@@ -174,7 +174,7 @@ final class LinearConverter extends AbstractConverter {
 
     /**
      * Indicates if this converter is linear.
-     * JSR-363 defines a converter as linear if:
+     * JSR-385 defines a converter as linear if:
      *
      * <ul>
      *   <li>{@code convert(u + v) == convert(u) + convert(v)}</li>
@@ -336,7 +336,7 @@ final class LinearConverter extends AbstractConverter {
         } else if (converter.isLinear()) {
             /*
              * Fallback for foreigner implementations. Note that 'otherOffset' should be restricted to zero
-             * according JSR-363 definition of 'isLinear()', but let be safe; maybe we are not the only one
+             * according JSR-385 definition of 'isLinear()', but let be safe; maybe we are not the only one
              * to have a different interpretation about the meaning of "linear".
              */
             otherOffset  = converter.convert(0.0);

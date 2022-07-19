@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Locale;
 import javax.measure.Unit;
 import javax.measure.format.UnitFormat;
+import javax.measure.spi.FormatService;
 import javax.measure.spi.ServiceProvider;
 import org.junit.Test;
 
@@ -111,13 +112,14 @@ public final strictfp class UnitServicesTest {
     }
 
     /**
-     * Tests {@link UnitServices#getAvailableFormatNames()}.
+     * Tests {@link UnitServices#getAvailableFormatNames(UnitServices.FormatType)}.
      */
     @Test
     public void testGetAvailableFormatNames() {
         final ServiceProvider provider = ServiceProvider.current();
-        assertEquals(new HashSet<>(Arrays.asList("SYMBOL", "UCUM", "NAME")),
-                provider.getUnitFormatService().getAvailableFormatNames());
+        final FormatService service = provider.getFormatService();
+        final Set<String> formats = service.getAvailableFormatNames(FormatService.FormatType.UNIT_FORMAT);
+        assertEquals(new HashSet<>(Arrays.asList("SYMBOL", "UCUM", "NAME")), formats);
     }
 
     /**
@@ -126,7 +128,7 @@ public final strictfp class UnitServicesTest {
     @Test
     public void testGetUnitFormat() {
         final ServiceProvider provider = ServiceProvider.current();
-        final UnitFormat f = provider.getUnitFormatService().getUnitFormat("name");
+        final UnitFormat f = provider.getFormatService().getUnitFormat("name");
         ((tech.uom.seshat.UnitFormat) f).setLocale(Locale.US);
         assertEquals("CUBIC_METRE", "cubic meter", f.format(Units.CUBIC_METRE));
     }
