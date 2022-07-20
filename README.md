@@ -5,9 +5,9 @@
 [![License](https://img.shields.io/badge/license-Apache2-red.svg)](http://opensource.org/licenses/apache-2.0)
 
 Seshat (from the ancient Egyptian goddess of knowledge, writing and surveying)
-is an implementation of Units of Measurement API defined by JSR 363. Seshat is
+is an implementation of Units of Measurement API defined by JSR 385. Seshat is
 a subset of [Apache Spatial Information System (SIS)](http://sis.apache.org/)
-library keeping only the classes required for JSR 363 implementation.
+library keeping only the classes required for JSR 385 implementation.
 Seshat supports arithmetic operations on units and on quantities.
 The unit (including SI prefix) and the quantity type resulting from
 those arithmetic operations are automatically inferred.
@@ -47,7 +47,7 @@ While uncommon, Seshat accepts fractional powers as in m^⅔.
 Some sentences like _"100 feet"_, _"square metre"_ and _"degree Kelvin"_
 are also recognized at parsing time.
 
-Seshat requires Java 11 and has no dependency other than JSR 363 and `java.base` module.
+Seshat requires Java 11 and has no dependency other than JSR 385 and `java.base` module.
 
 
 ## Maven dependency
@@ -60,7 +60,7 @@ Latest release can be used in a Maven project with following configuration:
     <dependency>
       <groupId>tech.uom</groupId>
       <artifactId>seshat</artifactId>
-      <version>1.1</version>
+      <version>1.2</version>
     </dependency>
   </dependencies>
 </project>
