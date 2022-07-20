@@ -125,6 +125,10 @@
       <version>2.1.1</version>
       <scope>test</scope>
       <exclusions>
+        <exclusion>     <!-- TCK declares an older version. -->
+          <groupId>javax.measure</groupId>
+          <artifactId>unit-api</artifactId>
+        </exclusion>
         <exclusion>     <!-- Avoid possible interference with the implementation under test -->
           <groupId>tech.units</groupId>
           <artifactId>indriya</artifactId>
@@ -140,6 +144,12 @@
       <artifactId>uom-lib-common</artifactId>     <!-- Was a transitive dependency of excluded Indriya. -->
       <version>2.1</version>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>     <!-- TCK declares an older version. -->
+          <groupId>javax.measure</groupId>
+          <artifactId>unit-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 
@@ -158,6 +168,26 @@
        ============================================================== -->
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>enforce</id>
+            <configuration>
+              <rules>
+                <requireJavaVersion>
+                  <version>17</version>     <!-- For avoiding "header used out of sequence: <H4>" error message. -->
+                </requireJavaVersion>
+                <dependencyConvergence/>
+              </rules>
+            </configuration>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <!-- Compile properties files into resources UTF files. -->
         <groupId>org.apache.sis.core</groupId>
