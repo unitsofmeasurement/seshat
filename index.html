@@ -8,17 +8,17 @@
   <body>
     <h1>Seshat</h1>
     <p>
-      Seshat is a Java library implementing the Units of Measurement API defined by <abbr title="Java Specification Request">JSR</abbr>-363.
+      Seshat is a Java library implementing the Units of Measurement API defined by <abbr title="Java Specification Request">JSR</abbr>-385.
       Seshat is a subset of <a href="http://sis.apache.org">Apache Spatial Information System (<abbr>SIS</abbr>)</a> library
-      keeping only the classes required for <abbr>JSR</abbr>-363 implementation.
+      keeping only the classes required for <abbr>JSR</abbr>-385 implementation.
       Seshat supports parsing and formatting of unit symbols,
       together with arithmetic operations on units and on quantities.
-      The <abbr title="Java Archive File">JAR</abbr> file size is 130 kb
-      and the public <abbr title="Application Programming Interface">API</abbr> is made of 5 classes
-      (not counting <abbr>JSR</abbr>-363 interfaces).
+      The <abbr title="Java Archive File">JAR</abbr> file size is 124 kb
+      and the public <abbr title="Application Programming Interface">API</abbr> is made of 6 classes
+      (not counting <abbr>JSR</abbr>-385 interfaces).
     </p>
     <ul>
-      <li><a href="api/index.html">Browse Javadoc online</a>
+      <li><a href="api/tech.uom.seshat/tech/uom/seshat/package-summary.html">Browse Javadoc online</a>
       <li><a href="https://github.com/unitsofmeasurement/seshat">Source code on GitHub</a>
       <li><a href="#maven">Download with Maven</a>
     </ul>
@@ -26,7 +26,7 @@
     <h2>Examples</h2>
     <p>
       A set of predefined units constants is provided in the
-      <a href="api/tech/uom/seshat/Units.html"><code>Units</code></a> class.
+      <a href="api/tech.uom.seshat/tech/uom/seshat/Units.html"><code>Units</code></a> class.
       Using the <code>PASCAL</code> constants, one can easily create a kilopascal unit.
       Note that the "kPa" symbol is inferred automatically:
     </p>
@@ -52,6 +52,19 @@ Power asTypeSafe = (Power) power;                                       // This 
       While uncommon, Seshat accepts fractional powers as in m^⅔.
       Some sentences like "100 feet", "square metre" and "degree Kelvin" are also recognized at parsing time.
     </p>
+
+    <h2 id="limitatiions">Limitations</h2>
+    <p>
+      In Seshat 1.2, the transition from JSR-363 to JSR-385 is not yet completed.
+      The following features are new in JSR-385 and are either not yet implemented
+      or are only partially supported in Seshat:
+    </p>
+    <ul>
+      <li><code>Unit.prefix(Prefix)</code> applies the scale factor but ignores the prefix symbol.
+          Note however that in many cases, Seshat infers the symbol automatically.</li>
+      <li><code>QuantityFactory.create(Number, Unit&lt;Q&gt;, Scale)</code> currently accepts
+          only <code>Scale.ABSOLUTE</code>.</li>
+    </ul>
 
     <h2 id="maven">Download with Maven</h2>
     <p>
