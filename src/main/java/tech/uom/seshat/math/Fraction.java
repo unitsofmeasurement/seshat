@@ -103,10 +103,10 @@ public final class Fraction extends Number implements Comparable<Fraction>, Seri
      * This method fails if any argument value is {@link Long#MIN_VALUE} because that value can not be made positive.
      * However it should never happen. Even in the worst scenario:</p>
      *
-     * <pre>
+     * {@snippet lang="java" :
      *     long n = Math.multiplyFull(Integer.MIN_VALUE, Integer.MAX_VALUE);
      *     n += n;
-     * </pre>
+     * }
      *
      * Above result still slightly smaller in magnitude than {@code Long.MIN_VALUE}.
      */

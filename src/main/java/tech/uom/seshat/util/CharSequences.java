@@ -90,7 +90,9 @@ public final class CharSequences {
      * except that this method works on arbitrary {@link CharSequence} objects instead of
      * {@link String}s only, and that the upper limit can be specified:
      *
-     * <pre>{@code return text.indexOf(part, fromIndex);}</pre>
+     * {@snippet lang="java" :
+     *     return text.indexOf(part, fromIndex);
+     * }
      *
      * There is no restriction on the value of {@code fromIndex}. If negative or greater
      * than {@code toIndex}, then the behavior of this method is as if the search started
@@ -242,7 +244,9 @@ search:     for (; fromIndex <= toIndex; fromIndex++) {
      * except that the {@link CharSequence#subSequence(int, int) subSequence} method is
      * invoked only once instead of two times:</p>
      *
-     * <pre>{@code text = trimWhitespaces(text.subSequence(lower, upper));}</pre>
+     * {@snippet lang="java" :
+     *     text = trimWhitespaces(text.subSequence(lower, upper));
+     * }
      *
      * @param  text   the text from which to remove leading and trailing white spaces.
      * @param  lower  index of the first character to consider for inclusion in the sub-sequence.
@@ -287,7 +291,9 @@ search:     for (; fromIndex <= toIndex; fromIndex++) {
      * except that this method works on arbitrary {@link CharSequence} objects instead of
      * {@link String}s only:
      *
-     * <pre>{@code return text.regionMatches(ignoreCase, offset, part, 0, part.length());}</pre>
+     * {@snippet lang="java" :
+     *     return text.regionMatches(ignoreCase, offset, part, 0, part.length());
+     * }
      *
      * This method does not thrown {@code IndexOutOfBoundsException}. Instead if
      * {@code fromIndex < 0} or {@code fromIndex + part.length() > text.length()},

@@ -40,7 +40,7 @@ import static tech.uom.seshat.util.WeakEntry.*;
  * <p>This class is convenient for avoiding the creation of duplicated elements, as in the
  * example below:</p>
  *
- * <pre>{@code
+ * {@snippet lang="java" :
  *     K key = ...
  *     V value;
  *     synchronized (map) {
@@ -50,7 +50,7 @@ import static tech.uom.seshat.util.WeakEntry.*;
  *             map.put(key, value);
  *         }
  *     }
- * }</pre>
+ * }
  *
  * In the above example, the calculation of a new value needs to be fast because it is performed inside a synchronized
  * statement blocking all other access to the map. This is okay if that particular {@code WeakValueHashMap} instance

@@ -289,11 +289,11 @@ public abstract class IndexedResourceBundle extends ResourceBundle {
      * formatted using {@link MessageFormat}. Calling this method is approximately equivalent to
      * calling:
      *
-     * <pre>{@code
+     * {@snippet lang="java" :
      *     String pattern = getString(key);
      *     Format f = new MessageFormat(pattern);
      *     return f.format(arg0);
-     * }</pre>
+     * }
      *
      * If {@code arg0} is not already an array, it will be placed into an array of length 1. Using
      * {@link MessageFormat}, all occurrences of "{0}", "{1}", "{2}" in the resource string will be

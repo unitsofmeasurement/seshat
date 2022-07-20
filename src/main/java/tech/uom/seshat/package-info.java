@@ -52,39 +52,43 @@
  * </ul>
  *
  * <h2>Arithmetic operations</h2>
- * <p>Seshat supports arithmetic operations on units and on quantities.
+ * Seshat supports arithmetic operations on units and on quantities.
  * The unit (including SI prefix) and the quantity type resulting from
  * those arithmetic operations are automatically inferred.
- * For example this line of code:</p>
+ * For example this line of code:
  *
- * <blockquote><pre>{@code System.out.println( Units.PASCAL.multiply(1000) );}</pre></blockquote>
+ * {@snippet lang="java" :
+ *     System.out.println( Units.PASCAL.multiply(1000) );
+ * }
  *
- * <p>prints <cite>"kPa"</cite>, i.e. the kilo prefix has been automatically applied
+ * prints <cite>"kPa"</cite>, i.e. the kilo prefix has been automatically applied
  * (SI prefixes are applied on SI units only, not on other systems).
- * Other example:</p>
+ * Other example:
  *
- * <blockquote><pre>{@code Force  f = Quantities.create(4, Units.NEWTON);
- *Length d = Quantities.create(6, Units.MILLIMETRE);
- *Time   t = Quantities.create(3, Units.SECOND);
- *Quantity<?> e = f.multiply(d).divide(t);
- *System.out.println(e);
- *System.out.println("Is instance of Power: " + (e instanceof Power));}</pre></blockquote>
+ * {@snippet lang="java" :
+ *     Force  f = Quantities.create(4, Units.NEWTON);
+ *     Length d = Quantities.create(6, Units.MILLIMETRE);
+ *     Time   t = Quantities.create(3, Units.SECOND);
+ *     Quantity<?> e = f.multiply(d).divide(t);
+ *     System.out.println(e);
+ *     System.out.println("Is instance of Power: " + (e instanceof Power));
+ * }
  *
- * <p>prints {@code "8 mW"} and {@code "Is instance of Power: true"},
+ * prints {@code "8 mW"} and {@code "Is instance of Power: true"},
  * i.e. Seshat detects that the result of N⋅m∕s is Watt,
  * inherits the milli prefix from millimetre and creates an instance
- * of {@link javax.measure.quantity.Power}, not just {@code Quantity<Power>} (the generic parent).</p>
+ * of {@link javax.measure.quantity.Power}, not just {@code Quantity<Power>} (the generic parent).
  *
  * <h2>Parsing and formatting</h2>
- * <p>{@linkplain tech.uom.seshat.Units#valueOf(String) Parsing} and formatting use Unicode symbols by default, as in "µg/m²".
+ * {@linkplain tech.uom.seshat.Units#valueOf(String) Parsing} and formatting use Unicode symbols by default, as in "µg/m²".
  * Parenthesis are recognized at parsing time and used for denominators at formatting time, as in "kg/(m²⋅s)".
  * While uncommon, Seshat accepts fractional powers as in "m^⅔".
  * Some sentences like <cite>"100 feet"</cite>, <cite>"square metre"</cite> and <cite>"degree Kelvin"</cite>
- * are also recognized at parsing time.</p>
+ * are also recognized at parsing time.
  *
  * <h2>Source</h2>
- * <p>Seshat is a subset of <a href="http://sis.apache.org/">Apache Spatial Information System (SIS)</a>
- * library keeping only the classes required for JSR 385 implementation.</p>
+ * Seshat is a subset of <a href="http://sis.apache.org/">Apache Spatial Information System (SIS)</a>
+ * library keeping only the classes required for JSR 385 implementation.
  *
  * @author  Martin Desruisseaux (MPO, IRD, Geomatys)
  * @version 1.2

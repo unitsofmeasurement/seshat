@@ -330,7 +330,9 @@ abstract class AbstractUnit<Q extends Quantity<Q>> implements Unit<Q>, Serializa
      * Indicates if this unit is compatible with the given unit.
      * This implementation delegates to:
      *
-     * <pre>{@code return getDimension().equals(that.getDimension());}</pre>
+     * {@snippet lang="java" :
+     *     return getDimension().equals(that.getDimension());
+     * }
      *
      * @param  that the other unit to compare for compatibility.
      * @return {@code true} if the given unit is compatible with this unit.

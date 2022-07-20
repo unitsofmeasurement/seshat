@@ -215,7 +215,9 @@ testNextNumber:         while (true) {      // Simulate a "goto" statement (usua
      * Converts a power of 2 to a power of 10, rounded toward negative infinity.
      * This method is equivalent to the following code, but using only integer arithmetic:
      *
-     * <pre>{@code return (int) Math.floor(exp2 * LOG10_2)}</pre>
+     * {@snippet lang="java" :
+     *     return (int) Math.floor(exp2 * LOG10_2);
+     * }
      *
      * This method is valid only for arguments in the [-2620 … 2620] range, which is more than enough
      * for the range of {@code double} exponents. We do not put this method in public API because it
@@ -251,7 +253,9 @@ testNextNumber:         while (true) {      // Simulate a "goto" statement (usua
      * <var>n</var> is {@link Math#getExponent(float)} - {@value #SIGNIFICAND_SIZE_OF_FLOAT}.
      * For any non-NaN positive values (including infinity), the following relationship holds:
      *
-     * <pre>{@code assert Math.scalb(getSignificand(value), Math.getExponent(value) - SIGNIFICAND_SIZE_OF_FLOAT) == value;}</pre>
+     * {@snippet lang="java" :
+     *     assert Math.scalb(getSignificand(value), Math.getExponent(value) - SIGNIFICAND_SIZE_OF_FLOAT) == value;
+     * }
      *
      * For negative values, this method behaves as if the value was positive.
      *
@@ -288,7 +292,9 @@ testNextNumber:         while (true) {      // Simulate a "goto" statement (usua
      * This method is equivalent to the following code, except that it is potentially faster since the
      * actual implementation avoid to format and parse the value:
      *
-     * <pre>{@code return Double.parseDouble(Float.toString(value));}</pre>
+     * {@snippet lang="java" :
+     *     return Double.parseDouble(Float.toString(value));
+     * }
      *
      * @param  value  the {@code float} value to convert as a {@code double}.
      * @return the given value as a {@code double} with the extra decimal fraction digits set to zero.
