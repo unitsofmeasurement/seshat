@@ -270,13 +270,14 @@
           <author>false</author>
           <version>false</version>
           <noqualifier>all</noqualifier>
+          <linksource>false</linksource>
+          <verbose>false</verbose>
           <quiet>true</quiet>
           <keywords>true</keywords>
           <breakiterator>true</breakiterator>
           <validateLinks>true</validateLinks>
           <failOnError>true</failOnError>
           <additionalOptions>--add-stylesheet "${basedir}/src/main/javadoc/sis.css</additionalOptions>
-          <verbose>false</verbose>
           <links>
             <link>https://unitsofmeasurement.github.io/unit-api/site/apidocs</link>
           </links>
