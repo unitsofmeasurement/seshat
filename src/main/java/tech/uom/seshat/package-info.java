@@ -51,7 +51,7 @@
  *      ({@link tech.uom.seshat.UnitFormat}).</li>
  * </ul>
  *
- * <div class="section">Arithmetic operations</div>
+ * <h2>Arithmetic operations</h2>
  * <p>Seshat supports arithmetic operations on units and on quantities.
  * The unit (including SI prefix) and the quantity type resulting from
  * those arithmetic operations are automatically inferred.
@@ -75,14 +75,14 @@
  * inherits the milli prefix from millimetre and creates an instance
  * of {@link javax.measure.quantity.Power}, not just {@code Quantity<Power>} (the generic parent).</p>
  *
- * <div class="section">Parsing and formatting</div>
+ * <h2>Parsing and formatting</h2>
  * <p>{@linkplain tech.uom.seshat.Units#valueOf(String) Parsing} and formatting use Unicode symbols by default, as in "µg/m²".
  * Parenthesis are recognized at parsing time and used for denominators at formatting time, as in "kg/(m²⋅s)".
  * While uncommon, Seshat accepts fractional powers as in "m^⅔".
  * Some sentences like <cite>"100 feet"</cite>, <cite>"square metre"</cite> and <cite>"degree Kelvin"</cite>
  * are also recognized at parsing time.</p>
  *
- * <div class="section">Source</div>
+ * <h2>Source</h2>
  * <p>Seshat is a subset of <a href="http://sis.apache.org/">Apache Spatial Information System (SIS)</a>
  * library keeping only the classes required for JSR 385 implementation.</p>
  *

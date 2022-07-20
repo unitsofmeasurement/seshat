@@ -60,6 +60,28 @@ table.sis tr td {
   vertical-align: text-top;
 }
 
+/*
+ * Optionally add a line or column separator.
+ */
+table.sis tr th.hsep,
+table.sis tr td.hsep {
+  border-top-width: 1px;
+  border-top-style: solid;
+  border-top-color: darkgray;
+}
+
+table.sis tr th.sep {
+  border-left-width: 1px;
+  border-left-style: solid;
+  border-left-color: #819AB2;
+}
+
+table.sis tr td.sep {
+  border-left-width: 1px;
+  border-left-style: solid;
+  border-left-color: #AAADB2;
+}
+
 
 /*
  * Definition of <table class="compact">
@@ -80,7 +102,6 @@ table.compact {
   border-spacing: 0;
   padding:        0;
   line-height:    1em;
-  text-align:     left;
 }
 
 table.compact tr td {
@@ -95,29 +116,22 @@ table.compact tr td {
  * Note or examples.
  */
 div.note {
-  color:     #353833;
-  font-size:   small;
-  margin-left:  40px;
-  margin-right: 40px;
-  margin-top:    9px;
-  margin-bottom: 9px;
+  color:      #353833;
+  margin-left:   40px;
+  margin-right:  40px;
+  margin-top:     9px;
+  margin-bottom:  9px;
 }
 
-
-/*
- * Formatting of section headers
- */
-div.section {
-  font-size:    15px;
-  font-weight:  bold;
-  margin-top:   21px;
-  margin-bottom: 3px;
+div.note:before {
+  color:     green;
+  position:  relative;
+  float:     left;
+  left:      -28px;
+  width:     0;
+  content:   "🛈";
 }
 
-div.description div.section {
-  font-size:  18px;
-  margin-top: 30px;
-}
 
 /*
  * Bullet and ordered lists. Put some space before and after the list.
@@ -126,7 +140,6 @@ div.block ul,
 div.block ol {
   margin-top:    9px;
   margin-bottom: 9px;
-  text-align:   left;
 }
 
 div.block ul > li,
@@ -142,7 +155,6 @@ div.block ul > li > ul,
 div.block ol > li > ul {
   margin-top:    3px;
   margin-bottom: 6px;
-  text-align:   left;
 }
 
 div.block ul > li > ul > li,
@@ -192,42 +204,4 @@ td > pre.code-sample {
  */
 span.deprecated {
   text-decoration: line-through;
-}
-
-:not(td) > div.block {
-  text-align: justify;
-}
-
-
-
-/* ----------------------------------------------------------------------
- * End of extension part. The remaining of this file overwrite some
- * aspects of the Javadoc default stylesheet.
- */
-body, div.block {
-  color:       black;
-  font-family: Helvetica, Arial, sans-serif;
-}
-
-.contentContainer .description dl dd, .contentContainer .details dl dd, .serializedFormContainer dl dd {
-  color:       #353833;
-  font-family: Helvetica, Arial, sans-serif;
-  margin-left: 40px;
-}
-
-pre, div.block pre, code, tt, dt code, table tr td dt code {
-  font-family: Andale Mono, Courier New, monospace;
-}
-
-div.block pre, code, tt, dt code, table tr td dt code {
-  line-height: 1em;
-  font-size:   1em;
-}
-
-/* Appareance of links in the "Description" column of class and package summaries.
- * JDK style uses bold characters for the left column, which contains the class and
- * package names. But we do not want those bold characters to apply to the descriptions.
- */
-td.colLast div.block a:link {
-  font-weight: normal;
 }
