@@ -27,9 +27,9 @@ module tech.uom.seshat {
 
     exports tech.uom.seshat;
     /*
-     * Do not export tech.uom.seshat.math and tech.uom.seshat.util packages; it is not the
-     * purpose of Seshat to publish additional collection implementations. Those classes are
-     * public in Apache SIS if needed.
+     * Do not export the `tech.uom.seshat.math` and `tech.uom.seshat.util` packages.
+     * It is not a Seshat purpose to publish additional collection implementations.
+     * Those classes are public in the Apache SIS library if needed.
      */
 
     provides javax.measure.spi.ServiceProvider with tech.uom.seshat.UnitServices;
