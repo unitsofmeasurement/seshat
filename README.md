@@ -60,7 +60,7 @@ Latest release can be used in a Maven project with following configuration:
     <dependency>
       <groupId>tech.uom</groupId>
       <artifactId>seshat</artifactId>
-      <version>1.2</version>
+      <version>1.3</version>
     </dependency>
   </dependencies>
 </project>
