@@ -63,7 +63,7 @@ public final class MathFunctions {
 
     /**
      * The highest prime number supported by the {@link #nextPrimeNumber(int)} method.
-     * In the current implementation, this value is {@value}. However this limit may
+     * In the current implementation, this value is {@value}. However, this limit may
      * change in any future Seshat version.
      *
      * <div class="note"><b>Note:</b>
@@ -217,7 +217,7 @@ testNextNumber:         while (true) {      // Simulate a "goto" statement (usua
      *
      * {@snippet lang="java" :
      *     return (int) Math.floor(exp2 * LOG10_2);
-     * }
+     *     }
      *
      * This method is valid only for arguments in the [-2620 … 2620] range, which is more than enough
      * for the range of {@code double} exponents. We do not put this method in public API because it
@@ -255,7 +255,7 @@ testNextNumber:         while (true) {      // Simulate a "goto" statement (usua
      *
      * {@snippet lang="java" :
      *     assert Math.scalb(getSignificand(value), Math.getExponent(value) - SIGNIFICAND_SIZE_OF_FLOAT) == value;
-     * }
+     *     }
      *
      * For negative values, this method behaves as if the value was positive.
      *
@@ -278,12 +278,12 @@ testNextNumber:         while (true) {      // Simulate a "goto" statement (usua
      * Converts the given {@code float} value to a {@code double} with the extra <em>decimal</em> fraction digits
      * set to zero. This is different than the standard cast in the Java language, which set the extra <em>binary</em>
      * fraction digits to zero.
-     * For example {@code (double) 0.1f} gives 0.10000000149011612 while {@code floatToDouble(0.1f)} returns 0.1.
+     * For example, {@code (double) 0.1f} gives 0.10000000149011612 while {@code floatToDouble(0.1f)} returns 0.1.
      *
      * <div class="note"><b>Note:</b>
      * This method is <strong>not</strong> more accurate than the standard Java cast – it should be used only when
      * the base 10 representation of the given value may be of special interest. If the value come from a call to
-     * {@link Float#parseFloat(String)} (directly or indirectly), and if that call can not be replaced by a call to
+     * {@link Float#parseFloat(String)} (directly or indirectly), and if that call cannot be replaced by a call to
      * {@link Double#parseDouble(String)} (for example because the original {@code String} is not available anymore),
      * then this method may be useful if one consider the {@code String} representation in base 10 as definitive.
      * But if the value come from an instrument measurement or a calculation, then there is probably no reason to use
@@ -293,8 +293,8 @@ testNextNumber:         while (true) {      // Simulate a "goto" statement (usua
      * actual implementation avoid to format and parse the value:
      *
      * {@snippet lang="java" :
-     *     return Double.parseDouble(Float.toString(value));
-     * }
+     *   return Double.parseDouble(Float.toString(value));
+     *   }
      *
      * @param  value  the {@code float} value to convert as a {@code double}.
      * @return the given value as a {@code double} with the extra decimal fraction digits set to zero.
@@ -318,7 +318,7 @@ testNextNumber:         while (true) {      // Simulate a "goto" statement (usua
          *
          * where e₁₀ is the smallest exponent which allow to represent the value without precision lost when (m × c)
          * is rounded to an integer. Because the number of significant digits in base 2 does not correspond to an
-         * integer number of significand digits in base 10, we have slightly more precision than what the 'float'
+         * integer number of significand digits in base 10, we have slightly more precision than what the `float`
          * value had: we have something between 0 and 1 extraneous digits.
          *
          * Note: the conversation factor c is also equals to 1 ULP converted to the units of (m × c).

@@ -20,7 +20,7 @@ package tech.uom.seshat.util;
  * Static methods working on {@code char} values, and some character constants.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.0
+ * @version 1.3
  */
 public final class Characters {
     /**
@@ -33,7 +33,9 @@ public final class Characters {
      * Determines whether the given character is a superscript. Most (but not all) superscripts
      * have a Unicode value in the [2070 … 207F] range. Superscripts are the following symbols:
      *
-     * <pre>{@code ⁰ ¹ ² ³ ⁴ ⁵ ⁶ ⁷ ⁸ ⁹ ⁺ ⁻ ⁼ ⁽ ⁾ ⁿ}</pre>
+     * <blockquote>
+     *   ⁰ ¹ ² ³ ⁴ ⁵ ⁶ ⁷ ⁸ ⁹ ⁺ ⁻ ⁼ ⁽ ⁾ ⁿ
+     * </blockquote>
      *
      * @param  c  the character to test.
      * @return {@code true} if the given character is a superscript.
@@ -54,7 +56,9 @@ public final class Characters {
      * Determines whether the given character is a subscript. All subscripts have
      * a Unicode value in the [2080 … 208E]. Subscripts are the following symbols:
      *
-     * <pre>{@code text ₀ ₁ ₂ ₃ ₄ ₅ ₆ ₇ ₈ ₉ ₊ ₋ ₌ ₍ ₎}</pre>
+     * <blockquote>
+     *   ₀ ₁ ₂ ₃ ₄ ₅ ₆ ₇ ₈ ₉ ₊ ₋ ₌ ₍ ₎
+     * </blockquote>
      *
      * @param  c  the character to test.
      * @return {@code true} if the given character is a subscript.
@@ -67,10 +71,12 @@ public final class Characters {
      * Converts the given character argument to superscript.
      * Only the following characters can be converted (other characters are left unchanged):
      *
-     * <pre>{@code 0 1 2 3 4 5 6 7 8 9 + - = ( ) n}</pre>
+     * <blockquote>
+     *     0 1 2 3 4 5 6 7 8 9 + - = ( ) n
+     * </blockquote>
      *
      * @param  c  the character to convert.
-     * @return the given character as a superscript, or {@code c} if the given character can not be converted.
+     * @return the given character as a superscript, or {@code c} if the given character cannot be converted.
      */
     public static char toSuperScript(char c) {
         switch (c) {
@@ -91,6 +97,18 @@ public final class Characters {
             }
         }
         return c;
+    }
+
+    /**
+     * Converts the given character argument to normal script.
+     *
+     * @param  c  the character to convert.
+     * @return the given character as a normal script, or {@code c} if the
+     *         given character was not a superscript or a subscript.
+     */
+    public static char toNormalScript(char c) {
+        // Cast is safe because all return values are in the Basic Multilingual Plane (BMP).
+        return (char) toNormalScript((int) c);
     }
 
     /**

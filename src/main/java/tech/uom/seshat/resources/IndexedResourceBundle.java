@@ -67,7 +67,7 @@ public abstract class IndexedResourceBundle extends ResourceBundle {
     static final int FIRST = 1;
 
     /**
-     * The array of resources. Keys are an array index plus {@value #FIRST}. For example the value for key "14" is
+     * The array of resources. Keys are an array index plus {@value #FIRST}. For example, the value for key "14" is
      * {@code values[13]}. This array will be loaded only when first needed. We should not load it at construction
      * time, because some {@code ResourceBundle} objects will never ask for values.  This is particularly the case
      * for parent resources of {@code Resources_fr_CA}, {@code Resources_en}, {@code Resources_de}, etc. which will
@@ -104,7 +104,7 @@ public abstract class IndexedResourceBundle extends ResourceBundle {
      * @param  base     the resource bundle class.
      * @param  locale   the locale, or {@code null} for the default locale.
      * @return resources in the given locale.
-     * @throws MissingResourceException if resources can't be found.
+     * @throws MissingResourceException if resources cannot be found.
      *
      * @see Errors#getResources(Locale)
      */
@@ -293,7 +293,7 @@ public abstract class IndexedResourceBundle extends ResourceBundle {
      *     String pattern = getString(key);
      *     Format f = new MessageFormat(pattern);
      *     return f.format(arg0);
-     * }
+     *     }
      *
      * If {@code arg0} is not already an array, it will be placed into an array of length 1. Using
      * {@link MessageFormat}, all occurrences of "{0}", "{1}", "{2}" in the resource string will be

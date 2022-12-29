@@ -29,8 +29,6 @@ import tech.uom.seshat.math.MathFunctions;
  * @version 1.0
  *
  * @param <E>  the type of elements in the collection.
- *
- * @since 1.0
  */
 abstract class WeakEntry<E> extends WeakReference<E> {
     /**
@@ -114,7 +112,7 @@ abstract class WeakEntry<E> extends WeakReference<E> {
                 } else {
                     table[removeAt] = e.next;
                 }
-                // We can not continue the loop pass that point, since `e` is no longer valid.
+                // We cannot continue the loop pass that point, since `e` is no longer valid.
                 return true;
             }
             prev = e;

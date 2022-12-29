@@ -47,7 +47,7 @@ import static tech.uom.seshat.util.CharSequences.*;
  */
 public final class DefinitionURI {
     /**
-     * The URN separator.
+     * The path separator in URN.
      */
     public static final char SEPARATOR = ':';
 

@@ -24,9 +24,11 @@ import javax.measure.UnitConverter;
  * instead of using the more generic {@link LinearConverter} class because we want to avoid performing
  * any arithmetic operation in the {@link #convert(double)} method, in order to preserve negative zero:
  *
- * <pre>
- *     convert(-0d) ≡ -0d
- * </pre>
+ * <pre class="math">convert(-0d) ≡ -0d</pre>
+ *
+ * When the value is used in a map projection parameter, its sign can have implications in the chain of
+ * concatenated transforms. The final result is numerically equivalent, but intermediate steps may differ
+ * depending on the parameter sign.
  *
  * @author  Martin Desruisseaux (Geomatys)
  * @version 1.0
@@ -64,8 +66,7 @@ final class IdentityConverter extends AbstractConverter {
      */
     @Override
     public Number convert(Number value) {
-        Objects.requireNonNull(value);
-        return value;
+        return Objects.requireNonNull(value);
     }
 
     /**

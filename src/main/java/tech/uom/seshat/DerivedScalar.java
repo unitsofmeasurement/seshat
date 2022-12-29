@@ -26,7 +26,7 @@ import java.util.Objects;
 
 /**
  * A quantity related to a scalar by an arbitrary (not necessarily linear) conversion.
- * For example a temperature in Celsius degrees is related to a temperature in Kelvin
+ * For example, a temperature in Celsius degrees is related to a temperature in Kelvin
  * by applying an offset.
  *
  * <p>The {@link Scalar} parent class is restricted to cases where the relationship with system unit
@@ -36,7 +36,7 @@ import java.util.Objects;
  * @author  Martin Desruisseaux (Geomatys)
  * @version 1.1
  *
- * @param <Q>  the concrete subtype.
+ * @param <Q>  the type of quantity implemented by this scalar.
  *
  * @since 1.0
  */
@@ -58,11 +58,13 @@ class DerivedScalar<Q extends Quantity<Q>> extends Scalar<Q> {
      * and its system unit (stored in super-class) is something more complex than a scale
      * factor, otherwise we would not need this {@code DerivedScalar}.
      */
+    @SuppressWarnings("serial")         // Not statically typed as Serializable.
     private final Unit<Q> derivedUnit;
 
     /**
      * Converter from the system unit to the unit of this quantity.
      */
+    @SuppressWarnings("serial")         // Not statically typed as Serializable.
     private final UnitConverter fromSystem;
 
     /**
@@ -98,7 +100,7 @@ class DerivedScalar<Q extends Quantity<Q>> extends Scalar<Q> {
      * {@snippet lang="java" :
      *     assert newUnit == getSystemUnit() : newUnit;
      *     return new MyDerivedScalar(this, newValue);
-     * }
+     *     }
      */
     @Override
     Quantity<Q> create(double newValue, Unit<Q> newUnit) {
@@ -158,7 +160,7 @@ class DerivedScalar<Q extends Quantity<Q>> extends Scalar<Q> {
         /*
          * Do not invoke `this.create(double, Unit)` because the contract in this subclass
          * restricts the above method to cases where the given unit is the system unit.
-         * Furthermore we need to let `Quantities.create(…)` re-evaluate whether we need
+         * Furthermore, we need to let `Quantities.create(…)` re-evaluate whether we need
          * a `DerivedScalar` instance or whether `Scalar` would be sufficient.
          */
         return Quantities.create(derivedUnit.getConverterTo(newUnit).convert(derivedValue), newUnit);
@@ -195,6 +197,8 @@ class DerivedScalar<Q extends Quantity<Q>> extends Scalar<Q> {
     /**
      * Fallback used when no {@link DerivedScalar} implementation is available for a given quantity type.
      * This is basically a copy of {@link ScalarFallback} implementation adapted to {@code DerivedScalar}.
+     *
+     * @param <Q>  the type of quantity implemented by this scalar.
      */
     @SuppressWarnings("serial")
     static final class Fallback<Q extends Quantity<Q>> extends DerivedScalar<Q> implements InvocationHandler {

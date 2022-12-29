@@ -15,7 +15,6 @@
  */
 package tech.uom.seshat;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
 import javax.measure.Unit;
@@ -134,7 +133,7 @@ public final strictfp class UnitDimensionTest {
         assertNull("LENGTH",        LENGTH       .getBaseDimensions());     // Null value as per JSR-385 specification.
         assertNull("TIME",          TIME         .getBaseDimensions());
         assertTrue("DIMENSIONLESS", DIMENSIONLESS.getBaseDimensions().isEmpty());
-        assertEquals(Collections.singletonMap(LENGTH, 3), VOLUME.getBaseDimensions());
+        assertEquals(Map.of(LENGTH, 3), VOLUME.getBaseDimensions());
 
         final Map<Dimension,Integer> expected = new HashMap<>(4);
         assertNull(expected.put(MASS,    1));

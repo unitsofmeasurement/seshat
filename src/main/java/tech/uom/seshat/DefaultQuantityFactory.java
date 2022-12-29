@@ -16,8 +16,8 @@
 package tech.uom.seshat;
 
 import java.util.Objects;
-import javax.measure.Quantity;
 import javax.measure.Unit;
+import javax.measure.Quantity;
 import javax.measure.spi.QuantityFactory;
 
 

@@ -1194,8 +1194,8 @@ public final class Units {
      * The only exception is for creating the {@link #DECIBEL} unit base on the bel conventional unit.</p>
      *
      * <p>If the {@code target} unit holds a list of {@linkplain SystemUnit#related() related units}
-     * (i.e. conventional units that can not be computed easily by appending a SI prefix), then the new
-     * conventional unit is added to that list of related units. For example "foot" is related to "metre"
+     * (i.e. conventional units that cannot be computed easily by appending a SI prefix), then the new
+     * conventional unit is added to that list of related units. For example, "foot" is related to "metre"
      * and "degree Celsius" is related to "Kelvin", but "kilometre" is not recorded as related to "metre"
      * because this relationship can be inferred automatically without the need of a {@code related} table.
      * The unrecorded units are all SI units related to {@code target} by a scale factor without offset.</p>
@@ -1214,7 +1214,7 @@ public final class Units {
 
     /**
      * Returns the system unit for the given dimension, or {@code null} if none.
-     * Note that this method can not distinguish the different kinds of dimensionless units.
+     * Note that this method cannot distinguish the different kinds of dimensionless units.
      * If the symbol or the quantity type is known, use {@link #get(String)} or {@link #get(Class)} instead.
      *
      * <p><b>Implementation note:</b> this method must be defined in this {@code Units} class
@@ -1238,7 +1238,7 @@ public final class Units {
     /**
      * Returns the system unit for the given symbol, or {@code null} if none.
      * This method does not perform any parsing (prefix, exponents, <i>etc</i>).
-     * It is only for getting one of the pre-defined constants, for example after deserialization.
+     * It is only for getting one of the predefined constants, for example after deserialization.
      *
      * <p><b>Implementation note:</b> this method must be defined in this {@code Units} class
      * in order to force a class initialization before use.</p>
@@ -1290,7 +1290,7 @@ public final class Units {
     /**
      * Returns {@code true} if the given unit is a pressure unit.
      * Pressure units are convertible to {@link #PASCAL}.
-     * Those units are sometime used instead of linear units for altitude measurements.
+     * Those units are sometimes used instead of linear units for altitude measurements.
      *
      * @param  unit  the unit to check (may be {@code null}).
      * @return {@code true} if the given unit is non-null and a pressure unit.
@@ -1399,7 +1399,7 @@ public final class Units {
     }
 
     /**
-     * Multiplies the given unit by the given ratio. For example multiplying {@link #CENTIMETRE} by 254/100 gives
+     * Multiplies the given unit by the given ratio. For example, multiplying {@link #CENTIMETRE} by 254/100 gives
      * {@link #INCH}. Invoking this method is equivalent to invoking <code>{@linkplain Unit#multiply(double)
      * Unit.multiply}(numerator / denominator)</code> except that the use of a ration of integer values help
      * Seshat to improve accuracy when more than one arithmetic operation are chained.
@@ -1424,13 +1424,13 @@ public final class Units {
      * must be multiplied by 1000 in order to give the equivalent measurement in the "standard" units
      * (here {@link #METRE}).</div>
      *
-     * If the given unit is {@code null} or if the conversion to the "standard" unit can not be expressed
+     * If the given unit is {@code null} or if the conversion to the "standard" unit cannot be expressed
      * by a single multiplication factor, then this method returns {@link Double#NaN}.
      *
      * @param  <Q>   the quantity measured by the unit, or {@code null}.
      * @param  unit  the unit for which we want the multiplication factor to standard unit, or {@code null}.
      * @return the factor by which to multiply a measurement in the given unit in order to get an equivalent
-     *         measurement in the standard unit, or NaN if the conversion can not be expressed by a scale factor.
+     *         measurement in the standard unit, or NaN if the conversion cannot be expressed by a scale factor.
      */
     public static <Q extends Quantity<Q>> double toStandardUnit(final Unit<Q> unit) {
         return AbstractConverter.scale(unit == null ? null : unit.getConverterTo(unit.getSystemUnit()));
@@ -1459,11 +1459,11 @@ public final class Units {
      *       length 2 containing the offset and scale factor, in that order.</li>
      * </ul>
      *
-     * This method returns {@code null} if it can not get the polynomial equation coefficients from the given converter.
+     * This method returns {@code null} if it cannot get the polynomial equation coefficients from the given converter.
      *
      * @param  converter  the converter from which to get the coefficients of the polynomial equation, or {@code null}.
      * @return the polynomial equation coefficients (may be any length, including zero), or {@code null} if the given
-     *         converter is {@code null} or if this method can not get the coefficients.
+     *         converter is {@code null} or if this method cannot get the coefficients.
      */
     @SuppressWarnings("fallthrough")
     public static Number[] coefficients(final UnitConverter converter) {
@@ -1491,7 +1491,7 @@ public final class Units {
 
     /**
      * Returns the derivative of the given converter at the given value,
-     * or {@code NaN} if this method can not compute it.
+     * or {@code NaN} if this method cannot compute it.
      *
      * @param  converter  the converter for which we want the derivative at a given point, or {@code null}.
      * @param  value      the point at which to compute the derivative.
@@ -1520,7 +1520,7 @@ public final class Units {
      *
      * @param  uom  the symbol to parse, or {@code null}.
      * @return the parsed symbol, or {@code null} if {@code uom} was null.
-     * @throws MeasurementParseException if the given symbol can not be parsed.
+     * @throws MeasurementParseException if the given symbol cannot be parsed.
      *
      * @see UnitFormat#parse(CharSequence)
      */
@@ -1617,7 +1617,7 @@ public final class Units {
      * Returns the EPSG code of the given units, or empty if unknown.
      * This method is the converse of {@link #valueOfEPSG(int)}.
      *
-     * @param  unit  the unit for which to get the EPSG code.
+     * @param  unit   the unit for which to get the EPSG code.
      * @return the EPSG code of the given units, or empty if unknown.
      *
      * @since 1.1

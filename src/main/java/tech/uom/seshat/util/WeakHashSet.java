@@ -52,8 +52,6 @@ import static tech.uom.seshat.util.WeakEntry.*;
  * @version 1.0
  *
  * @param <E>  the type of elements in the set.
- *
- * @since 1.0
  */
 public final class WeakHashSet<E> extends AbstractSet<E> {
     /**
@@ -234,7 +232,7 @@ public final class WeakHashSet<E> extends AbstractSet<E> {
      *         }
      *     }
      *     return element;
-     * }
+     *     }
      *
      * @param  <T>      the type of the element to get. Can be {@code null}.
      * @param  element  the element to get or to add in the set if not already presents,

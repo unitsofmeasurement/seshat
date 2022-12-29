@@ -17,7 +17,6 @@ package tech.uom.seshat;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Collections;
 import java.io.Serializable;
 import javax.measure.UnitConverter;
 import tech.uom.seshat.math.MathFunctions;
@@ -108,8 +107,10 @@ abstract class AbstractConverter implements UnitConverter, Serializable {
      */
     static double scale(final UnitConverter converter) {
         if (converter != null && converter.isLinear() && converter.convert(0) == 0) {
-            // Above check for converter(0) is a paranoiac check since
-            // JSR-385 said that a "linear" converter has no offset.
+            /*
+             * Above check for `converter(0)` is a paranoiac check because
+             * JSR-385 said that a "linear" converter has no offset.
+             */
             return converter.convert(1);
         }
         return Double.NaN;
@@ -153,6 +154,6 @@ abstract class AbstractConverter implements UnitConverter, Serializable {
      */
     @Override
     public List<UnitConverter> getConversionSteps() {
-        return Collections.singletonList(this);
+        return List.of(this);
     }
 }

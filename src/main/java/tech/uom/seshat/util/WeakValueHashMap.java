@@ -50,7 +50,7 @@ import static tech.uom.seshat.util.WeakEntry.*;
  *             map.put(key, value);
  *         }
  *     }
- * }
+ *     }
  *
  * In the above example, the calculation of a new value needs to be fast because it is performed inside a synchronized
  * statement blocking all other access to the map. This is okay if that particular {@code WeakValueHashMap} instance
@@ -69,8 +69,6 @@ import static tech.uom.seshat.util.WeakEntry.*;
  *
  * @see java.util.WeakHashMap
  * @see WeakHashSet
- *
- * @since 1.0
  */
 public class WeakValueHashMap<K,V> extends AbstractMap<K,V> {
     /*
@@ -396,7 +394,7 @@ public class WeakValueHashMap<K,V> extends AbstractMap<K,V> {
 
     /**
      * Associates the specified value with the specified key in this map if no value were previously associated.
-     * If an other value is already associated to the given key, then the map is left unchanged and the current
+     * If another value is already associated to the given key, then the map is left unchanged and the current
      * value is returned. Otherwise the specified value is associated to the key using a {@link WeakReference}
      * and {@code null} is returned.
      *

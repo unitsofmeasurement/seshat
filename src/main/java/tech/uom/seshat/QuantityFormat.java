@@ -38,8 +38,7 @@ import tech.uom.seshat.resources.Errors;
  * @see NumberFormat
  * @see UnitFormat
  *
- * @since 1.2
- * @module
+ * @since 1.1
  */
 public class QuantityFormat extends Format implements javax.measure.format.QuantityFormat {
     /**
@@ -153,6 +152,7 @@ public class QuantityFormat extends Format implements javax.measure.format.Quant
      * @return the quantity parsed from the specified text.
      * @throws MeasurementParseException if the given text can not be parsed.
      */
+    @Override
     public Quantity<?> parse(final CharSequence source) throws MeasurementParseException {
         return parse(source, new ParsePosition(0));
     }
@@ -196,7 +196,7 @@ public class QuantityFormat extends Format implements javax.measure.format.Quant
                 }
             }
         }
-        throw new MeasurementParseException("Can not parse quantity.", source, pos.getErrorIndex());
+        throw new MeasurementParseException(Errors.format(Errors.Keys.CanNotParse_1, source), source, pos.getErrorIndex());
     }
 
     /**

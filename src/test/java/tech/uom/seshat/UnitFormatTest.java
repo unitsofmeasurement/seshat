@@ -34,7 +34,7 @@ import static org.junit.Assert.*;
  *
  * @author  Martin Desruisseaux (Geomatys)
  * @author  Alexis Manin (Geomatys)
- * @version 1.2
+ * @version 1.3
  * @since   1.0
  */
 public final strictfp class UnitFormatTest {
@@ -190,7 +190,7 @@ public final strictfp class UnitFormatTest {
             assertTrue(message, message.contains("mFoo"));
         }
         /*
-         * Verify that we can not specify invalid unit label.
+         * Verify that we cannot specify invalid unit label.
          */
         try {
             f.label(Units.METRE, "m¹");
@@ -414,6 +414,18 @@ public final strictfp class UnitFormatTest {
     }
 
     /**
+     * Tests parsing a unit defined by a URI in OGC namespace.
+     * Example: {@code "urn:ogc:def:uom:EPSG::1026"} is for metres per second.
+     */
+    @Test
+    public void testParseEPSG() {
+        final UnitFormat f = new UnitFormat(Locale.UK);
+        assertSame(Units.METRE,             f.parse("EPSG:9001"));
+        assertSame(Units.METRE,             f.parse("urn:ogc:def:uom:EPSG::9001"));
+        assertSame(Units.METRES_PER_SECOND, f.parse("urn:ogc:def:uom:EPSG::1026"));
+    }
+
+    /**
      * Tests parsing of symbols without arithmetic operations other than exponent.
      */
     @Test
@@ -554,7 +566,7 @@ public final strictfp class UnitFormatTest {
     /**
      * Tests parsing of symbols containing an explicit exponentiation operation.
      * Usually the exponentiation is implicit, as in {@code "m*s-1"}.
-     * However some formats write it explicitly, as in {@code "m*s^-1"}.
+     * However, some formats write it explicitly, as in {@code "m*s^-1"}.
      */
     @Test
     public void testParseExponentiation() {

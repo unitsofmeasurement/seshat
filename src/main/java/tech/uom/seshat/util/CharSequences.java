@@ -26,14 +26,14 @@ import static java.lang.Character.*;
  *
  * <h2>Unicode support</h2>
  * Every methods defined in this class work on <cite>code points</cite> instead of characters
- * when appropriate. Consequently those methods should behave correctly with characters outside
+ * when appropriate. Consequently, those methods should behave correctly with characters outside
  * the <cite>Basic Multilingual Plane</cite> (BMP).
  *
  * <h2>Policy on space characters</h2>
  * Java defines two methods for testing if a character is a white space:
  * {@link Character#isWhitespace(int)} and {@link Character#isSpaceChar(int)}.
- * Those two methods differ in the way they handle no-break spaces, tabulations
- * and line feeds. The general policy in the Seshat library is:
+ * Those two methods differ in the way they handle no-break spaces, tabulations and line feeds.
+ * The general policy in the Seshat library is:
  *
  * <ul>
  *   <li>Use {@code isWhitespace(…)} when separating entities (words, numbers, tokens, <i>etc.</i>)
@@ -47,7 +47,7 @@ import static java.lang.Character.*;
  * <div class="note"><b>Example:</b>
  * Numbers formatted in the French locale use no-break spaces as group separators. When parsing a list of numbers,
  * ordinary spaces around the numbers may need to be ignored, but no-break spaces shall be considered as part of the
- * numbers. Consequently {@code isWhitespace(…)} is appropriate for skipping spaces <em>between</em> the numbers.
+ * numbers. Consequently, {@code isWhitespace(…)} is appropriate for skipping spaces <em>between</em> the numbers.
  * But if there is spaces to skip <em>inside</em> a single number, then {@code isSpaceChar(…)} is a good choice
  * for accepting no-break spaces and for stopping the parse operation at tabulations or line feed character.
  * A tabulation or line feed between two characters is very likely to separate two distinct values.</div>
@@ -92,7 +92,7 @@ public final class CharSequences {
      *
      * {@snippet lang="java" :
      *     return text.indexOf(part, fromIndex);
-     * }
+     *     }
      *
      * There is no restriction on the value of {@code fromIndex}. If negative or greater
      * than {@code toIndex}, then the behavior of this method is as if the search started
@@ -105,6 +105,7 @@ public final class CharSequences {
      * @param  toIndex    the index after the last character where to perform the search.
      * @return the index within the text of the first occurrence of the specified part, starting at the specified index,
      *         or -1 if no occurrence has been found or if the {@code text} argument is null.
+     * @throws NullPointerException if the {@code toSearch} argument is null.
      * @throws IllegalArgumentException if the {@code toSearch} argument is empty.
      *
      * @see String#indexOf(String, int)
@@ -165,8 +166,8 @@ search:     for (; fromIndex <= toIndex; fromIndex++) {
      *
      * Space characters are identified by the {@link Character#isWhitespace(int)} method.
      *
-     * @param  text       the string in which to perform the search (can not be null).
-     * @param  fromIndex  the index from which to start the search (can not be negative).
+     * @param  text       the string in which to perform the search (cannot be null).
+     * @param  fromIndex  the index from which to start the search (cannot be negative).
      * @param  toIndex    the index after the last character where to perform the search.
      * @return the index within the text of the first occurrence of a non-space character, starting
      *         at the specified index, or a value equals or greater than {@code toIndex} if none.
@@ -201,8 +202,8 @@ search:     for (; fromIndex <= toIndex; fromIndex++) {
      *
      * Space characters are identified by the {@link Character#isWhitespace(int)} method.
      *
-     * @param  text       the string in which to perform the search (can not be null).
-     * @param  fromIndex  the index from which to start the search (can not be negative).
+     * @param  text       the string in which to perform the search (cannot be null).
+     * @param  fromIndex  the index from which to start the search (cannot be negative).
      * @param  toIndex    the index after the last character where to perform the search.
      * @return the index within the text of the last occurrence of a non-space character, starting
      *         at the specified index, or a value equals or lower than {@code fromIndex} if none.
@@ -221,7 +222,7 @@ search:     for (; fromIndex <= toIndex; fromIndex++) {
 
     /**
      * Replaces some Unicode characters by ASCII characters on a "best effort basis".
-     * For example the “ é ” character is replaced by  “ e ” (without accent),
+     * For example, the “ é ” character is replaced by  “ e ” (without accent),
      * the  “ ″ ” symbol for minutes of angle is replaced by straight double quotes “ " ”,
      * and combined characters like ㎏, ㎎, ㎝, ㎞, ㎢, ㎦, ㎖, ㎧, ㎩, ㎐, <i>etc.</i> are replaced
      * by the corresponding sequences of characters.
@@ -246,7 +247,7 @@ search:     for (; fromIndex <= toIndex; fromIndex++) {
      *
      * {@snippet lang="java" :
      *     text = trimWhitespaces(text.subSequence(lower, upper));
-     * }
+     *     }
      *
      * @param  text   the text from which to remove leading and trailing white spaces.
      * @param  lower  index of the first character to consider for inclusion in the sub-sequence.
@@ -293,9 +294,9 @@ search:     for (; fromIndex <= toIndex; fromIndex++) {
      *
      * {@snippet lang="java" :
      *     return text.regionMatches(ignoreCase, offset, part, 0, part.length());
-     * }
+     *     }
      *
-     * This method does not thrown {@code IndexOutOfBoundsException}. Instead if
+     * This method does not thrown {@code IndexOutOfBoundsException}. Instead, if
      * {@code fromIndex < 0} or {@code fromIndex + part.length() > text.length()},
      * then this method returns {@code false}.
      *

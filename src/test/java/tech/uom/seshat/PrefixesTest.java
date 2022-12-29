@@ -36,7 +36,7 @@ public final strictfp class PrefixesTest {
      * and that {@link Prefixes#POWERS} has the same length.
      * Those two arrays form a map used by {@link Prefixes#converter(char)}.
      *
-     * @throws ReflectiveOperationException if this test can not access the private fields of {@link LinearConverter}.
+     * @throws ReflectiveOperationException if this test cannot access the private fields of {@link LinearConverter}.
      */
     @Test
     public void verifyConverterMap() throws ReflectiveOperationException {
@@ -55,7 +55,7 @@ public final strictfp class PrefixesTest {
      * the prefixes recognized by {@link Prefixes#converter(char)}.
      * This array forms a list used by {@link Prefixes#converter(char)}.
      *
-     * @throws ReflectiveOperationException if this test can not access the private fields of {@link LinearConverter}.
+     * @throws ReflectiveOperationException if this test cannot access the private fields of {@link LinearConverter}.
      */
     @Test
     public void verifySymbolList() throws ReflectiveOperationException {

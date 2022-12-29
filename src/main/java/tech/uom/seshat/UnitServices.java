@@ -15,7 +15,6 @@
  */
 package tech.uom.seshat;
 
-import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -23,6 +22,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
+import java.text.NumberFormat;
 import javax.measure.Unit;
 import javax.measure.Quantity;
 import javax.measure.format.UnitFormat;
@@ -37,7 +37,7 @@ import tech.uom.seshat.resources.Errors;
 
 /**
  * The central point from which all unit services (parsing, formatting, listing, <i>etc</i>) can be obtained.
- * Seshat does not use this class (Seshat rather uses {@link Units} pre-defined constants and {@link UnitFormat}
+ * Seshat does not use this class (Seshat rather uses {@link Units} predefined constants and {@link UnitFormat}
  * directly since they are designed specifically for Seshat needs).
  * This class is provided for allowing other applications to discover Seshat implementation of JSR-385
  * without direct dependency. A {@code UnitServices} instance can be obtained by call to {@link #current()}.
@@ -205,6 +205,7 @@ public class UnitServices extends ServiceProvider implements SystemOfUnitsServic
      * Returns a quantity format for the default locale.
      *
      * @return a {@link tech.uom.seshat.QuantityFormat} instance for quantities.
+     * @since  1.2
      */
     @Override
     public QuantityFormat getQuantityFormat() {
@@ -217,6 +218,7 @@ public class UnitServices extends ServiceProvider implements SystemOfUnitsServic
      *
      * @param  name  the name of the format.
      * @return the corresponding quantity format, or {@code null} if none.
+     * @since  1.2
      */
     @Override
     public QuantityFormat getQuantityFormat(final String name) {

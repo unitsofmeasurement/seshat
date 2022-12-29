@@ -50,6 +50,12 @@ import tech.uom.seshat.util.WeakValueHashMap;
  * In addition to the symbols of the <cite>Système international</cite> (SI), this class is also capable to handle
  * some symbols found in <cite>Well Known Text</cite> (WKT) definitions or in XML files.
  *
+ * <h2>Parsing authority codes</h2>
+ * If a character sequence given to the {@link #parse(CharSequence)} method is of the form {@code "EPSG:####"},
+ * {@code "urn:ogc:def:uom:EPSG::####"} or {@code "http://www.opengis.net/def/uom/EPSG/0/####"} (ignoring case
+ * and whitespaces around path separators), then {@code "####"} is parsed as an integer and forwarded to the
+ * {@link Units#valueOfEPSG(int)} method.
+ *
  * <h2>Note on netCDF unit symbols</h2>
  * In netCDF files, values of "unit" attribute are concatenations of an angular unit with an axis direction,
  * as in {@code "degrees_east"} or {@code "degrees_north"}. This class ignores those suffixes and unconditionally
@@ -60,7 +66,7 @@ import tech.uom.seshat.util.WeakValueHashMap;
  * each thread should have its own {@code UnitFormat} instance.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.2
+ * @version 1.3
  *
  * @see Units#valueOf(String)
  *
@@ -75,7 +81,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
     /**
      * Whether the parsing of authority codes such as {@code "EPSG:9001"} is allowed.
      */
-    private final boolean parseAuthorityCodes;
+    private static final boolean PARSE_AUTHORITY_CODES = true;
 
     /**
      * The unit name for degrees (not necessarily angular), to be handled in a special way.
@@ -111,7 +117,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
 
     /**
      * Identify whether unit formatting uses ASCII symbols, Unicode symbols or full localized names.
-     * For example the {@link Units#CUBIC_METRE} units can be formatted in the following ways:
+     * For example, the {@link Units#CUBIC_METRE} units can be formatted in the following ways:
      *
      * <ul>
      *   <li>As a symbol using Unicode characters: <b>m³</b></li>
@@ -144,7 +150,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
          *
          * <h4>Modification to UCUM syntax rules</h4>
          * UCUM does not allow floating point numbers in unit terms, so the use of period as an operator
-         * should not be ambiguous. However Seshat relaxes this restriction in order to support the
+         * should not be ambiguous. However, Seshat relaxes this restriction in order to support the
          * scale factors commonly found in angular units (e.g. π/180). The meaning of a period in a string
          * is resolved with two Seshat-specific rules:
          *
@@ -170,7 +176,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
                 final CharSequence cs = CharSequences.toASCII(value);
                 final int length = cs.length();
                 for (int i=0; i<length; i++) {
-                    toAppendTo.append((char) Characters.toNormalScript(cs.charAt(i)));
+                    toAppendTo.append(Characters.toNormalScript(cs.charAt(i)));
                 }
                 return toAppendTo;
             }
@@ -251,6 +257,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
      *
      * @see #label(Unit, String)
      */
+    @SuppressWarnings("serial")         // Not statically typed as Serializable.
     private final Map<Unit<?>,String> unitToLabel;
 
     /**
@@ -261,6 +268,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
      *
      * @see #label(Unit, String)
      */
+    @SuppressWarnings("serial")         // Not statically typed as Serializable.
     private final Map<String,Unit<?>> labelToUnit;
 
     /**
@@ -294,9 +302,8 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
     private UnitFormat() {
         locale      = Locale.ROOT;
         style       = Style.SYMBOL;
-        unitToLabel = Collections.emptyMap();
-        labelToUnit = Collections.emptyMap();
-        parseAuthorityCodes = true;
+        unitToLabel = Map.of();
+        labelToUnit = Map.of();
     }
 
     /**
@@ -310,7 +317,6 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
         style       = Style.SYMBOL;
         unitToLabel = new HashMap<>();
         labelToUnit = new HashMap<>();
-        parseAuthorityCodes = false;
     }
 
     /**
@@ -324,7 +330,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
 
     /**
      * Sets the locale that this {@code UnitFormat} will use for long names.
-     * For example a call to <code>setLocale({@linkplain Locale#US})</code>
+     * For example, a call to <code>setLocale({@linkplain Locale#US})</code>
      * instructs this formatter to use the “meter” spelling instead of “metre”.
      *
      * @param  locale  the new locale for this {@code UnitFormat}.
@@ -386,7 +392,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
      * <ul>
      *   <li>The following characters are reserved since they have special meaning in UCUM format, in URI
      *       or in Seshat parser: <blockquote>" # ( ) * + - . / : = ? [ ] { } ^ ⋅ ∕</blockquote></li>
-     *   <li>The symbol can not begin or end with digits, since such digits would be confused with unit power.</li>
+     *   <li>The symbol cannot begin or end with digits, since such digits would be confused with unit power.</li>
      * </ul>
      *
      * @param  unit   the unit being labeled.
@@ -508,7 +514,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
                 if (!locale.equals(Locale.ROOT)) copy(Locale.ROOT, getBundle(Locale.ROOT), map);
                 /*
                  * The UnitAliases file contains names that are not unit symbols and are not included in the UnitNames
-                 * property files neither. It contains longer names sometime used (for example "decimal degree" instead
+                 * property files neither. It contains longer names sometimes used (for example "decimal degree" instead
                  * of "degree"), some plural forms (for example "feet" instead of "foot") and a few common misspellings
                  * (for exemple "Celcius" instead of "Celsius").
                  */
@@ -545,7 +551,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
                  DEGREES,  "degree").toString();
         /*
          * Returns the unit with application of the power if it is part of the name.
-         * For example this method interprets "meter2" as "meter" raised to power 2.
+         * For example, this method interprets "meter2" as "meter" raised to power 2.
          */
         Unit<?> unit = map.get(uom);
 appPow: if (unit == null) {
@@ -699,7 +705,7 @@ appPow: if (unit == null) {
         } else {
             // Fallback for foreigner implementations (power restricted to integer).
             Map<? extends Unit<?>, Integer> c = unscaled.getBaseUnits();
-            if (c == null) c = Collections.singletonMap(unit, 1);
+            if (c == null) c = Map.of(unit, 1);
             components = c;
             for (final Map.Entry<? extends Unit<?>, Integer> e : c.entrySet()) {
                 final int power = e.getValue();
@@ -790,7 +796,7 @@ appPow: if (unit == null) {
         }
         /*
          * At this point, all numerators have been appended. Now append the denominators together.
-         * For example pressure dimension is formatted as M∕(L⋅T²) no matter if 'M' was the first
+         * For example, pressure dimension is formatted as M∕(L⋅T²) no matter if 'M' was the first
          * dimension in the given `components` map or not.
          */
         if (!deferred.isEmpty()) {
@@ -950,7 +956,7 @@ appPow: if (unit == null) {
      * Note that "digit" is taken here in a much more restrictive way than {@link Character#isDigit(int)}.
      *
      * <p>A return value of {@code true} guarantees that the given character is in the Basic Multilingual Plane (BMP).
-     * Consequently the {@code c} argument value does not need to be the result of {@link String#codePointAt(int)};
+     * Consequently, the {@code c} argument value does not need to be the result of {@link String#codePointAt(int)};
      * the result of {@link String#charAt(int)} is sufficient. We nevertheless use the {@code int} type for avoiding
      * the need to cast if caller uses code points for another reason.</p>
      *
@@ -963,7 +969,7 @@ appPow: if (unit == null) {
     /**
      * Returns {@code true} if the given character is the sign of a number according the {@code UnitFormat} parser.
      * A return value of {@code true} guarantees that the given character is in the Basic Multilingual Plane (BMP).
-     * Consequently the {@code c} argument value does not need to be the result of {@link String#codePointAt(int)}.
+     * Consequently, the {@code c} argument value does not need to be the result of {@link String#codePointAt(int)}.
      */
     private static boolean isSign(final int c) {
         return c == '+' || c == '-';
@@ -972,7 +978,7 @@ appPow: if (unit == null) {
     /**
      * Returns {@code true} if the given character is the sign of a division operator.
      * A return value of {@code true} guarantees that the given character is in the Basic Multilingual Plane (BMP).
-     * Consequently the {@code c} argument value does not need to be the result of {@link String#codePointAt(int)}.
+     * Consequently, the {@code c} argument value does not need to be the result of {@link String#codePointAt(int)}.
      */
     private static boolean isDivisor(final int c) {
         return c == '/' || c == AbstractUnit.DIVIDE;
@@ -1025,7 +1031,7 @@ appPow: if (unit == null) {
      * If the parse completes without reading the entire length of the text, an exception is thrown.
      *
      * <p>The parsing is lenient: symbols can be products or quotients of units like “m∕s”,
-     * or words like “meters per second”.
+     * words like “meters per second”, or authority codes like {@code "urn:ogc:def:uom:EPSG::1026"}.
      * The product operator can be either {@code '.'} (ASCII) or {@code '⋅'} (Unicode) character.
      * Exponent after symbol can be decimal digits as in “m2” or a superscript as in “m²”.</p>
      *
@@ -1073,7 +1079,7 @@ appPow: if (unit == null) {
      * After parsing, the above-cited index is updated to the first unparsed character.
      *
      * <p>The parsing is lenient: symbols can be products or quotients of units like “m∕s”,
-     * or words like “meters per second”.
+     * words like “meters per second”, or authority codes like {@code "urn:ogc:def:uom:EPSG::1026"}.
      * The product operator can be either {@code '.'} (ASCII) or {@code '⋅'} (Unicode) character.
      * Exponent after symbol can be decimal digits as in “m2” or a superscript as in “m²”.</p>
      *
@@ -1097,7 +1103,7 @@ appPow: if (unit == null) {
          */
         int end   = symbols.length();
         int start = CharSequences.skipLeadingWhitespaces(symbols, position.getIndex(), end);
-        if (parseAuthorityCodes) {
+        if (PARSE_AUTHORITY_CODES) {
             final String uom = symbols.toString();
             final String code = DefinitionURI.codeOf("EPSG", uom);
             if (code != null) {
@@ -1112,7 +1118,8 @@ appPow: if (unit == null) {
                 } catch (NumberFormatException e) {
                     failure = e;
                 }
-                throw (MeasurementParseException) new MeasurementParseException(Errors.format(Errors.Keys.UnknownUnit_1,
+                throw (MeasurementParseException) new MeasurementParseException(
+                        Errors.format(Errors.Keys.UnknownUnit_1,
                         "EPSG" + DefinitionURI.SEPARATOR + code),
                         symbols, start + Math.max(0, uom.lastIndexOf(code))).initCause(failure);
             }
@@ -1212,7 +1219,7 @@ scan:   for (int n; i < end; i += n) {
                     i = CharSequences.skipLeadingWhitespaces(symbols, sub.getIndex(), end);
                     if (i >= end || Character.codePointAt(symbols, i) != Style.CLOSE) {
                         throw new MeasurementParseException(Errors.format(Errors.Keys.NonEquilibratedParenthesis_2,
-                               symbols.subSequence(start, i), Style.CLOSE), symbols, start);
+                                    symbols.subSequence(start, i), Style.CLOSE), symbols, start);
                     }
                     unit = operation.apply(unit, term, pos);
                     operation.code = Operation.IMPLICIT;    // Default operation if there is no × or / symbol after parenthesis.
@@ -1223,7 +1230,7 @@ scan:   for (int n; i < end; i += n) {
             /*
              * We reach this point only if we found some operator (division or multiplication).
              * If the operator has been found between two digits, we consider it as part of the
-             * term. For example "m2/3" is considered as a single term where "2/3" is the exponent.
+             * term. For example, "m2/3" is considered as a single term where "2/3" is the exponent.
              */
             if (i > start && i+n < end
                     && Character.isDigit(Character.codePointBefore(symbols, i))
@@ -1416,8 +1423,8 @@ search:     while ((i = CharSequences.skipTrailingWhitespaces(symbols, start, i)
                      * Example: "10*6" is equal to one million. Seshat also handles the "^" character as "*".
                      *
                      * In principle, spaces are not allowed in unit symbols (in particular, UCUM specifies that
-                     * spaces should not be interpreted as multication operators).  However in practice we have
-                     * sometime units written in a form like "100 feet".
+                     * spaces should not be interpreted as multication operators). However, in practice we have
+                     * sometimes units written in a form like "100 feet".
                      *
                      * If the last character is a super-script, then we assume a notation like "10⁻⁴".
                      */
@@ -1535,7 +1542,7 @@ search:     while ((i = CharSequences.skipTrailingWhitespaces(symbols, start, i)
 
     /**
      * Parses a multiplication factor, which may be a single number or a base raised to an exponent.
-     * For example all the following strings are equivalent: "1000", "1000.0", "1E3", "10*3", "10^3", "10³".
+     * For example, all the following strings are equivalent: "1000", "1000.0", "1E3", "10*3", "10^3", "10³".
      */
     private static double parseMultiplicationFactor(final String term) throws NumberFormatException {
         final String exponent;
@@ -1563,12 +1570,13 @@ search:     while ((i = CharSequences.skipTrailingWhitespaces(symbols, start, i)
     }
 
     /**
-     * Parses text from a string to produce a unit. The default implementation delegates to {@link #parse(CharSequence)}
-     * and wraps the {@link MeasurementParseException} into a {@link ParseException} for compatibility with {@code java.text} API.
+     * Parses text from a string to produce a unit. The default implementation delegates
+     * to {@link #parse(CharSequence)} and wraps the {@link MeasurementParseException}
+     * into a {@link ParseException} for compatibility with {@code java.text} API.
      *
      * @param  source  the text, part of which should be parsed.
      * @return a unit parsed from the string.
-     * @throws ParseException if the given string can not be fully parsed.
+     * @throws ParseException if the given string cannot be fully parsed.
      */
     @Override
     public Object parseObject(final String source) throws ParseException {

@@ -16,6 +16,7 @@
 package tech.uom.seshat;
 
 import java.util.Collections;
+import java.util.Set;
 import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.function.Function;
@@ -65,7 +66,7 @@ final class UnitDimension implements Dimension, Serializable {
     /**
      * Pseudo-dimension for dimensionless units.
      */
-    static final UnitDimension NONE = new UnitDimension(Collections.emptyMap());
+    static final UnitDimension NONE = new UnitDimension(Map.of());
     // No need to store in UnitRegistry since UnitDimension performs special checks for dimensionless instances.
 
     /**
@@ -75,6 +76,7 @@ final class UnitDimension implements Dimension, Serializable {
      *
      * @see #getBaseDimensions()
      */
+    @SuppressWarnings("serial")         // Not statically typed as Serializable.
     final Map<UnitDimension,Fraction> components;
 
     /**
@@ -92,7 +94,7 @@ final class UnitDimension implements Dimension, Serializable {
     @SuppressWarnings("ThisEscapedInObjectConstruction")    // Safe because this class is final.
     UnitDimension(final char symbol) {
         this.symbol = symbol;
-        components  = Collections.singletonMap(this, new Fraction(1,1).unique());
+        components  = Map.of(this, new Fraction(1,1).unique());
         UnitRegistry.init(components, this);
     }
 
@@ -127,7 +129,7 @@ final class UnitDimension implements Dimension, Serializable {
         }
         /*
          * Implementation note: following code duplicates the functionality of Map.computeIfAbsent(…),
-         * but we had to do it because we compute not only the value, but also the 'components' key.
+         * but we had to do it because we compute not only the value, but also the `components` key.
          */
         UnitDimension dim = (UnitDimension) UnitRegistry.get(components);
         if (dim == null) {
@@ -203,7 +205,7 @@ final class UnitDimension implements Dimension, Serializable {
      */
     final boolean numeratorIs(final char s) {
         if (symbol == s) {                                  // Optimization for a simple case.
-            assert components.keySet().equals(Collections.singleton(this));
+            assert components.keySet().equals(Set.of(this));
             return true;
         }
         boolean found = false;
@@ -245,12 +247,12 @@ final class UnitDimension implements Dimension, Serializable {
         }
         /*
          * Fallback for non-Seshat implementations. The cast from <? extends Dimension> to <Dimension>
-         * is safe if we use the 'components' map as a read-only map (no put operation allowed).
+         * is safe if we use the `components` map as a read-only map (no put operation allowed).
          */
         @SuppressWarnings("unchecked")
         Map<Dimension,Integer> components = (Map<Dimension,Integer>) dimension.getBaseDimensions();
         if (components == null) {
-            return Collections.singletonMap(dimension, new Fraction(1,1));
+            return Map.of(dimension, new Fraction(1,1));
         }
         return new DerivedMap<>(components, Function.identity(), FractionConverter.FromInteger.INSTANCE);
     }
@@ -358,8 +360,8 @@ final class UnitDimension implements Dimension, Serializable {
             final UnitDimension that = (UnitDimension) other;
             if (symbol == that.symbol) {
                 /*
-                 * Do not compare 'components' if 'symbols' is non-zero because in such case
-                 * the components map contains 'this', which would cause an infinite loop.
+                 * Do not compare `components` if `symbols` is non-zero because in such case
+                 * the components map contains `this`, which would cause an infinite loop.
                  */
                 return (symbol != 0) || components.equals(that.components);
             }
@@ -373,8 +375,8 @@ final class UnitDimension implements Dimension, Serializable {
     @Override
     public int hashCode() {
         /*
-         * Do not use 'components' in hash code calculation if 'symbols' is non-zero
-         * beause in such case the map contains 'this', which would cause an infinite loop.
+         * Do not use `components` in hash code calculation if `symbols` is non-zero
+         * beause in such case the map contains `this`, which would cause an infinite loop.
          */
         return (symbol != 0) ? symbol ^ (int) serialVersionUID : components.hashCode();
     }

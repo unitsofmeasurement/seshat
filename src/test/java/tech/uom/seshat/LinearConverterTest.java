@@ -164,7 +164,7 @@ public final strictfp class LinearConverterTest {
         assertEquals(12.3, c.convert(inv.convert(12.3)), STRICT);
         /*
          * Following is an example of case where our effort regarding preserving accuracy in base 10 does not work.
-         * However the concatenation of those two UnitConverter gives the identity converter, as expected.
+         * However, the concatenation of those two UnitConverter gives the identity converter, as expected.
          * That concatenation is not verified here because it is not the purpose of this test case.
          */
         c = LinearConverter.offset(27315, 100);

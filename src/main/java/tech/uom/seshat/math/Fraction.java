@@ -87,7 +87,7 @@ public final class Fraction extends Number implements Comparable<Fraction>, Seri
 
     /**
      * Returns a fraction equivalent to {@code this} but represented by the smallest possible numerator
-     * and denominator values. If this fraction can not be simplified, then this method returns {@code this}.
+     * and denominator values. If this fraction cannot be simplified, then this method returns {@code this}.
      *
      * @return the simplest fraction equivalent to this fraction.
      */
@@ -100,10 +100,10 @@ public final class Fraction extends Number implements Comparable<Fraction>, Seri
      * If the simplified fraction is equal to {@code this}, then this method returns {@code this}.
      *
      * <p>The arguments given to this method are the results of multiplications and additions of {@code int} values.
-     * This method fails if any argument value is {@link Long#MIN_VALUE} because that value can not be made positive.
-     * However it should never happen. Even in the worst scenario:</p>
+     * This method fails if any argument value is {@link Long#MIN_VALUE} because that value cannot be made positive.
+     * However, it should never happen. Even in the worst scenario:</p>
      *
-     * {@snippet lang="java" :
+     * {@prefomat java
      *     long n = Math.multiplyFull(Integer.MIN_VALUE, Integer.MAX_VALUE);
      *     n += n;
      * }
@@ -348,7 +348,7 @@ public final class Fraction extends Number implements Comparable<Fraction>, Seri
      * Returns this fraction rounded toward zero, if the result can be represented as a short integer.
      *
      * @return this fraction rounded toward zero.
-     * @throws ArithmeticException if the result can not be represented as a short integer.
+     * @throws ArithmeticException if the result cannot be represented as a short integer.
      */
     @Override
     public short shortValue() {
@@ -361,7 +361,7 @@ public final class Fraction extends Number implements Comparable<Fraction>, Seri
      * Returns this fraction rounded toward zero, if the result can be represented as a signed byte.
      *
      * @return this fraction rounded toward zero.
-     * @throws ArithmeticException if the result can not be represented as a signed byte.
+     * @throws ArithmeticException if the result cannot be represented as a signed byte.
      */
     @Override
     public byte byteValue() {
@@ -402,7 +402,7 @@ public final class Fraction extends Number implements Comparable<Fraction>, Seri
      * Fractions with different values are not considered equal even if the two fraction are equivalent.
      *
      * @param  other  the object to compare with this fraction for equality.
-     * @return {@code true} if the given object is an other fraction with the same numerator and denominator values.
+     * @return {@code true} if the given object is another fraction with the same numerator and denominator values.
      */
     @Override
     public boolean equals(final Object other) {
@@ -427,7 +427,7 @@ public final class Fraction extends Number implements Comparable<Fraction>, Seri
 
     /**
      * The matrix of Unicode symbols available for some fractions. Each row contains all symbols for the same numerator.
-     * For example the first row contains the symbol of all fractions of the form 0/x, the second row all fractions of
+     * For example, the first row contains the symbol of all fractions of the form 0/x, the second row all fractions of
      * the form 1/x, <i>etc.</i>. In each row, the character at column <var>i</var> is for the fraction having the
      * denominator i + (row index) + 1.
      */
@@ -485,7 +485,7 @@ public final class Fraction extends Number implements Comparable<Fraction>, Seri
      * "∞" and "−∞". The given text shall not contain spaces.
      *
      * @param  s  the text to parse.
-     * @throws NumberFormatException if the given text can not be parsed.
+     * @throws NumberFormatException if the given text cannot be parsed.
      */
     public Fraction(final String s) throws NumberFormatException {
         final int length = s.length();

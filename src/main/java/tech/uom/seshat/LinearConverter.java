@@ -54,7 +54,7 @@ final class LinearConverter extends AbstractConverter {
      * The complete formula used by Seshat is {@code y = (x*scale + offset) / divisor}.
      * This division is mathematically unneeded since we could divide the offset and scale factor directly,
      * but we keep it for accuracy reasons because most unit conversion factors are defined in base 10 and
-     * IEEE 754 can not represent fractional values in base 10 accurately.
+     * IEEE 754 cannot represent fractional values in base 10 accurately.
      */
     private final double divisor;
 
@@ -182,7 +182,7 @@ final class LinearConverter extends AbstractConverter {
      * </ul>
      *
      * Note that this definition allows scale factors but does not allow offsets.
-     * Consequently this is a different definition of "linear" than this class.
+     * Consequently, this is a different definition of "linear" than this class and the rest of Seshat.
      */
     @Override
     public boolean isLinear() {
@@ -208,15 +208,13 @@ final class LinearConverter extends AbstractConverter {
      * Returns the inverse of this unit converter.
      * Given that the formula applied by this converter is:
      *
-     * <pre>
-     *    y = (x⋅scale + offset) ∕ divisor
-     * </pre>
+     * <pre class="math">
+     *    y = (x⋅scale + offset) ∕ divisor</pre>
      *
      * the inverse formula is:
      *
-     * <pre>
-     *    x = (y⋅divisor - offset) ∕ scale
-     * </pre>
+     * <pre class="math">
+     *    x = (y⋅divisor - offset) ∕ scale</pre>
      */
     @Override
     public synchronized UnitConverter inverse() {
@@ -307,16 +305,14 @@ final class LinearConverter extends AbstractConverter {
      * by the specified converter (right converter), and then converting by this converter (left converter).  In the
      * following equations, the 1 subscript is for the specified converter and the 2 subscript is for this converter:
      *
-     * <pre>
+     * <pre class="math">
      *    t = (x⋅scale₁ + offset₁) ∕ divisor₁
-     *    y = (t⋅scale₂ + offset₂) ∕ divisor₂
-     * </pre>
+     *    y = (t⋅scale₂ + offset₂) ∕ divisor₂</pre>
      *
      * We rewrite as:
      *
-     * <pre>
-     *    y = (x⋅scale₁⋅scale₂ + offset₁⋅scale₂ + divisor₁⋅offset₂) ∕ (divisor₁⋅divisor₂)
-     * </pre>
+     * <pre class="math">
+     *    y = (x⋅scale₁⋅scale₂ + offset₁⋅scale₂ + divisor₁⋅offset₂) ∕ (divisor₁⋅divisor₂)</pre>
      */
     @Override
     public UnitConverter concatenate(final UnitConverter converter) {
@@ -335,8 +331,8 @@ final class LinearConverter extends AbstractConverter {
             otherDivisor = lc.divisor;
         } else if (converter.isLinear()) {
             /*
-             * Fallback for foreigner implementations. Note that 'otherOffset' should be restricted to zero
-             * according JSR-385 definition of 'isLinear()', but let be safe; maybe we are not the only one
+             * Fallback for foreigner implementations. Note that `otherOffset` should be restricted to zero
+             * according JSR-385 definition of `isLinear()`, but let be safe; maybe we are not the only one
              * to have a different interpretation about the meaning of "linear".
              */
             otherOffset  = converter.convert(0.0);

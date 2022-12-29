@@ -173,7 +173,7 @@ public final strictfp class UnitsTest {
     /**
      * Tests the conversion factor of {@link Units#DECIBEL}.
      *
-     * @throws IncommensurableException if the conversion can not be applied.
+     * @throws IncommensurableException if the conversion cannot be applied.
      *
      * @see <a href="https://en.wikipedia.org/wiki/Decibel#Conversions">Decibel on Wikipedia</a>
      */

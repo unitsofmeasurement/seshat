@@ -91,7 +91,7 @@
  * library keeping only the classes required for JSR 385 implementation.
  *
  * @author  Martin Desruisseaux (MPO, IRD, Geomatys)
- * @version 1.2
+ * @version 1.3
  * @since   1.0
  */
 package tech.uom.seshat;

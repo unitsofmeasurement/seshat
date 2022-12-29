@@ -61,6 +61,11 @@ public class Errors extends IndexedResourceBundle {
         public static final short CanNotConvertValue_2 = 18;
 
         /**
+         * Cannot parse “{0}”.
+         */
+        public static final short CanNotParse_1 = 20;
+
+        /**
          * Element “{0}” is already present.
          */
         public static final short ElementAlreadyPresent_1 = 1;

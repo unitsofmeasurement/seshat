@@ -28,7 +28,7 @@ import static java.lang.Character.*;
  *
  * <h2>Unicode support</h2>
  * Every methods defined in this class work on <cite>code points</cite> instead of characters
- * when appropriate. Consequently those methods should behave correctly with characters outside
+ * when appropriate. Consequently, those methods should behave correctly with characters outside
  * the <cite>Basic Multilingual Plane</cite> (BMP).
  *
  * @author  Martin Desruisseaux (Geomatys)
@@ -67,6 +67,7 @@ public final class StringBuilders {
      * been appended to the buffer}, in order to make it appears like an integer when possible.
      *
      * @param  buffer  the buffer to trim if possible.
+     * @throws NullPointerException if the given {@code buffer} is null.
      */
     @SuppressWarnings("fallthrough")
     public static void trimFractionalPart(final StringBuilder buffer) {

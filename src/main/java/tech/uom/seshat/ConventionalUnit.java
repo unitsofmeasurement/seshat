@@ -33,8 +33,11 @@ import tech.uom.seshat.resources.Errors;
  * A unit of measure which is related to a base or derived unit through a conversion formula.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.2
- * @since   1.0
+ * @version 1.3
+ *
+ * @param <Q>  the kind of quantity to be measured using this units.
+ *
+ * @since 1.0
  */
 final class ConventionalUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> {
     /**
@@ -53,6 +56,7 @@ final class ConventionalUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> {
     /**
      * The conversion from this unit to the {@linkplain #target} unit.
      */
+    @SuppressWarnings("serial")         // Not statically typed as Serializable.
     final UnitConverter toTarget;
 
     /**
@@ -116,7 +120,7 @@ final class ConventionalUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> {
         /*
          * Create the unit, but we may discard it later if an equivalent unit already exists in the cache.
          * The use of the cache is not only for sharing instances, but also because existing instances may
-         * have more information.  For example instances provided by Units static constants may contain an
+         * have more information.  For example, instances provided by Units static constants may contain an
          * EPSG code, or even an alternative symbol (e.g. “hm²” will be replaced by “ha” for hectare).
          */
         ConventionalUnit<Q> unit = new ConventionalUnit<>(target, toTarget, symbol, (byte) 0, (short) 0);
@@ -192,14 +196,14 @@ final class ConventionalUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> {
 
     /**
      * Returns the positive power after the given unit symbol, or 0 in case of doubt.
-     * For example this method returns 1 for “m” and 2 for “m²”. We parse the unit symbol instead
-     * than the {@link SystemUnit#dimension} because we can not extract easily the power from the
-     * product of dimensions (e.g. what is the M⋅L²∕T³ power?) Furthermore the power will be used
+     * For example, this method returns 1 for “m” and 2 for “m²”. We parse the unit symbol instead
+     * than the {@link SystemUnit#dimension} because we cannot extract easily the power from the
+     * product of dimensions (e.g. what is the M⋅L²∕T³ power?) Furthermore, the power will be used
      * for choosing a symbol prefix, so we want it to be consistent with the symbol more than the
      * internal representation.
      *
      * <p>If the unit is itself a product of other units, then this method returns the power of
-     * the first unit. For example the power of “m/s²” is 1. This means that the “k” prefix in
+     * the first unit. For example, the power of “m/s²” is 1. This means that the “k” prefix in
      * “km/s²” apply only to the “m” unit.</p>
      */
     static int power(final String symbol) {
@@ -302,7 +306,7 @@ final class ConventionalUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> {
      *
      * @param  that  the unit of same type to which to convert the numeric values.
      * @return the converter from this unit to {@code that} unit.
-     * @throws UnconvertibleException if the converter can not be constructed.
+     * @throws UnconvertibleException if the converter cannot be constructed.
      */
     @Override
     public UnitConverter getConverterTo(final Unit<Q> that) throws UnconvertibleException {
@@ -369,7 +373,7 @@ final class ConventionalUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> {
      *
      * @param  symbol  the new symbol for the alternate unit.
      * @return the alternate unit.
-     * @throws MeasurementException always thrown since this unit is not an unscaled standard unit.
+     * @throws MeasurementException always thrown because this unit is not an unscaled standard unit.
      *
      * @see SystemUnit#alternate(String)
      */
@@ -478,7 +482,8 @@ final class ConventionalUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> {
     }
 
     /**
-     * Compares this unit with the given object for equality.
+     * Compares this unit with the given object for equality,
+     * optionally ignoring metadata and rounding errors.
      *
      * @param  other  the other object to compare with this unit, or {@code null}.
      * @return {@code true} if the given object is equal to this unit.

@@ -22,7 +22,7 @@ import java.util.function.Function;
 
 
 /**
- * A set whose values are derived <cite>on-the-fly</cite> from an other set.
+ * A set whose values are derived <cite>on-the-fly</cite> from another set.
  *
  * <h2>Constraints</h2>
  * <ul>
