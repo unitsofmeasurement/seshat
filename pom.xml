@@ -119,38 +119,6 @@
       <version>4.13.2</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>tech.units</groupId>
-      <artifactId>unit-tck</artifactId>
-      <version>2.1.1</version>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>     <!-- TCK declares an older version. -->
-          <groupId>javax.measure</groupId>
-          <artifactId>unit-api</artifactId>
-        </exclusion>
-        <exclusion>     <!-- Avoid possible interference with the implementation under test. -->
-          <groupId>tech.units</groupId>
-          <artifactId>indriya</artifactId>
-        </exclusion>
-        <exclusion>     <!-- MutabilityDetector uses an older version than the one inherited from JUnit. -->
-          <groupId>org.hamcrest</groupId>
-          <artifactId>hamcrest-core</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>tech.uom.lib</groupId>
-      <artifactId>uom-lib-common</artifactId>     <!-- Was a transitive dependency of excluded Indriya. -->
-      <version>2.1</version>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>     <!-- TCK declares an older version. -->
-          <groupId>javax.measure</groupId>
-          <artifactId>unit-api</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
   </dependencies>
 
   <properties>
@@ -209,8 +177,6 @@
           <compilerArgs>
             <arg>-Xlint:all</arg>
             <arg>-Xdoclint:all</arg>
-            <arg>--add-modules</arg>
-            <arg>java.compiler</arg>        <!-- Used in tests only. -->
           </compilerArgs>
           <compilerArgument>-g:lines,source</compilerArgument>         <!-- Override parent pom.xml configuration. -->
           <useIncrementalCompilation>false</useIncrementalCompilation> <!-- https://jira.codehaus.org/browse/MCOMPILER-209 -->
@@ -220,9 +186,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <testNGArtifactName>none:none</testNGArtifactName>    <!-- Disable TestNG runner as we use JUnit instead. -->
-        </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
