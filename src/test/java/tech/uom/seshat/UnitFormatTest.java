@@ -34,7 +34,7 @@ import static org.junit.Assert.*;
  *
  * @author  Martin Desruisseaux (Geomatys)
  * @author  Alexis Manin (Geomatys)
- * @version 1.3
+ * @version 1.4
  * @since   1.0
  */
 public final strictfp class UnitFormatTest {
@@ -96,6 +96,7 @@ public final strictfp class UnitFormatTest {
         verify(declared, "BAR",                 "M∕(L⋅T²)",     "bar",    null,                     Units.BAR);
         verify(declared, "ATMOSPHERE",          "M∕(L⋅T²)",     "atm",   "atmosphere",              Units.ATMOSPHERE);
         verify(declared, "NEWTON",              "M⋅L∕T²",       "N",     "newton",                  Units.NEWTON);
+        verify(declared, "TORQUE",              "M⋅L²∕T²",      "N⋅m",   "newton-metre",            Units.TORQUE);
         verify(declared, "JOULE",               "M⋅L²∕T²",      "J",     "joule",                   Units.JOULE);
         verify(declared, "WATT",                "M⋅L²∕T³",      "W",     "watt",                    Units.WATT);
         verify(declared, "VOLT",                "M⋅L²∕(T³⋅I)",  "V",     "volt",                    Units.VOLT);
@@ -149,7 +150,7 @@ public final strictfp class UnitFormatTest {
         }
         for (int i=0; i<symbol.length();) {
             final int c = symbol.codePointAt(i);
-            assertTrue(symbol, AbstractUnit.isSymbolChar(c) || Characters.isSuperScript(c) || c == '∕');
+            assertTrue(symbol, AbstractUnit.isSymbolChar(c) || Characters.isSuperScript(c) || c == '⋅' || c == '∕');
             i += Character.charCount(c);
         }
         declared.remove(field);

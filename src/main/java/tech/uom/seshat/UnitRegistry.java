@@ -134,23 +134,32 @@ final class UnitRegistry implements SystemOfUnits, Serializable {
         /* Unconditional */ existed |= (HARD_CODED.put(unit.quantity,  unit) == null) ? 0 : 2;
         if (symbol != null) existed |= (HARD_CODED.put(symbol,         unit) == null) ? 0 : 4;
         if (unit.epsg != 0) existed |= (HARD_CODED.put(unit.epsg,      unit) == null) ? 0 : 8;
-        /*
-         * Key collision on dimension and quantity tolerated for dimensionless units only, with an
-         * an exception for "candela" because "lumen" is candela divided by a dimensionless unit.
-         * Another exception is "Hz" because it come after rad/s, which has the same dimension.
-         */
         assert filter(existed, unit, symbol) == 0 : unit;
         return unit;
     }
 
     /**
      * Clears the {@code existed} bits for the cases where we allow dimension or quantity type collisions.
+     * Key collisions on dimensions and quantities are tolerated for dimensionless units only,
+     * with following exceptions:
+     *
+     * <ul>
+     *   <li>"candela" because in overwrites "lumen", which is candela divided by a dimensionless unit.</li>
+     *   <li>"Hz"      because it overwrites rad/s, which has the same dimensions.</li>
+     *   <li>"J"       because it overwrites torque, which has the same dimensions.</li>
+     * </ul>
+     *
      * This method is invoked for assertions only.
      */
     private static int filter(int existed, final SystemUnit<?> unit, final String s) {
-        if (unit.dimension.isDimensionless()) existed &= ~(1 | 2);      // Accepts dimension and quantity collisions.
-        if ("cd".equals(s) || "Hz".equals(s)) existed &= ~(1    );      // Accepts dimension collisions only;
-        return (s == null) || s.isEmpty() ? 0 : existed;
+        if (s == null || s.isEmpty()) return 0;                         // Units.UNITY overwrites everything.
+        if (unit.dimension.isDimensionless()) {
+            existed &= ~(1 | 2);                                        // Accept dimension and quantity collisions.
+        }
+        if ("cd".equals(s) || "Hz".equals(s) || "J".equals(s)) {
+            existed &= ~1;                                              // Accept dimension collisions only.
+        }
+        return existed;
     }
 
     /**

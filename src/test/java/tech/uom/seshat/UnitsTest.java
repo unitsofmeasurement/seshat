@@ -32,7 +32,7 @@ import static org.junit.Assert.*;
  * Test conversions using the units declared in {@link Units}.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.2
+ * @version 1.4
  * @since   1.0
  */
 public final strictfp class UnitsTest {
@@ -159,6 +159,7 @@ public final strictfp class UnitsTest {
         assertEquals(1000.0,               toStandardUnit(KILOMETRE), 1E-15);
         assertEquals(0.017453292519943295, toStandardUnit(DEGREE),    1E-15);
         assertEquals(0.01,                 toStandardUnit(GAL),       1E-15);
+        assertEquals(1,                    toStandardUnit(TORQUE),    STRICT);
     }
 
     /**
@@ -209,6 +210,8 @@ public final strictfp class UnitsTest {
         verifyGetFromQuantity(Angle.class,             RADIAN);
         verifyGetFromQuantity(Dimensionless.class,     UNITY);
         verifyGetFromQuantity(Acceleration.class,      METRES_PER_SECOND_SQUARED);
+        verifyGetFromQuantity(Energy.class,            JOULE);
+        verifyGetFromQuantity(Torque.class,            TORQUE);
     }
 
     /**
@@ -229,6 +232,8 @@ public final strictfp class UnitsTest {
         verifyGetFromDimension(Angle.class,             UNITY,                     RADIAN);
         verifyGetFromDimension(Dimensionless.class,     UNITY,                     UNITY);
         verifyGetFromDimension(Acceleration.class,      METRES_PER_SECOND_SQUARED, METRES_PER_SECOND_SQUARED);
+        verifyGetFromDimension(Energy.class,            JOULE,                     JOULE);
+        verifyGetFromDimension(Torque.class,            JOULE,                     TORQUE);
     }
 
     /**
@@ -304,6 +309,7 @@ public final strictfp class UnitsTest {
         assertSame(DECIBEL,      valueOf("dB"));
         assertSame(GAL,          valueOf("gal"));
         assertSame(GAL,          valueOf("cm/s²"));
+        assertSame(JOULE,        valueOf("N⋅m"));           // Not to be confused with Torque.
     }
 
     /**

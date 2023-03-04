@@ -70,7 +70,7 @@ import static tech.uom.seshat.UnitRegistry.PREFIXABLE;
  *
  * @author  Martin Desruisseaux (IRD, Geomatys)
  * @author  Alexis Manin (Geomatys)
- * @version 1.2
+ * @version 1.4
  * @since   1.0
  */
 public final class Units {
@@ -695,6 +695,14 @@ public final class Units {
     public static final Unit<Force> NEWTON;
 
     /**
+     * The SI derived unit for torque (N⋅m).
+     * This unit has the same dimensions as {@link #JOULE} but is considered a different unit.
+     *
+     * @since 1.4
+     */
+    public static final Unit<Torque> TORQUE;
+
+    /**
      * The SI derived unit for energy (J).
      * The unlocalized name is “joule”.
      *
@@ -1124,6 +1132,7 @@ public final class Units {
          */
         HERTZ      = add(Frequency.class,           Scalar.Frequency::new, frequency,                    "Hz",  (byte) (SI | PREFIXABLE), (short) 0);
         NEWTON     = add(Force.class,               Scalar.Force::new,     force,                        "N",   (byte) (SI | PREFIXABLE), (short) 0);
+        TORQUE     = add(Torque.class,              null,                  energy,                       "N⋅m", (byte) (SI | PREFIXABLE), (short) 0);
         JOULE      = add(Energy.class,              Scalar.Energy::new,    energy,                       "J",   (byte) (SI | PREFIXABLE), (short) 0);
         WATT       = add(Power.class,               Scalar.Power::new,     power,                        "W",   (byte) (SI | PREFIXABLE), (short) 0);
         AMPERE     = add(ElectricCurrent.class,     null,                  current,                      "A",   (byte) (SI | PREFIXABLE), (short) 0);
