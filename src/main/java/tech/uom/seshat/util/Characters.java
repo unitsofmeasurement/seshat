@@ -20,7 +20,6 @@ package tech.uom.seshat.util;
  * Static methods working on {@code char} values, and some character constants.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.3
  */
 public final class Characters {
     /**

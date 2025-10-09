@@ -38,11 +38,8 @@ import tech.uom.seshat.resources.Errors;
  * without scale factor or offset.
  *
  * @author  Martin Desruisseaux (MPO, Geomatys)
- * @version 1.1
  *
  * @param <Q>  the kind of quantity to be measured using this units.
- *
- * @since 1.0
  */
 final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements QuantityFactory<Q> {
     /**
@@ -54,6 +51,11 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
      * The non-empty symbol for {@link Units#UNITY}.
      */
     static final String ONE = "1";
+
+    /**
+     * The symbol for unformattable units.
+     */
+    static final String UNFORMATTABLE = "?";
 
     /**
      * The type of quantity that uses this unit, or {@code null} if unknown.
@@ -243,7 +245,7 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
     }
 
     /**
-     * Casts this unit to a parameterized unit of specified nature or throw a {@code ClassCastException}
+     * Casts this unit to a parameterized unit of specified nature or throws a {@code ClassCastException}
      * if the dimension of the specified quantity and this unit's dimension do not match.
      *
      * @param  <T>   the type of the quantity measured by the unit.
@@ -254,8 +256,7 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
     @Override
     @SuppressWarnings("unchecked")
     public <T extends Quantity<T>> Unit<T> asType(final Class<T> type) throws ClassCastException {
-        Objects.requireNonNull(type);
-        if (type == quantity) {
+        if (Objects.requireNonNull(type) == quantity) {
             if (getSymbol() == null) {
                 // If this unit has no symbol, opportunistically supply a symbol if we find it.
                 final SystemUnit<T> unit = Units.get(type);
@@ -278,7 +279,7 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
         }
         if (!dimension.equals(unit.dimension)) {
             throw new ClassCastException(Errors.format(Errors.Keys.IncompatibleUnitDimension_5, new Object[] {
-                    this, (quantity != null) ? quantity.getSimpleName() : "?", dimension,
+                    this, (quantity != null) ? quantity.getSimpleName() : UNFORMATTABLE, dimension,
                     type.getSimpleName(), unit.dimension}));
         }
         return unit;
@@ -319,7 +320,6 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
      */
     @Override
     public UnitConverter getConverterTo(final Unit<Q> unit) throws UnconvertibleException {
-        Objects.requireNonNull(unit);
         final Unit<Q> step = unit.getSystemUnit();
         if (step != this && !equalsIgnoreMetadata(step)) {
             // Should never occur unless parameterized type has been compromised.
@@ -350,7 +350,6 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
      */
     @Override
     public UnitConverter getConverterToAny(final Unit<?> unit) throws IncommensurableException {
-        Objects.requireNonNull(unit);
         final Unit<?> step = unit.getSystemUnit();
         if (step != this && !isCompatible(step)) {
             throw new IncommensurableException(incompatible(unit));
@@ -358,7 +357,7 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
         if (step == unit) {
             return IdentityConverter.INSTANCE;
         }
-        // Same remark than in getConverterTo(Unit).
+        // Same remark as in getConverterTo(Unit).
         return unit.getConverterToAny(step).inverse();
     }
 
@@ -381,9 +380,6 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
     public Unit<Q> alternate(final String symbol) {
         Objects.requireNonNull(symbol);
         final int c = invalidCharForSymbol(symbol, 0, false);
-        if (c < -1) {
-            throw new IllegalArgumentException(Errors.format(Errors.Keys.EmptyArgument_1, "symbol"));
-        }
         if (c >= 0) {
             throw new IllegalArgumentException(Errors.format(Errors.Keys.IllegalCharacter_2,
                     "symbol", String.valueOf(Character.toChars(c))));
@@ -426,8 +422,8 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
      */
     @Override
     public Unit<?> multiply(final Unit<?> multiplier) {
-        Objects.requireNonNull(multiplier);
         if (multiplier == this) return pow(2);                      // For formating e.g. "K²" instead of "K⋅K".
+        Objects.requireNonNull(multiplier);
         return product(multiplier, false);
     }
 
@@ -471,7 +467,7 @@ final class SystemUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> implements
                 if (inverse) c = c.inverse();
                 result = result.transform(c);
                 /*
-                 * If the system unit product is an Seshat implementation, try to infer a unit symbol
+                 * If the system unit product is a Seshat implementation, try to infer a unit symbol
                  * to be given to our customized `transform` method. Otherwise fallback on standard API.
                  */
                 result = inferSymbol(result, operation, other);

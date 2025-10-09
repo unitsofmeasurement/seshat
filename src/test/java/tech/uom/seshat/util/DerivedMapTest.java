@@ -18,9 +18,11 @@ package tech.uom.seshat.util;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.function.Function;
-import org.junit.Test;
 
-import static org.junit.Assert.*;
+// Test dependencies
+import tech.uom.seshat.TestCase;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 /**
@@ -30,13 +32,18 @@ import static org.junit.Assert.*;
  * converted map).
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.0
  */
-public final strictfp class DerivedMapTest implements Function<Integer,Integer> {
+public final class DerivedMapTest extends TestCase implements Function<Integer,Integer> {
     /**
      * The value to replace by {@code null}.
      */
     protected static final int EXCLUDED = 17;                       // non-private for javadoc purpose.
+
+    /**
+     * Creates a new test case.
+     */
+    public DerivedMapTest() {
+    }
 
     /**
      * Fills test values in the given maps.
@@ -67,9 +74,9 @@ public final strictfp class DerivedMapTest implements Function<Integer,Integer> 
         assertEquals(target.keySet(),   tested.keySet());
         assertEquals(target.entrySet(), tested.entrySet());
         assertEquals(target,            tested);
-        assertTrue ("containsKey(400)", tested.containsKey(400));
-        assertFalse("containsKey(4)",   tested.containsKey(4));
-        assertEquals(8, source.get(3).intValue());
+        assertTrue (tested.containsKey(400));
+        assertFalse(tested.containsKey(4));
+        assertEquals(target, tested);
     }
 
     /**

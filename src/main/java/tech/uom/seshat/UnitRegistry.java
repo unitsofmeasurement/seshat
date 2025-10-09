@@ -25,8 +25,8 @@ import java.io.Serializable;
 import javax.measure.Unit;
 import javax.measure.Quantity;
 import javax.measure.Dimension;
-import javax.measure.format.MeasurementParseException;
 import javax.measure.spi.SystemOfUnits;
+import javax.measure.format.MeasurementParseException;
 import tech.uom.seshat.math.Fraction;
 import tech.uom.seshat.util.WeakValueHashMap;
 
@@ -37,8 +37,6 @@ import tech.uom.seshat.util.WeakValueHashMap;
  * rather uses the static methods directly since we define all units in terms of SI.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.2
- * @since   1.0
  */
 final class UnitRegistry implements SystemOfUnits, Serializable {
     /**
@@ -67,8 +65,6 @@ final class UnitRegistry implements SystemOfUnits, Serializable {
 
     /**
      * Identifies units defined by the centimeter–gram–second (CGS) system.
-     *
-     * @since 1.2
      */
     static final byte CGS = 8;
 
@@ -96,20 +92,69 @@ final class UnitRegistry implements SystemOfUnits, Serializable {
      *   <tr><td>{@link String}</td>                      <td>{@link AbstractUnit}</td>  <td>Key is the unit symbol.</td></tr>
      *   <tr><td>{@link Short}</td>                       <td>{@link AbstractUnit}</td>  <td>Key is the EPSG code.</td></tr>
      * </table>
+     *
+     * <h4>Dimension order</h4>
+     * The search for an existing unit in this map is <strong>not</strong> sensitive to dimension order.
+     * N⋅m is considered equivalent to m⋅N, and both of them are associated to the symbol "J" (Joule).
+     * We ignore dimension order because it has no incidence on the unit symbol shown to user.
      */
     private static final Map<Object,Object> HARD_CODED = new HashMap<>(256);
 
     /**
      * Units defined by the user. Accesses to this map implies synchronization.
      * Values are stored by weak references and garbage collected when no longer used.
-     * Key and value types are the same than the one described in {@link #HARD_CODED}.
+     * Key and value types are the same as the one described in {@link #HARD_CODED}.
      *
-     * <div class="note"><b>Implementation note:</b>
-     * we separate hard-coded values from user-defined values because the amount of hard-coded values is relatively
-     * large, using weak references for them is useless, and most applications will not define any custom values.
-     * This map will typically stay empty.</div>
+     * <h4>Dimension order</h4>
+     * Contrarily to {@link #HARD_CODED}, the user-specified map of units is sensitive to dimension order.
+     * kg∕(m⋅s³) is not considered the same as kg∕(s³⋅m) for formatting purpose (but still considered the
+     * same for unit conversions purpose). This distinction is applied because the unit may have no label
+     * associated to it. The only label may be the list of dimensions, so we try to show them in the same
+     * order as specified by the users when they constructed their units.
+     *
+     * <h4>Implementation note</h4>
+     * We separate hard-coded values from user-defined values because the number of hard-coded values is relatively
+     * large, using weak references for them is useless, and most applications will not define any custom values so
+     * the user-defined map will typically stay empty. This separation avoids synchronization of hard-coded values.
+     * Furthermore the two maps have a different policy on whether to consider dimension order as significant.
      */
-    private static final WeakValueHashMap<Object,Object> USER_DEFINED = new WeakValueHashMap<>(Object.class);
+    private static final WeakValueHashMap<Object,Object> USER_DEFINED = new WeakValueHashMap<>(Object.class,
+            UnitRegistry::hashCodeOrdered,
+            UnitRegistry::equalsOrdered);
+
+    /**
+     * Returns a hash code value for the specified key, taking dimension order in account.
+     * This is used for the policy of keys in the {@link #USER_DEFINED} map.
+     *
+     * @param  key  a key of one of the types defined in {@link #HARD_CODED}.
+     * @return hash code value for the given key. Never null.
+     */
+    private static int hashCodeOrdered(final Object key) {
+        if (key instanceof UnitDimension) return ((UnitDimension) key).hashCodeOrdered();
+        if (key instanceof Map<?,?>) return UnitDimension.hashCodeOrdered((Map<?,?>) key);
+        return key.hashCode();
+    }
+
+    /**
+     * Compares the given keys, taking dimension order in account.
+     * Shall be consistent with {@link #hashCodeOrdered(Object)}.
+     *
+     * @param  key    a key of one of the types defined in {@link #HARD_CODED}.
+     * @param  other  an object to compare with the key. Never null.
+     * @return whether the given object are equal.
+     */
+    private static boolean equalsOrdered(final Object key, final Object other) {
+        if (key instanceof UnitDimension) {
+            if (other instanceof UnitDimension) {
+                return ((UnitDimension) key).equalsOrdered((UnitDimension) other);
+            }
+        } else if (key instanceof Map<?,?>) {
+            if (other instanceof Map<?,?>) {
+                return UnitDimension.equalsOrdered((Map<?,?>) key, (Map<?,?>) other);
+            }
+        }
+        return key.equals(other);
+    }
 
     /**
      * Adds the given {@code components}, {@code dim} pair in the map of hard-coded values.
@@ -148,8 +193,9 @@ final class UnitRegistry implements SystemOfUnits, Serializable {
      * This method is invoked for assertions only.
      */
     private static int filter(int existed, final SystemUnit<?> unit, final String s) {
+        if ("cd".equals(s) ||
+            "Hz".equals(s) || "Bq".equals(s)) existed &= ~(1    );      // Accepts dimension collisions only;
         if (unit.dimension.isDimensionless()) existed &= ~(1 | 2);      // Accepts dimension and quantity collisions.
-        if ("cd".equals(s) || "Hz".equals(s)) existed &= ~(1    );      // Accepts dimension collisions only;
         return (s == null) || s.isEmpty() ? 0 : existed;
     }
 
@@ -250,7 +296,7 @@ final class UnitRegistry implements SystemOfUnits, Serializable {
      *
      * @param  symbols  the string representation of a unit.
      * @return the unit with the given string representation,
-     *         or {@code null} if the give symbols can not be parsed.
+     *         or {@code null} if the give symbols cannot be parsed.
      */
     @Override
     public Unit<?> getUnit(final String symbols) {
@@ -295,7 +341,7 @@ final class UnitRegistry implements SystemOfUnits, Serializable {
     @Override
     public Set<Unit<?>> getUnits(final Dimension dimension) {
         Objects.requireNonNull(dimension);
-        final Set<Unit<?>> filtered = new HashSet<>();
+        final var filtered = new HashSet<Unit<?>>();
         for (final Unit<?> unit : getUnits()) {
             if (dimension.equals(unit.getDimension())) {
                 filtered.add(unit);

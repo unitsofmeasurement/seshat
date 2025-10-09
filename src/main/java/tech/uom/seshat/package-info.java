@@ -60,7 +60,7 @@
  * See the module summary page for code examples.
  *
  * @author  Martin Desruisseaux (MPO, IRD, Geomatys)
- * @version 1.3
+ * @version 1.5
  * @since   1.0
  */
 package tech.uom.seshat;

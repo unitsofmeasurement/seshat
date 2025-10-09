@@ -41,7 +41,21 @@ import static tech.uom.seshat.util.WeakEntry.*;
  * {@link java.util.Set} interface. This {@code get} method retrieves an entry from this set
  * that is equal to the supplied object. The {@link #unique(Object)} method combines a
  * {@code get} followed by a {@code add} operation if the specified object was not in the set.
- * This is similar in spirit to the {@link String#intern()} method.
+ * This is similar in spirit to the {@link String#intern()} method. The following example shows
+ * a convenient way to use {@code WeakHashSet} as an internal pool of immutable objects:
+ *
+ * {@snippet lang="java" :
+ *     class MyClass {
+ *         private final WeakHashSet<Foo> pool = new WeakHashSet<Foo>(Foo.class);
+ *
+ *         public Foo create(String definition) {
+ *             Foo created = new Foo(definition);
+ *             return pool.unique(created);
+ *         }
+ *     }
+ *     }
+ *
+ * Thus, {@code WeakHashSet} can be used inside a factory to prevent creating duplicate immutable objects.
  *
  * <h2>Thread safety</h2>
  * The same {@code WeakHashSet} instance can be safely used by many threads without synchronization on the part of
@@ -49,9 +63,10 @@ import static tech.uom.seshat.util.WeakEntry.*;
  * then the caller can synchronize on {@code this}.
  *
  * @author  Martin Desruisseaux (MPO, IRD, Geomatys)
- * @version 1.0
  *
  * @param <E>  the type of elements in the set.
+ *
+ * @see java.util.WeakHashMap
  */
 public final class WeakHashSet<E> extends AbstractSet<E> {
     /**
@@ -174,8 +189,7 @@ public final class WeakHashSet<E> extends AbstractSet<E> {
      */
     @Override
     public synchronized boolean add(final E element) {
-        Objects.requireNonNull(element);
-        return intern(element, ADD) == null;
+        return intern(Objects.requireNonNull(element), ADD) == null;
     }
 
     /**
@@ -218,7 +232,7 @@ public final class WeakHashSet<E> extends AbstractSet<E> {
     }
 
     /**
-     * Returns an object equals to {@code element} if such an object already exist in this
+     * Returns an object equals to {@code element} if such an object already exists in this
      * {@code WeakHashSet}. Otherwise, adds {@code element} to this {@code WeakHashSet}.
      * This method is functionally equivalents to the following code:
      *
@@ -234,30 +248,47 @@ public final class WeakHashSet<E> extends AbstractSet<E> {
      *     return element;
      *     }
      *
-     * @param  <T>      the type of the element to get. Can be {@code null}.
-     * @param  element  the element to get or to add in the set if not already presents,
-     *                  or {@code null} if the given element was null.
-     * @return an element equals to the given one if already presents in the set,
-     *         or the given {@code object} otherwise.
+     * <h4>Requirement for type safety</h4>
+     * This method is safe only if the given {@code element} implements the {@link Object#equals(Object)} method
+     * in such a way that {@code T.equals(x)} can be true only if <var>x</var> is an instance of <var>T</var>.
+     * This requirement is true in the common case when the {@code equals(Object)} implementation requires that
+     * the two compared objects are of the same class, for example as below:
+     *
+     * {@snippet lang="java" :
+     *     @Override
+     *     public boolean equals(Object obj) {
+     *         if (obj == null || obj.getClass() != getClass()) {
+     *             return false;
+     *         }
+     *         // Do the comparison
+     *     }
+     *     }
+     *
+     * @param  <T>      the type of the element to get.
+     * @param  element  the element to get or to add in the set if not already presents. Can be {@code null}.
+     * @return an element equals to the given one if already presents in the set, or the given {@code element}
+     *         otherwise. Can be {@code null} if the given element was null.
      */
+    @SuppressWarnings("unchecked")
     public synchronized <T extends E> T unique(final T element) {
         /*
-         * There is no way to make sure that this operation is really safe.
-         * We have to trust the Object.equals(Object) method to be strict
+         * It is difficult to make sure that this operation is really safe.
+         * We have to trust the `Object.equals(Object)` method to be strict
          * about the type of compared objects.
          */
-        return (T) intern(element, INTERN);
+        return (T) intern(element, UNIQUE);
     }
 
     // Arguments for the {@link #intern} method.
     /** The "remove" operation.  */  private static final int REMOVE = -1;
     /** The "get"    operation.  */  private static final int GET    =  0;
     /** The "add"    operation.  */  private static final int ADD    = +1;
-    /** The "intern" operation.  */  private static final int INTERN = +2;
+    /** The "unique" operation.  */  private static final int UNIQUE = +2;
 
     /**
      * Implementation of the {@link #add(Object)}, {@link #remove(Object)}, {@link #get(Object)},
-     * {@link #contains(Object)} and {@link #unique(Object)} methods.
+     * {@link #contains(Object)} and {@link #unique(Object)} methods. Tests for equality are done
+     * on the given object (this is implied by the {@link #unique(Object)} method contract).
      */
     private E intern(final Object obj, final int operation) {
         assert isValid();
@@ -266,6 +297,7 @@ public final class WeakHashSet<E> extends AbstractSet<E> {
              * Check if the object is already contained in this
              * WeakHashSet. If yes, return the existing element.
              */
+            @SuppressWarnings("LocalVariableHidesMemberVariable")
             Entry[] table = this.table;
             final int hash = obj.hashCode() & HASH_MASK;
             int index = hash % table.length;
@@ -294,7 +326,7 @@ public final class WeakHashSet<E> extends AbstractSet<E> {
                 final E element = elementType.cast(obj);
                 table[index] = new Entry(element, table[index], hash);
                 assert isValid();
-                if (operation == INTERN) {
+                if (operation == UNIQUE) {
                     return element;
                 }
             }

@@ -33,7 +33,7 @@ import tech.uom.seshat.util.DerivedMap;
 
 /**
  * Dimension (length, mass, time, <i>etc.</i>) of a unit of measurement.
- * Only two kind of dimensions are defined in Seshat:
+ * Only two kinds of dimensions are defined in Seshat:
  *
  * <ul>
  *   <li>Base dimensions are the 7 base dimensions specified by the SI system.</li>
@@ -54,8 +54,6 @@ import tech.uom.seshat.util.DerivedMap;
  * All {@code UnitDimension} instances are immutable and thus inherently thread-safe.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.0
- * @since   1.0
  */
 final class UnitDimension implements Dimension, Serializable {
     /**
@@ -76,7 +74,7 @@ final class UnitDimension implements Dimension, Serializable {
      *
      * @see #getBaseDimensions()
      */
-    @SuppressWarnings("serial")         // Not statically typed as Serializable.
+    @SuppressWarnings("serial")                     // The implementation is serializable.
     final Map<UnitDimension,Fraction> components;
 
     /**
@@ -148,7 +146,7 @@ final class UnitDimension implements Dimension, Serializable {
             if (!Units.initialized) {
                 UnitRegistry.init(components, dim);
             } else {
-                final UnitDimension c = (UnitDimension) UnitRegistry.putIfAbsent(components, dim);
+                final var c = (UnitDimension) UnitRegistry.putIfAbsent(components, dim);
                 if (c != null) {
                     return c;       // UnitDimension created concurrently in another thread.
                 }
@@ -165,7 +163,7 @@ final class UnitDimension implements Dimension, Serializable {
             return NONE;
         }
         if (Units.initialized) {        // Force Units class initialization.
-            final UnitDimension dim = (UnitDimension) UnitRegistry.putIfAbsent(components, this);
+            final var dim = (UnitDimension) UnitRegistry.putIfAbsent(components, this);
             if (dim != null) {
                 return dim;
             }
@@ -250,7 +248,7 @@ final class UnitDimension implements Dimension, Serializable {
          * is safe if we use the `components` map as a read-only map (no put operation allowed).
          */
         @SuppressWarnings("unchecked")
-        Map<Dimension,Integer> components = (Map<Dimension,Integer>) dimension.getBaseDimensions();
+        final var components = (Map<Dimension,Integer>) dimension.getBaseDimensions();
         if (components == null) {
             return Map.of(dimension, new Fraction(1,1));
         }
@@ -281,6 +279,7 @@ final class UnitDimension implements Dimension, Serializable {
 
     /**
      * Returns the product or the quotient of this dimension with the specified one.
+     * This method may return a cached instance.
      *
      * @param  other   the dimension by which to multiply or divide this dimension.
      * @param  divide  {@code false} for a multiplication, {@code true} for a division.
@@ -358,15 +357,47 @@ final class UnitDimension implements Dimension, Serializable {
         }
         if (other instanceof UnitDimension) {
             final UnitDimension that = (UnitDimension) other;
-            if (symbol == that.symbol) {
-                /*
-                 * Do not compare `components` if `symbols` is non-zero because in such case
-                 * the components map contains `this`, which would cause an infinite loop.
-                 */
-                return (symbol != 0) || components.equals(that.components);
+            if ((symbol | that.symbol) != 0) {
+                return symbol == that.symbol;
             }
+            /*
+             * Do not compare `components` if `symbols` is non-zero because in such case
+             * the components map contains `this`, which would cause an infinite loop.
+             */
+            return components.equals(that.components);
         }
         return false;
+    }
+
+    /**
+     * Compares this dimension with the given object for equality, taking element order in account.
+     *
+     * @param  that  the other object to compare with.
+     * @return whether the two objects are equal with elements in the same order.
+     */
+    final boolean equalsOrdered(final UnitDimension that) {
+        if ((symbol | that.symbol) != 0) {
+            return symbol == that.symbol;
+        }
+        return equalsOrdered(components, that.components);
+    }
+
+    /**
+     * Compares the given map in a way that take order in account.
+     *
+     * @param  m1  the first map to compare.
+     * @param  m2  the second map to compare.
+     * @return whether the two maps contain the same element in the same order.
+     */
+    static boolean equalsOrdered(final Map<?,?> m1, final Map<?,?> m2) {
+        final var i1 = m1.entrySet().iterator();
+        final var i2 = m2.entrySet().iterator();
+        while (i1.hasNext()) {
+            if (!(i2.hasNext() && i1.next().equals(i2.next()))) {
+                return false;
+            }
+        }
+        return !i2.hasNext();
     }
 
     /**
@@ -378,7 +409,31 @@ final class UnitDimension implements Dimension, Serializable {
          * Do not use `components` in hash code calculation if `symbols` is non-zero
          * beause in such case the map contains `this`, which would cause an infinite loop.
          */
-        return (symbol != 0) ? symbol ^ (int) serialVersionUID : components.hashCode();
+        return (symbol != 0 ? symbol : components.hashCode()) ^ (int) serialVersionUID;
+    }
+
+    /**
+     * {@return returns a hash code value which takes element order in account}.
+     * If the map is empty or contains only one element, then the returned value
+     * is the same as {@link #hashCode()}.
+     */
+    final int hashCodeOrdered() {
+        int code = symbol;
+        if (code == 0) code = hashCodeOrdered(components);
+        return code ^ (int) serialVersionUID;
+    }
+
+    /**
+     * {@return an hash code value of the given map computed in an order-sensitive was}.
+     *
+     * @param  components  the map for which to compute hash code.
+     */
+    static int hashCodeOrdered(final Map<?,?> components) {
+        int code = 0;
+        for (final Map.Entry<?,?> entry : components.entrySet()) {
+            code = code * 31 + entry.hashCode();
+        }
+        return code;
     }
 
     /**
@@ -386,7 +441,7 @@ final class UnitDimension implements Dimension, Serializable {
      */
     @Override
     public String toString() {
-        final StringBuilder buffer = new StringBuilder(8);
+        final var buffer = new StringBuilder(8);
         try {
             UnitFormat.formatComponents(components, UnitFormat.Style.SYMBOL, buffer);
         } catch (IOException e) {

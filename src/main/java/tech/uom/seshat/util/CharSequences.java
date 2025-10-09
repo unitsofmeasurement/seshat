@@ -25,9 +25,9 @@ import static java.lang.Character.*;
  * but works on a generic {@code CharSequence} instance instead of {@code String}.
  *
  * <h2>Unicode support</h2>
- * Every methods defined in this class work on <cite>code points</cite> instead of characters
+ * Every methods defined in this class work on <i>code points</i> instead of characters
  * when appropriate. Consequently, those methods should behave correctly with characters outside
- * the <cite>Basic Multilingual Plane</cite> (BMP).
+ * the <i>Basic Multilingual Plane</i> (BMP).
  *
  * <h2>Policy on space characters</h2>
  * Java defines two methods for testing if a character is a white space:
@@ -44,17 +44,17 @@ import static java.lang.Character.*;
  *       feeds or tabulations are entity boundaries.</li>
  * </ul>
  *
- * <div class="note"><b>Example:</b>
- * Numbers formatted in the French locale use no-break spaces as group separators. When parsing a list of numbers,
- * ordinary spaces around the numbers may need to be ignored, but no-break spaces shall be considered as part of the
- * numbers. Consequently, {@code isWhitespace(…)} is appropriate for skipping spaces <em>between</em> the numbers.
+ * For example numbers formatted in the French locale use no-break spaces as group separators.
+ * When parsing a list of numbers, ordinary spaces around the numbers may need to be ignored,
+ * but no-break spaces shall be considered as part of the numbers.
+ * Consequently, {@code isWhitespace(…)} is appropriate for skipping spaces <em>between</em> the numbers.
  * But if there is spaces to skip <em>inside</em> a single number, then {@code isSpaceChar(…)} is a good choice
  * for accepting no-break spaces and for stopping the parse operation at tabulations or line feed character.
- * A tabulation or line feed between two characters is very likely to separate two distinct values.</div>
+ * A tabulation or line feed between two characters is very likely to separate two distinct values.
  *
- * <p>Note that the {@link String#trim()} method doesn't follow any of those policies and should
- * generally be avoided. That {@code trim()} method removes every ISO control characters without
- * distinction about whether the characters are space or not, and ignore all Unicode spaces.</p>
+ * In practice, the {@link java.text.Format} implementations in the Seshat library typically use
+ * {@code isSpaceChar(…)} while most of the rest of the Seshat library, including this
+ * {@code CharSequences} class, consistently uses {@code isWhitespace(…)}.
  *
  * <h2>Handling of null values</h2>
  * Most methods in this class accept a {@code null} {@code CharSequence} argument. In such cases
@@ -62,7 +62,6 @@ import static java.lang.Character.*;
  * {@code 0} or {@code false} primitive type calculated as if the input was an empty string.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.2
  *
  * @see StringBuilders
  */
@@ -271,7 +270,7 @@ search:     for (; fromIndex <= toIndex; fromIndex++) {
 
     /**
      * Returns {@code true} if the given code points are equal, ignoring case.
-     * This method implements the same comparison algorithm than String#equalsIgnoreCase(String).
+     * This method implements the same comparison algorithm as String#equalsIgnoreCase(String).
      *
      * <p>This method does not verify if {@code c1 == c2}. This check should have been done
      * by the caller, since the caller code is a more optimal place for this check.</p>
@@ -360,7 +359,7 @@ search:     for (; fromIndex <= toIndex; fromIndex++) {
             if (i >= 0) {
                 int p = 0;
                 final int sl = toSearch.length();
-                final StringBuilder buffer = new StringBuilder(length + (replaceBy.length() - sl));
+                final var buffer = new StringBuilder(length + (replaceBy.length() - sl));
                 do {
                     buffer.append(text, p, i).append(replaceBy);
                     i = indexOf(text, toSearch, p = i + sl, length);

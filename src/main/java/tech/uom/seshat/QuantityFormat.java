@@ -15,14 +15,14 @@
  */
 package tech.uom.seshat;
 
-import java.util.Objects;
 import java.util.Locale;
+import java.util.Objects;
 import java.text.Format;
 import java.text.FieldPosition;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
-import java.lang.reflect.InaccessibleObjectException;
 import java.io.IOException;
+import java.lang.reflect.InaccessibleObjectException;
 import javax.measure.Quantity;
 import javax.measure.Unit;
 import javax.measure.format.MeasurementParseException;
@@ -33,7 +33,7 @@ import tech.uom.seshat.resources.Errors;
  * Parses and formats numbers with units of measurement.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.2
+ * @version 1.5
  *
  * @see NumberFormat
  * @see UnitFormat
@@ -68,9 +68,8 @@ public class QuantityFormat extends Format implements javax.measure.format.Quant
      * @param  locale  the locale for the quantity format.
      */
     public QuantityFormat(final Locale locale) {
-        Objects.requireNonNull(locale);
+        unitFormat   = new UnitFormat(locale);                  // Does null check.
         numberFormat = NumberFormat.getNumberInstance(locale);
-        unitFormat   = new UnitFormat(locale);
     }
 
     /**
@@ -80,10 +79,8 @@ public class QuantityFormat extends Format implements javax.measure.format.Quant
      * @param  unitFormat    the format for parsing and formatting the unit of measurement part.
      */
     public QuantityFormat(final NumberFormat numberFormat, final UnitFormat unitFormat) {
-        Objects.requireNonNull(numberFormat);
-        Objects.requireNonNull(unitFormat);
-        this.numberFormat = numberFormat;
-        this.unitFormat   = unitFormat;
+        this.numberFormat = Objects.requireNonNull(numberFormat);
+        this.unitFormat   = Objects.requireNonNull(unitFormat);
     }
 
     /**
@@ -91,6 +88,7 @@ public class QuantityFormat extends Format implements javax.measure.format.Quant
      * This is {@code true} in this {@code QuantityFormat} implementation.
      *
      * @return whether this format depends on the locale, which is true in this implementation.
+     * @since  1.4
      */
     @Override
     public boolean isLocaleSensitive() {
@@ -103,6 +101,7 @@ public class QuantityFormat extends Format implements javax.measure.format.Quant
      *
      * @param  quantity  the quantity to format.
      * @return the string representation of the given quantity.
+     * @since  1.4
      */
     @Override
     public String format(final Quantity<?> quantity) {
@@ -117,6 +116,7 @@ public class QuantityFormat extends Format implements javax.measure.format.Quant
      * @param  toAppendTo  where to format the quantity.
      * @return the given {@code toAppendTo} argument, for method calls chaining.
      * @throws IOException if an I/O exception occurred.
+     * @since  1.4
      */
     @Override
     public Appendable format(final Quantity<?> quantity, final Appendable toAppendTo) throws IOException {
@@ -150,7 +150,8 @@ public class QuantityFormat extends Format implements javax.measure.format.Quant
      *
      * @param  source  the text to parse.
      * @return the quantity parsed from the specified text.
-     * @throws MeasurementParseException if the given text can not be parsed.
+     * @throws MeasurementParseException if the given text cannot be parsed.
+     * @since  1.4
      */
     @Override
     public Quantity<?> parse(final CharSequence source) throws MeasurementParseException {
@@ -164,7 +165,8 @@ public class QuantityFormat extends Format implements javax.measure.format.Quant
      * @param  source  the text, part of which should be parsed.
      * @param  pos     index and error index information.
      * @return the quantity parsed from the specified character sub-sequence.
-     * @throws MeasurementParseException if the given text can not be parsed.
+     * @throws MeasurementParseException if the given text cannot be parsed.
+     * @since  1.4
      */
     @Override
     public Quantity<?> parse(final CharSequence source, final ParsePosition pos) throws MeasurementParseException {
@@ -225,28 +227,46 @@ public class QuantityFormat extends Format implements javax.measure.format.Quant
     }
 
     /**
+     * Parses only a number without units of measurement.
+     * This method is sometime useful when the number is in a context where the unit is not repeated.
+     *
+     * @param  source  the number to parse.
+     * @return the number parsed from the specified text.
+     * @throws MeasurementParseException if the given text cannot be parsed.
+     * @since  1.5
+     */
+    public Number parseNumber(final String source) throws MeasurementParseException {
+        final var pos = new ParsePosition(0);
+        final Number value = numberFormat.parse(source, pos);
+        if (value != null) {
+            return value;
+        }
+        throw new MeasurementParseException(Errors.format(Errors.Keys.CanNotParse_1, source), source, pos.getErrorIndex());
+    }
+
+    /**
      * Returns a clone of this format.
      *
      * @return a clone of this format.
      */
     @Override
     public QuantityFormat clone() {
-        final QuantityFormat clone = (QuantityFormat) super.clone();
+        final QuantityFormat f = (QuantityFormat) super.clone();
         try {
-            clone.setFinalField("numberFormat", numberFormat);
-            clone.setFinalField("unitFormat", unitFormat);
+            f.clone("numberFormat");
+            f.clone("unitFormat");
         } catch (ReflectiveOperationException e) {
             throw (InaccessibleObjectException) new InaccessibleObjectException().initCause(e);
         }
-        return clone;
+        return f;
     }
 
     /**
-     * Clones the given format, then assigns the clone to the field of given name.
+     * Clones the value in the specified field.
      */
-    private void setFinalField(final String fieldName, final Format value) throws ReflectiveOperationException {
-        final java.lang.reflect.Field f = QuantityFormat.class.getDeclaredField(fieldName);
+    private void clone(final String field) throws ReflectiveOperationException {
+        final var f = QuantityFormat.class.getDeclaredField(field);
         f.setAccessible(true);
-        f.set(this, value.clone());
+        f.set(this, ((Format) f.get(this)).clone());
     }
 }

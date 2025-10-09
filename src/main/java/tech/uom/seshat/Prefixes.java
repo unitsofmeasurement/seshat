@@ -28,8 +28,6 @@ import tech.uom.seshat.math.MathFunctions;
  * but this may be improved in future version.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.0
- * @since   1.0
  */
 final class Prefixes {
     /**

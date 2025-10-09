@@ -34,11 +34,8 @@ import java.util.Objects;
  * It is a design similar to {@code org.opengis.referencing.crs.DerivedCRS}</p>
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.1
  *
  * @param <Q>  the type of quantity implemented by this scalar.
- *
- * @since 1.0
  */
 class DerivedScalar<Q extends Quantity<Q>> extends Scalar<Q> {
     /**
@@ -58,13 +55,13 @@ class DerivedScalar<Q extends Quantity<Q>> extends Scalar<Q> {
      * and its system unit (stored in super-class) is something more complex than a scale
      * factor, otherwise we would not need this {@code DerivedScalar}.
      */
-    @SuppressWarnings("serial")         // Not statically typed as Serializable.
+    @SuppressWarnings("serial")             // Most Seshat implementations are serializable.
     private final Unit<Q> derivedUnit;
 
     /**
      * Converter from the system unit to the unit of this quantity.
      */
-    @SuppressWarnings("serial")         // Not statically typed as Serializable.
+    @SuppressWarnings("serial")             // Most Seshat implementations are serializable.
     private final UnitConverter fromSystem;
 
     /**
@@ -81,7 +78,7 @@ class DerivedScalar<Q extends Quantity<Q>> extends Scalar<Q> {
 
     /**
      * Creates a new scalar resulting from an arithmetic operation performed on the given scalar.
-     * The arithmetic operation result is in the same unit than the original scalar.
+     * The arithmetic operation result is in the same unit as the original scalar.
      *
      * @param  value  the arithmetic result in system unit.
      */
@@ -93,8 +90,8 @@ class DerivedScalar<Q extends Quantity<Q>> extends Scalar<Q> {
     }
 
     /**
-     * Creates a new quantity of same type than this quantity but with a different value.
-     * The unit of measurement shall be the same than the system unit of this quantity.
+     * Creates a new quantity of same type as this quantity but with a different value.
+     * The unit of measurement shall be the same as the system unit of this quantity.
      * Implementation in subclasses should be like below:
      *
      * {@snippet lang="java" :
@@ -132,7 +129,7 @@ class DerivedScalar<Q extends Quantity<Q>> extends Scalar<Q> {
     }
 
     /**
-     * Returns the value casted to a single-precision floating point number.
+     * Returns the value cast to a single-precision floating point number.
      */
     @Override
     public final float floatValue() {
@@ -140,7 +137,7 @@ class DerivedScalar<Q extends Quantity<Q>> extends Scalar<Q> {
     }
 
     /**
-     * Returns the value rounded to nearest integer. {@link Double#NaN} are casted to 0 and values out of
+     * Returns the value rounded to nearest integer. {@link Double#NaN} are cast to 0 and values out of
      * {@code long} range are clamped to minimal or maximal representable numbers of {@code long} type.
      */
     @Override
@@ -228,7 +225,7 @@ class DerivedScalar<Q extends Quantity<Q>> extends Scalar<Q> {
         }
 
         /**
-         * Creates a new quantity of the same type than this quantity but a different value and/or unit.
+         * Creates a new quantity of the same type as this quantity but a different value and/or unit.
          *
          * @see ScalarFallback#create(double, Unit)
          */

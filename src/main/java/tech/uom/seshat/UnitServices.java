@@ -20,8 +20,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Set;
+import java.util.Objects;
 import java.text.NumberFormat;
 import javax.measure.Unit;
 import javax.measure.Quantity;
@@ -43,7 +43,7 @@ import tech.uom.seshat.resources.Errors;
  * without direct dependency. A {@code UnitServices} instance can be obtained by call to {@link #current()}.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.2
+ * @version 1.4
  * @since   1.0
  */
 public class UnitServices extends ServiceProvider implements SystemOfUnitsService, FormatService {
@@ -195,6 +195,7 @@ public class UnitServices extends ServiceProvider implements SystemOfUnitsServic
      * @param  name     the name of the desired format.
      * @param  variant  indicates a variation of a unit format.
      * @return the corresponding unit format, or {@code null} if none.
+     * @since  1.4
      */
     @Override
     public UnitFormat getUnitFormat(final String name, final String variant) {
@@ -205,7 +206,7 @@ public class UnitServices extends ServiceProvider implements SystemOfUnitsServic
      * Returns a quantity format for the default locale.
      *
      * @return a {@link tech.uom.seshat.QuantityFormat} instance for quantities.
-     * @since  1.2
+     * @since  1.4
      */
     @Override
     public QuantityFormat getQuantityFormat() {
@@ -218,7 +219,7 @@ public class UnitServices extends ServiceProvider implements SystemOfUnitsServic
      *
      * @param  name  the name of the format.
      * @return the corresponding quantity format, or {@code null} if none.
-     * @since  1.2
+     * @since  1.4
      */
     @Override
     public QuantityFormat getQuantityFormat(final String name) {
@@ -239,7 +240,7 @@ public class UnitServices extends ServiceProvider implements SystemOfUnitsServic
      */
     @Override
     public Set<String> getAvailableFormatNames(final FormatType type) {
-        final Set<String> names = new HashSet<>(4);
+        final var names = new HashSet<String>(4);
         for (final Enum<?> e : tech.uom.seshat.UnitFormat.Style.values()) {
             names.add(e.name());
         }
@@ -265,7 +266,7 @@ public class UnitServices extends ServiceProvider implements SystemOfUnitsServic
     }
 
     /**
-     * Return a factory for the given {@code Quantity} type. In the particular case of Seshat implementation,
+     * Returns a factory for the given {@code Quantity} type. In the particular case of Seshat implementation,
      * {@link Quantities#create(double, Unit)} provides a more direct way to instantiate quantities.
      *
      * @param  <Q>   compile-time value of the {@code type} argument.
@@ -276,8 +277,7 @@ public class UnitServices extends ServiceProvider implements SystemOfUnitsServic
      */
     @Override
     public <Q extends Quantity<Q>> QuantityFactory<Q> getQuantityFactory(final Class<Q> type) {
-        Objects.requireNonNull(type);
-        QuantityFactory<Q> factory = Units.get(type);
+        QuantityFactory<Q> factory = Units.get(Objects.requireNonNull(type));
         if (factory == null) {
             if (type != null) {
                 factory = new DefaultQuantityFactory<Q>() {

@@ -19,8 +19,8 @@ import java.util.Objects;
 import java.lang.reflect.Proxy;
 import javax.measure.Unit;
 import javax.measure.Quantity;
-import javax.measure.UnconvertibleException;
 import javax.measure.UnitConverter;
+import javax.measure.UnconvertibleException;
 import tech.uom.seshat.util.StringBuilders;
 import tech.uom.seshat.resources.Errors;
 
@@ -33,11 +33,8 @@ import tech.uom.seshat.resources.Errors;
  *
  * @author  Martin Desruisseaux (Geomatys)
  * @author  Alexis Manin (Geomatys)
- * @version 1.2
  *
  * @param <Q>  the type of quantity implemented by this scalar.
- *
- * @since 1.0
  */
 class Scalar<Q extends Quantity<Q>> extends Number implements Quantity<Q>, Comparable<Q> {
     /**
@@ -58,7 +55,7 @@ class Scalar<Q extends Quantity<Q>> extends Number implements Quantity<Q>, Compa
     /**
      * The unit of measurement associated to the value.
      */
-    @SuppressWarnings("serial")         // Not statically typed as Serializable.
+    @SuppressWarnings("serial")         // Most Seshat implementations are serializable.
     private final Unit<Q> unit;
 
     /**
@@ -71,8 +68,8 @@ class Scalar<Q extends Quantity<Q>> extends Number implements Quantity<Q>, Compa
     }
 
     /**
-     * Creates a new quantity of same type than this quantity but with a different value and/or unit.
-     * This method performs the same work than {@link Quantities#create(double, Unit)}, but without
+     * Creates a new quantity of same type as this quantity but with a different value and/or unit.
+     * This method performs the same work as {@link Quantities#create(double, Unit)}, but without
      * the need to check for the Seshat specific {@link SystemUnit} implementation.
      *
      * <p>This method is invoked (indirectly) in only two situations:</p>
@@ -94,8 +91,8 @@ class Scalar<Q extends Quantity<Q>> extends Number implements Quantity<Q>, Compa
     }
 
     /**
-     * Returns a quantity quantity of same type than this quantity but with a different value and/or unit.
-     * If the new value and unit are the same than this quantity, then {@code this} instance is returned.
+     * Returns a quantity quantity of same type as this quantity but with a different value and/or unit.
+     * If the new value and unit are the same as this quantity, then {@code this} instance is returned.
      * Positive and negative zeros are considered two different values.
      */
     private Quantity<?> of(final double newValue, final Unit<?> newUnit) {
@@ -106,7 +103,7 @@ class Scalar<Q extends Quantity<Q>> extends Number implements Quantity<Q>, Compa
     }
 
     /**
-     * Returns a quantity with the same units than this quantity. If the new value is the same
+     * Returns a quantity with the same units as this quantity. If the new value is the same
      * than current value, then {@code this} instance is returned. Positive and negative zeros
      * are considered two different values.
      */
@@ -153,7 +150,7 @@ class Scalar<Q extends Quantity<Q>> extends Number implements Quantity<Q>, Compa
     }
 
     /**
-     * Returns the value casted to a single-precision floating point number.
+     * Returns the value cast to a single-precision floating point number.
      */
     @Override
     public float floatValue() {
@@ -161,7 +158,7 @@ class Scalar<Q extends Quantity<Q>> extends Number implements Quantity<Q>, Compa
     }
 
     /**
-     * Returns the value rounded to nearest integer. {@link Double#NaN} are casted to 0 and values out of
+     * Returns the value rounded to nearest integer. {@link Double#NaN} are cast to 0 and values out of
      * {@code long} range are clamped to minimal or maximal representable numbers of {@code long} type.
      */
     @Override
@@ -170,7 +167,7 @@ class Scalar<Q extends Quantity<Q>> extends Number implements Quantity<Q>, Compa
     }
 
     /**
-     * Returns the value rounded to nearest integer. {@link Double#NaN} are casted to 0 and values out of
+     * Returns the value rounded to nearest integer. {@link Double#NaN} are cast to 0 and values out of
      * {@code int} range are clamped to minimal or maximal representable numbers of {@code int} type.
      */
     @Override
@@ -179,7 +176,7 @@ class Scalar<Q extends Quantity<Q>> extends Number implements Quantity<Q>, Compa
     }
 
     /**
-     * Returns the value rounded to nearest integer. {@link Double#NaN} are casted to 0 and values out of
+     * Returns the value rounded to nearest integer. {@link Double#NaN} are cast to 0 and values out of
      * {@code short} range are clamped to minimal or maximal representable numbers of {@code short} type.
      */
     @Override
@@ -188,7 +185,7 @@ class Scalar<Q extends Quantity<Q>> extends Number implements Quantity<Q>, Compa
     }
 
     /**
-     * Returns the value rounded to nearest integer. {@link Double#NaN} are casted to 0 and values out of
+     * Returns the value rounded to nearest integer. {@link Double#NaN} are cast to 0 and values out of
      * {@code byte} range are clamped to minimal or maximal representable numbers of {@code byte} type.
      */
     @Override
@@ -402,8 +399,8 @@ class Scalar<Q extends Quantity<Q>> extends Number implements Quantity<Q>, Compa
 
     /*
      * Following inner classes are straightforward implementations for some commonly used quantity types.
-     * We do not need to provide an implementation for every types; we will fallback on a proxy mechanism
-     * as a fallback for less frequently used types.
+     * We do not need to provide an implementation for every types, because we have a proxy mechanism as
+     * a fallback for less frequently used types.
      */
 
 

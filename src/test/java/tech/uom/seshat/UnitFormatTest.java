@@ -24,9 +24,10 @@ import javax.measure.Unit;
 import javax.measure.quantity.Length;
 import javax.measure.format.MeasurementParseException;
 import tech.uom.seshat.util.Characters;
-import org.junit.Test;
 
-import static org.junit.Assert.*;
+// Test dependencies
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 /**
@@ -34,11 +35,14 @@ import static org.junit.Assert.*;
  *
  * @author  Martin Desruisseaux (Geomatys)
  * @author  Alexis Manin (Geomatys)
- * @version 1.3
- * @since   1.0
  */
-public final strictfp class UnitFormatTest {
-    private static final double STRICT = 0;
+@SuppressWarnings("exports")
+public final class UnitFormatTest extends TestCase {
+    /**
+     * Creates a new test case.
+     */
+    public UnitFormatTest() {
+    }
 
     /**
      * Verifies all constants defined in {@link Units} class. This method verifies:
@@ -51,7 +55,7 @@ public final strictfp class UnitFormatTest {
      */
     @Test
     public void verifyUnitConstants() {
-        final Set<String> declared = new HashSet<>(64);
+        final var declared = new HashSet<String>(64);
         for (final Field f : Units.class.getFields()) {
             if (Unit.class.isAssignableFrom(f.getType())) {
                 declared.add(f.getName());
@@ -80,6 +84,7 @@ public final strictfp class UnitFormatTest {
         verify(declared, "ARC_MINUTE",          "",             "′",     "arc-minute",              Units.ARC_MINUTE);
         verify(declared, "ARC_SECOND",          "",             "″",     "arc-second",              Units.ARC_SECOND);
         verify(declared, "GRAD",                "",             "grad",  "grad",                    Units.GRAD);
+        verify(declared, "NANOSECOND",          "T",            "ns",    "nanosecond",              Units.NANOSECOND);
         verify(declared, "MILLISECOND",         "T",            "ms",    "millisecond",             Units.MILLISECOND);
         verify(declared, "SECOND",              "T",            "s",     "second",                  Units.SECOND);
         verify(declared, "MINUTE",              "T",            "min",   "minute",                  Units.MINUTE);
@@ -87,9 +92,13 @@ public final strictfp class UnitFormatTest {
         verify(declared, "DAY",                 "T",            "d",     "day",                     Units.DAY);
         verify(declared, "WEEK",                "T",            "wk",    "week",                    Units.WEEK);
         verify(declared, "TROPICAL_YEAR",       "T",            "a",     "year",                    Units.TROPICAL_YEAR);
+        verify(declared, "CURIE",               "∕T",           "Ci",    "curie",                   Units.CURIE);
+        verify(declared, "BECQUEREL",           "∕T",           "Bq",    "becquerel",               Units.BECQUEREL);
         verify(declared, "HERTZ",               "∕T",           "Hz",    "hertz",                   Units.HERTZ);
+        verify(declared, "RADIANS_PER_SECOND",  "∕T",           "rad∕s", "radians per second",      Units.RADIANS_PER_SECOND);
         verify(declared, "METRES_PER_SECOND",   "L∕T",          "m∕s",   "metres per second",       Units.METRES_PER_SECOND);
         verify(declared, "KILOMETRES_PER_HOUR", "L∕T",          "km∕h",  "kilometres per hour",     Units.KILOMETRES_PER_HOUR);
+        verify(declared, "KNOT",                "L∕T",          "kn",    "knot",                    Units.KNOT);
         verify(declared, "PASCAL",              "M∕(L⋅T²)",     "Pa",    "pascal",                  Units.PASCAL);
         verify(declared, "HECTOPASCAL",         "M∕(L⋅T²)",     "hPa",   "hectopascal",             Units.HECTOPASCAL);
         verify(declared, "DECIBAR",             "M∕(L⋅T²)",     "dbar",  "decibar",                 Units.DECIBAR);
@@ -115,19 +124,21 @@ public final strictfp class UnitFormatTest {
         verify(declared, "LUX",                 "J∕L²",         "lx",    "lux",                     Units.LUX);
         verify(declared, "KILOGRAM",            "M",            "kg",    "kilogram",                Units.KILOGRAM);
         verify(declared, "GRAM",                "M",            "g",     "gram",                    Units.GRAM);
+        verify(declared, "TONNE",               "M",            "t",     "tonne",                   Units.TONNE);
         verify(declared, "MOLE",                "N",            "mol",   "mole",                    Units.MOLE);
         verify(declared, "UNITY",               "",             "",       null,                     Units.UNITY);
         verify(declared, "PERCENT",             "",             "%",     "percent",                 Units.PERCENT);
         verify(declared, "PPM",                 "",             "ppm",   "parts per million",       Units.PPM);
+        verify(declared, "PSU",                 "",             "psu",   "practical salinity unit", Units.PSU);
         verify(declared, "PIXEL",               "",             "px",    "pixel",                   Units.PIXEL);
         verify(declared, "DECIBEL",             "",             "dB",    "decibel",                 Units.DECIBEL);
         verify(declared, "GAL",                 "L∕T²",         "Gal",   "gal",                     Units.GAL);
         verify(declared, "METRES_PER_SECOND_SQUARED", "L∕T²",   "m∕s²",  "metres per second squared", Units.METRES_PER_SECOND_SQUARED);
-        assertTrue("Missing units in test:" + declared, declared.isEmpty());
+        assertTrue(declared.isEmpty(), () -> "Missing units in test:" + declared);
     }
 
     /**
-     * Verifies one of the constants declared in the {@link Unit} class.
+     * Verifies one of the constants declared in the {@link Units} class.
      *
      * @param declared   a map from which to remove the {@code field} value, for verifying that we didn't forgot an element.
      * @param field      the name of the constant to be verified.
@@ -137,19 +148,19 @@ public final strictfp class UnitFormatTest {
      * @param unit       the unit to verify.
      */
     private static void verify(final Set<String> declared, final String field, final String dimension, final String symbol, final String name, final Unit<?> unit) {
-        assertEquals(field, dimension, String.valueOf(unit.getDimension()));
-        assertEquals(field, symbol,    UnitFormat.INSTANCE.format(unit));
+        assertEquals(dimension, String.valueOf(unit.getDimension()), field);
+        assertEquals(symbol, UnitFormat.INSTANCE.format(unit), field);
         if (name != null) {
-            assertEquals(field, name, UnitFormat.getBundle(Locale.UK).getString(symbol));
+            assertEquals(name, UnitFormat.getBundle(Locale.UK).getString(symbol), field);
             for (int i=0; i<name.length();) {
                 final int c = name.codePointAt(i);
-                assertTrue(name, AbstractUnit.isSymbolChar(c) || Character.isWhitespace(c));
+                assertTrue(AbstractUnit.isSymbolChar(c) || Character.isWhitespace(c), name);
                 i += Character.charCount(c);
             }
         }
         for (int i=0; i<symbol.length();) {
             final int c = symbol.codePointAt(i);
-            assertTrue(symbol, AbstractUnit.isSymbolChar(c) || Characters.isSuperScript(c) || c == '∕');
+            assertTrue(AbstractUnit.isSymbolChar(c) || Characters.isSuperScript(c) || c == '∕', symbol);
             i += Character.charCount(c);
         }
         declared.remove(field);
@@ -168,7 +179,7 @@ public final strictfp class UnitFormatTest {
      */
     @Test
     public void testLabel() {
-        final UnitFormat f = new UnitFormat(Locale.ENGLISH);
+        final var f = new UnitFormat(Locale.ENGLISH);
         f.label(Units.METRE,  "mFoo");
         f.label(Units.SECOND, "sFoo");
         assertEquals("mFoo", f.format(Units.METRE));
@@ -182,23 +193,15 @@ public final strictfp class UnitFormatTest {
         assertEquals("mètre", f.format(Units.METRE));
         assertEquals("sFoo",  f.format(Units.SECOND));
         assertSame(Units.METRE, f.parse("mètre"));
-        try {
-            f.parse("mFoo");
-            fail("“mFoo” should not be assigned to unit anymore.");
-        } catch (MeasurementParseException e) {
-            final String message = e.getMessage();
-            assertTrue(message, message.contains("mFoo"));
-        }
-        /*
-         * Verify that we cannot specify invalid unit label.
-         */
-        try {
-            f.label(Units.METRE, "m¹");
-            fail("Should not accept labels ending with a digit.");
-        } catch (IllegalArgumentException e) {
-            final String message = e.getMessage();
-            assertTrue(message, message.contains("m¹"));
-        }
+
+        // “mFoo” should not be assigned to unit anymore.
+        RuntimeException exception;
+        exception = assertThrows(MeasurementParseException.class, () -> f.parse("mFoo"));
+        assertMessageContains(exception, "mFoo");
+
+        // Should not accept labels ending with a digit.
+        exception = assertThrows(IllegalArgumentException.class, () -> f.label(Units.METRE, "m¹"));
+        assertMessageContains(exception, "m¹");
     }
 
     /**
@@ -206,7 +209,7 @@ public final strictfp class UnitFormatTest {
      */
     @Test
     public void testDuplicatedLabels() {
-        final UnitFormat f = new UnitFormat(Locale.ENGLISH);
+        final var f = new UnitFormat(Locale.ENGLISH);
         f.label(Units.DEGREE, "deg");
         f.label(Units.DEGREE, "dd");        // For "decimal degrees"
         roundtrip(f, "dd", "dd");
@@ -217,7 +220,7 @@ public final strictfp class UnitFormatTest {
      */
     @Test
     public void testFormatUCUM() {
-        final UnitFormat f = new UnitFormat(Locale.UK);
+        final var f = new UnitFormat(Locale.UK);
         f.setStyle(UnitFormat.Style.UCUM);
         assertEquals("m",   f.format(Units.METRE));
         assertEquals("km",  f.format(Units.KILOMETRE));
@@ -237,7 +240,7 @@ public final strictfp class UnitFormatTest {
      */
     @Test
     public void testFormatName() {
-        final UnitFormat f = new UnitFormat(Locale.UK);
+        final var f = new UnitFormat(Locale.UK);
         f.setStyle(UnitFormat.Style.NAME);
         assertEquals("metre",        f.format(Units.METRE));
         assertEquals("kilometre",    f.format(Units.KILOMETRE));
@@ -276,7 +279,7 @@ public final strictfp class UnitFormatTest {
      */
     @Test
     public void testFormatScaled() {
-        final UnitFormat f = new UnitFormat(Locale.UK);
+        final var f = new UnitFormat(Locale.UK);
         f.setStyle(UnitFormat.Style.SYMBOL);
         assertEquals("Mm",      f.format(Units.KILOMETRE .multiply(1000)));
         assertEquals("10⁵⋅m",   f.format(Units.KILOMETRE .multiply( 100)));
@@ -293,7 +296,7 @@ public final strictfp class UnitFormatTest {
      */
     @Test
     public void testFormatPower() {
-        final UnitFormat f = new UnitFormat(Locale.UK);
+        final var f = new UnitFormat(Locale.UK);
         f.setStyle(UnitFormat.Style.SYMBOL);
         assertEquals("m²",  f.format(Units.METRE     .pow(2)));
         assertEquals("cm²", f.format(Units.CENTIMETRE.pow(2)));
@@ -305,7 +308,7 @@ public final strictfp class UnitFormatTest {
      */
     @Test
     public void testFormatRatio() {
-        final UnitFormat f = new UnitFormat(Locale.UK);
+        final var f = new UnitFormat(Locale.UK);
         f.setStyle(UnitFormat.Style.SYMBOL);
         assertEquals( "m∕h", f.format(Units.METRE.divide(Units.HOUR)));
         assertEquals("mm∕h", f.format(Units.MILLIMETRE.divide(Units.HOUR)));
@@ -317,7 +320,7 @@ public final strictfp class UnitFormatTest {
      */
     @Test
     public void testFormatUnusual() {
-        final UnitFormat f = new UnitFormat(Locale.UK);
+        final var f = new UnitFormat(Locale.UK);
         final Unit<?> u1 = Units.SECOND.pow(-1).multiply(3);
         assertEquals("3∕s",        f.format(u1));
         assertEquals("3⋅m∕s",      f.format(Units.METRE.multiply(u1)));
@@ -332,7 +335,7 @@ public final strictfp class UnitFormatTest {
      */
     @Test
     public void testUnity() {
-        final UnitFormat f = new UnitFormat(Locale.UK);
+        final var f = new UnitFormat(Locale.UK);
         assertEquals(   "1∕m²", f.format(Units.UNITY.divide(Units.SQUARE_METRE)));
         assertEquals("10⁻²∕m²", f.format(Units.UNITY.divide(100).divide(Units.SQUARE_METRE)));
         assertEquals("%∕m²",    f.format(Units.PERCENT.divide(Units.SQUARE_METRE)));
@@ -382,25 +385,28 @@ public final strictfp class UnitFormatTest {
         assertSame(Units.CELSIUS,       f.parse("deg C"));
         assertSame(Units.WATT,          f.parse("watt"));
         assertSame(Units.UNITY,         f.parse("unity"));
-        try {
-            f.parse("degree foo");
-            fail("Should not accept unknown unit.");
-        } catch (MeasurementParseException e) {
-            final String message = e.getMessage();
-            assertTrue(message, message.contains("degree"));
-            assertTrue(message, message.contains("foo"));
-        }
-        // Tests with localisation.
-        try {
-            f.parse("mètre cube");
-            fail("Should not accept localized unit unless requested.");
-        } catch (MeasurementParseException e) {
-            final String message = e.getMessage();
-            assertTrue(message, message.contains("mètre"));
-            assertTrue(message, message.contains("cube"));
-        }
+
+        // Should not accept unknown unit.
+        MeasurementParseException exception;
+        exception = assertThrows(MeasurementParseException.class, () -> f.parse("degree foo"));
+        assertMessageContains(exception, "degree", "foo");
+
+        // Should not accept localized unit unless requested.
+        exception = assertThrows(MeasurementParseException.class, () -> f.parse("mètre cube"));
+        assertMessageContains(exception, "mètre", "cube");
+
         f.setLocale(Locale.FRANCE);
         assertSame(Units.CUBIC_METRE, f.parse("mètre cube"));
+    }
+
+    /**
+     * Tests parsing of names such "metres per second".
+     */
+    @Test
+    public void testParseNameWithRatio() {
+        final var f = new UnitFormat(Locale.UK);
+        assertSame(Units.METRES_PER_SECOND, f.parse("metres per second"));
+        assertSame(Units.METRES_PER_SECOND, f.parse("metres per seconds"));     // Mispelling sometime encoutered.
     }
 
     /**
@@ -408,7 +414,7 @@ public final strictfp class UnitFormatTest {
      */
     @Test
     public void testParseNameRaisedToPower() {
-        final UnitFormat f = new UnitFormat(Locale.UK);
+        final var f = new UnitFormat(Locale.UK);
         assertSame(Units.SQUARE_METRE, f.parse("meter2"));
         assertSame(Units.HERTZ,        f.parse("second-1"));
     }
@@ -419,10 +425,20 @@ public final strictfp class UnitFormatTest {
      */
     @Test
     public void testParseEPSG() {
-        final UnitFormat f = new UnitFormat(Locale.UK);
+        final var f = new UnitFormat(Locale.UK);
         assertSame(Units.METRE,             f.parse("EPSG:9001"));
         assertSame(Units.METRE,             f.parse("urn:ogc:def:uom:EPSG::9001"));
         assertSame(Units.METRES_PER_SECOND, f.parse("urn:ogc:def:uom:EPSG::1026"));
+    }
+
+    /**
+     * Tests parsing a unit defined by a URL.
+     */
+    @Test
+    public void testParseURL() {
+        final var f = new UnitFormat(Locale.UK);
+        assertSame(Units.METRE, f.parse("http://www.opengis.net/def/uom/EPSG/0/9001"));
+        assertSame(Units.DAY,   f.parse("http://www.opengis.net/def/uom/UCUM/0/d"));
     }
 
     /**
@@ -430,7 +446,7 @@ public final strictfp class UnitFormatTest {
      */
     @Test
     public void testParseSymbol() {
-        final UnitFormat f = new UnitFormat(Locale.UK);
+        final var f = new UnitFormat(Locale.UK);
         assertSame(Units.METRE,         f.parse("m"));
         assertSame(Units.UNITY,         f.parse("m⁰"));
         assertSame(Units.METRE,         f.parse("m¹"));
@@ -452,7 +468,7 @@ public final strictfp class UnitFormatTest {
      */
     @Test
     public void testParsePrefix() {
-        final UnitFormat f = new UnitFormat(Locale.UK);
+        final var f = new UnitFormat(Locale.UK);
         ConventionalUnitTest.verify(Units.JOULE,       f.parse("kJ"),   "kJ",   1E+3);
         ConventionalUnitTest.verify(Units.HERTZ,       f.parse("MHz"),  "MHz",  1E+6);
         ConventionalUnitTest.verify(Units.PASCAL,      f.parse("daPa"), "daPa", 1E+1);
@@ -465,21 +481,19 @@ public final strictfp class UnitFormatTest {
          * When the unit contain an exponent, the conversion factor shall be raised
          * to that exponent too.
          */
-        assertEquals("km²", 1E+6, Units.toStandardUnit(f.parse("km²")), STRICT);
-        assertEquals("kJ²", 1E+6, Units.toStandardUnit(f.parse("kJ²")), STRICT);
+        assertEquals(1E+6, Units.toStandardUnit(f.parse("km²")), "km²");
+        assertEquals(1E+6, Units.toStandardUnit(f.parse("kJ²")), "kJ²");
         /*
          * Verify that prefix are not accepted for conventional units. It would either be illegal prefix duplication
          * (for example we should not accept "kkm" as if it was "k" + "km") or confusing (for example "a" stands for
          * the tropical year, "ha" could be understood as 100 tropical years but is actually used for hectare).
          */
         assertSame(Units.TROPICAL_YEAR, f.parse("a"));
-        try {
-            f.parse("ka");
-            fail("Should not accept prefix in ConventionalUnit.");
-        } catch (MeasurementParseException e) {
-            final String message = e.getMessage();
-            assertTrue(message, message.contains("ka"));
-        }
+
+        // Should not accept prefix in ConventionalUnit.
+        MeasurementParseException exception;
+        exception = assertThrows(MeasurementParseException.class, () -> f.parse("ka"));
+        assertMessageContains(exception, "ka");
     }
 
     /**
@@ -487,7 +501,7 @@ public final strictfp class UnitFormatTest {
      */
     @Test
     public void testParseTerms() {
-        final UnitFormat f = new UnitFormat(Locale.UK);
+        final var f = new UnitFormat(Locale.UK);
         assertSame(Units.SQUARE_METRE,      f.parse("m⋅m"));
         assertSame(Units.CUBIC_METRE,       f.parse("m⋅m⋅m"));
         assertSame(Units.CUBIC_METRE,       f.parse("m²⋅m"));
@@ -503,17 +517,14 @@ public final strictfp class UnitFormatTest {
      */
     @Test
     public void testParseTermsSeparatedBySpace() {
-        final UnitFormat f = new UnitFormat(Locale.UK);
+        final var f = new UnitFormat(Locale.UK);
         assertSame(Units.METRES_PER_SECOND, f.parse("m s**-1"));
         assertEqualsIgnoreSymbol(Units.KILOGRAM.divide(Units.SQUARE_METRE), f.parse("kg m**-2"));
-        try {
-            f.parse("degree minute");
-            fail("Should not accept unknown sentence even if each individual word is known.");
-        } catch (MeasurementParseException e) {
-            final String message = e.getMessage();
-            assertTrue(message, message.contains("degree"));
-            assertTrue(message, message.contains("minute"));
-        }
+
+        // Should not accept unknown sentence even if each individual word is known.
+        MeasurementParseException exception;
+        exception = assertThrows(MeasurementParseException.class, () -> f.parse("degree minute"));
+        assertMessageContains(exception, "degree", "minute");
     }
 
     /**
@@ -521,7 +532,7 @@ public final strictfp class UnitFormatTest {
      */
     @Test
     public void testParseMultiplier() {
-        final UnitFormat f = new UnitFormat(Locale.UK);
+        final var f = new UnitFormat(Locale.UK);
         assertSame(Units.MILLIMETRE, f.parse("m/1000"));
         assertSame(Units.KILOMETRE,  f.parse( "1000*m"));
         assertSame(Units.KILOMETRE,  f.parse( "1000.0*m"));
@@ -544,7 +555,7 @@ public final strictfp class UnitFormatTest {
      */
     @Test
     public void testParseKilogram() {
-        final UnitFormat f = new UnitFormat(Locale.UK);
+        final var f = new UnitFormat(Locale.UK);
         /*
          * Kilograms should be identified even if they appear in an expression.
          * Current implementation creates a symbol early when it detects such case.
@@ -558,7 +569,7 @@ public final strictfp class UnitFormatTest {
      */
     @Test
     public void testParseInverseL() {
-        final UnitFormat f = new UnitFormat(Locale.UK);
+        final var f = new UnitFormat(Locale.UK);
         final Unit<?> u = f.parse("1/l");
         assertEquals("1∕L", u.toString());
     }
@@ -570,7 +581,7 @@ public final strictfp class UnitFormatTest {
      */
     @Test
     public void testParseExponentiation() {
-        final UnitFormat f = new UnitFormat(Locale.UK);
+        final var f = new UnitFormat(Locale.UK);
         assertSame(Units.HERTZ,             f.parse("s^-1"));
         assertSame(Units.HERTZ,             f.parse("s**-1"));
         assertSame(Units.METRES_PER_SECOND, f.parse("m*s^-1"));
@@ -582,7 +593,7 @@ public final strictfp class UnitFormatTest {
      */
     @Test
     public void testParseWithParenthesis() {
-        final UnitFormat f = new UnitFormat(Locale.UK);
+        final var f = new UnitFormat(Locale.UK);
         assertSame(Units.PASCAL, f.parse("kg∕(m⋅s²)"));
         assertSame(Units.PASCAL, f.parse("(kg)∕m∕s²"));
         assertSame(Units.VOLT,   f.parse("kg⋅m²∕(s³⋅A)"));
@@ -595,11 +606,11 @@ public final strictfp class UnitFormatTest {
      */
     @Test
     public void testParsePosition() {
-        final UnitFormat f = new UnitFormat(Locale.UK);
-        final ParsePosition pos = new ParsePosition(4);
+        final var f = new UnitFormat(Locale.UK);
+        final var pos = new ParsePosition(4);
         assertSame(Units.CENTIMETRE, f.parse("ABC cm foo", pos));
-        assertEquals("ParsePosition.getIndex()", 6, pos.getIndex());
-        assertEquals("ParsePosition.getErrorIndex()", -1, pos.getErrorIndex());
+        assertEquals( 6, pos.getIndex(), "ParsePosition.getIndex()");
+        assertEquals(-1, pos.getErrorIndex(), "ParsePosition.getErrorIndex()");
         /*
          * Adding "cm DEF" as a unit label should allow UnitFormat to recognize those characters.
          * We associate a random unit to that label, just for testing purpose.
@@ -607,8 +618,8 @@ public final strictfp class UnitFormatTest {
         pos.setIndex(4);
         f.label(Units.HECTARE, "cm foo");
         assertEqualsIgnoreSymbol(Units.HECTARE, f.parse("ABC cm foo", pos));
-        assertEquals("ParsePosition.getIndex()", 10, pos.getIndex());
-        assertEquals("ParsePosition.getErrorIndex()", -1, pos.getErrorIndex());
+        assertEquals(10, pos.getIndex(), "ParsePosition.getIndex()");
+        assertEquals(-1, pos.getErrorIndex(), "ParsePosition.getErrorIndex()");
     }
 
     /**
@@ -616,7 +627,7 @@ public final strictfp class UnitFormatTest {
      */
     @Test
     public void testClone() {
-        final UnitFormat f1 = new UnitFormat(Locale.FRANCE);
+        final var f1 = new UnitFormat(Locale.FRANCE);
         f1.label(Units.METRE,  "myMeterLabel");
         f1.label(Units.SECOND, "mySecondLabel");
         final UnitFormat f2 = f1.clone();
@@ -632,14 +643,14 @@ public final strictfp class UnitFormatTest {
     /**
      * Tests parsing of miscellaneous symbols, followed by formatting.
      * This test uses some units defined by World Meteorological Organisation (WMO).
-     * The lines with <cite>"Too aggressive simplification bug (SIS-378)"</cite> comment are actually bugs,
+     * The lines with <q>Too aggressive simplification bug (SIS-378)</q> comment are actually bugs,
      * but they are tested anyway (despite the bogus "expected" value) for tracking progresses on SIS-378.
      *
      * @see <a href="https://issues.apache.org/jira/browse/SIS-378">SIS-378</a>
      */
     @Test
     public void testParseAndFormat() {
-        final UnitFormat f = new UnitFormat(Locale.UK);
+        final var f = new UnitFormat(Locale.UK);
         roundtrip(f, "K.m2.kg-1.s-1",    "K⋅m²∕(kg⋅s)");
         roundtrip(f, "m.m6.m-3",         "m⋅m⁶∕m³");
         roundtrip(f, "Pa.s-1",           "Pa∕s");
@@ -688,6 +699,7 @@ public final strictfp class UnitFormatTest {
         roundtrip(f, "m2.s-1",           "m²∕s");
         roundtrip(f, "mol.m-3",          "mol∕m³");
         roundtrip(f, "J.m-2",            "J∕m²");
+        roundtrip(f, "psu",              "psu");
         roundtrip(f, "kg-2.s-1",         "1∕(kg²⋅s)");
         roundtrip(f, "K*K",              "K²");
         roundtrip(f, "kg.m-3.s-1",       "kg∕(m³⋅s)");
@@ -698,7 +710,7 @@ public final strictfp class UnitFormatTest {
         roundtrip(f, "(m2.s.sr)-1",      "1∕(m²⋅s)");       // Too aggressive simplification bug (SIS-378)
         roundtrip(f, "(kg.m-3).(m.s-1)", "kg∕(m²⋅s)");      // Too aggressive simplification bug (SIS-378)
         roundtrip(f, "cm/day",           "cm∕d");
-        roundtrip(f, "W.m-2.nm-1",       "10⁹⋅kg∕(m⋅s³)");  // Too aggressive simplification bug (SIS-378)
+        roundtrip(f, "W.m-2.nm-1",       "10⁹⋅kg∕(s³⋅m)");  // Too aggressive simplification bug (SIS-378)
     }
 
     /**
@@ -708,7 +720,7 @@ public final strictfp class UnitFormatTest {
     public void testParseAndFormatLabel() {
         final Unit<Length> yard  = Units.METRE.multiply(0.9144);
         final Unit<?>      yard2 = yard.pow(2);
-        final UnitFormat f = new UnitFormat(Locale.ENGLISH);
+        final var f = new UnitFormat(Locale.ENGLISH);
         f.label(yard, "yd");
         roundtrip(f, "yd",    "yd",  yard);
         roundtrip(f, "yd**2", "yd²", yard2);
@@ -728,7 +740,7 @@ public final strictfp class UnitFormatTest {
      */
     @Test
     public void needForImprovements() {
-        final UnitFormat f = new UnitFormat(Locale.UK);
+        final var f = new UnitFormat(Locale.UK);
         roundtrip(f, "kg.kg-1.m.s-1",    "m∕s");
         roundtrip(f, "(m2.s.sr)-1",      "1∕(m²⋅s)");
         roundtrip(f, "m-2.s.rad-1",      "s∕m²");
@@ -740,7 +752,7 @@ public final strictfp class UnitFormatTest {
         roundtrip(f, "W.m-3.sr-1",       "W∕m³");
         roundtrip(f, "m3.s-1.m-1",       "m²∕s");
         roundtrip(f, "(kg.m-3)*(m.s-1)", "kg∕(m²⋅s)");
-        roundtrip(f, "W.m-2.nm-1",       "10⁹⋅kg∕(m⋅s³)");
+        roundtrip(f, "W.m-2.nm-1",       "10⁹⋅kg∕(s³⋅m)");
     }
 
     /**
@@ -769,7 +781,7 @@ public final strictfp class UnitFormatTest {
         final Unit<?> systemUnit  = actual.getSystemUnit();
         final Unit<?> expectedSys = expected.getSystemUnit();
         if ((systemUnit.getSymbol() != null) == (expectedSys.getSymbol() != null)) {
-            assertSame("systemUnit", systemUnit, expectedSys);
+            assertSame(systemUnit, expectedSys, "systemUnit");
             // We should also check the 'toTarget' converter (skipped for now).
         } else {
             /*

@@ -15,9 +15,9 @@
  */
 package tech.uom.seshat;
 
+import java.util.Objects;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Objects;
 import javax.measure.UnitConverter;
 import tech.uom.seshat.math.Fraction;
 import tech.uom.seshat.math.MathFunctions;
@@ -26,12 +26,10 @@ import tech.uom.seshat.util.StringBuilders;
 
 /**
  * Conversions between units that can be represented by a linear operation (scale or offset).
- * Note that the "linear" word in this class does not have the same meaning than the same word
+ * Note that the "linear" word in this class does not have the same meaning as the same word
  * in the {@link #isLinear()} method inherited from JSR-385.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.2
- * @since   1.0
  */
 final class LinearConverter extends AbstractConverter {
     /**
@@ -183,8 +181,11 @@ final class LinearConverter extends AbstractConverter {
      *
      * Note that this definition allows scale factors but does not allow offsets.
      * Consequently, this is a different definition of "linear" than this class and the rest of Seshat.
+     *
+     * @deprecated This method is badly named, but we can't change since it is defined by JSR-385.
      */
     @Override
+    @Deprecated
     public boolean isLinear() {
         return offset == 0;
     }
@@ -227,6 +228,7 @@ final class LinearConverter extends AbstractConverter {
 
     /**
      * Returns the coefficient of this linear conversion.
+     * Coefficients are offset and scale, in that order.
      */
     @Override
     @SuppressWarnings("fallthrough")
@@ -244,11 +246,13 @@ final class LinearConverter extends AbstractConverter {
      * Returns the given ratio as a {@link Fraction} if possible, or as a {@link Double} otherwise.
      */
     private static Number ratio(final double value, final double divisor) {
-        final int numerator = (int) value;
-        if (numerator == value) {
-            final int denominator = (int) divisor;
-            if (denominator == divisor) {
-                return (denominator == 1) ? numerator : new Fraction(numerator, denominator);
+        if (value != 0) {
+            final int numerator = (int) value;
+            if (numerator == value) {
+                final int denominator = (int) divisor;
+                if (denominator == divisor) {
+                    return (denominator == 1) ? numerator : new Fraction(numerator, denominator);
+                }
             }
         }
         return value / divisor;
@@ -274,9 +278,11 @@ final class LinearConverter extends AbstractConverter {
                 value = new BigDecimal((BigInteger) value);
             }
             if (value instanceof BigDecimal) {
-                BigDecimal scale10  = this.scale10;
-                BigDecimal offset10 = this.offset10;
+                @SuppressWarnings("LocalVariableHidesMemberVariable")
+                BigDecimal scale10  = this.scale10,
+                           offset10 = this.offset10;
                 if (scale10 == null || offset10 == null) {
+                    @SuppressWarnings("LocalVariableHidesMemberVariable")
                     final BigDecimal divisor = BigDecimal.valueOf(this.divisor);
                     scale10  = BigDecimal.valueOf(scale) .divide(divisor);
                     offset10 = BigDecimal.valueOf(offset).divide(divisor);
@@ -316,7 +322,6 @@ final class LinearConverter extends AbstractConverter {
      */
     @Override
     public UnitConverter concatenate(final UnitConverter converter) {
-        Objects.requireNonNull(converter);
         if (converter.isIdentity()) {
             return this;
         }
@@ -393,7 +398,7 @@ final class LinearConverter extends AbstractConverter {
     }
 
     /**
-     * Returns {@code true} if the given converter perform the same conversion than this converter,
+     * Returns {@code true} if the given converter perform the same conversion as this converter,
      * except for rounding errors.
      */
     final boolean equivalent(final LinearConverter other) {

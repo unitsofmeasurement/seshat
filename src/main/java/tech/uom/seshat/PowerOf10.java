@@ -24,8 +24,6 @@ import tech.uom.seshat.math.MathFunctions;
  * Conversions from units represented by a logarithm in base 10.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.0
- * @since   1.0
  */
 final class PowerOf10 extends AbstractConverter {
     /**
@@ -41,7 +39,7 @@ final class PowerOf10 extends AbstractConverter {
     /**
      * The singleton instance. Can be used for conversion from neper units to {@link Units#UNITY}.
      */
-    private static final UnitConverter INSTANCE = new PowerOf10();
+    static final UnitConverter INSTANCE = new PowerOf10();
 
     /**
      * Returns the converter from bel unit (B) to dimensionless unit. ISO 80000-3:2006 defines

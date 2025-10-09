@@ -22,6 +22,9 @@ import java.util.AbstractSet;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Arrays;
+import java.util.function.Function;
+import java.util.function.ToIntFunction;
+import java.util.function.BiPredicate;
 import java.lang.ref.WeakReference;
 
 import static tech.uom.seshat.util.WeakEntry.*;
@@ -62,7 +65,6 @@ import static tech.uom.seshat.util.WeakEntry.*;
  * then the caller can synchronize on {@code this}.
  *
  * @author  Martin Desruisseaux (IRD, Geomatys)
- * @version 1.2
  *
  * @param <K>  the class of key elements.
  * @param <V>  the class of value elements.
@@ -71,10 +73,25 @@ import static tech.uom.seshat.util.WeakEntry.*;
  * @see WeakHashSet
  */
 public class WeakValueHashMap<K,V> extends AbstractMap<K,V> {
-    /*
-     * NOTE: Apache SIS defines constants for handling different comparison modes.
-     *       Those modes have been removed in this port because not needed for Seshat.
+    /**
+     * The function to invoke for computing hash codes.
+     * This is usually one of the following:
+     *
+     * <ul>
+     *   <li>{@link Objects#hashCode(Object)} for the {@link java.util.HashMap} behavior.</li>
+     *   <li>{@link System#identityHashCode(Object)} for the {@link java.util.IdentityHashMap} behavior.</li>
+     * </ul>
+     *
+     * The argument given in calls to {@code applyAsInt(Object)} will never be null.
      */
+    private final ToIntFunction<Object> hashFunction;
+
+    /**
+     * The function to invoke for comparing two objects.
+     * Shall be consistent with {@link #hashFunction}.
+     * The arguments given in calls to {@code test(Object, Object)} will never be null.
+     */
+    private final BiPredicate<Object,Object> comparator;
 
     /**
      * An entry in the {@link WeakValueHashMap}. This is a weak reference
@@ -82,7 +99,7 @@ public class WeakValueHashMap<K,V> extends AbstractMap<K,V> {
      */
     private final class Entry extends WeakEntry<V> implements Map.Entry<K,V> {
         /**
-         * The key.
+         * The key. Shall never be null.
          */
         final K key;
 
@@ -141,8 +158,8 @@ public class WeakValueHashMap<K,V> extends AbstractMap<K,V> {
         @Override
         public boolean equals(final Object other) {
             if (other instanceof Map.Entry<?,?>) {
-                final Map.Entry<?,?> that = (Map.Entry<?,?>) other;
-                return key.equals(that.getKey()) && Objects.equals(get(), that.getValue());
+                final var that = (Map.Entry<?,?>) other;
+                return comparator.test(key, that.getKey()) && Objects.equals(get(), that.getValue());
             }
             return false;
         }
@@ -153,7 +170,7 @@ public class WeakValueHashMap<K,V> extends AbstractMap<K,V> {
          */
         @Override
         public int hashCode() {
-            int code = key.hashCode();
+            int code = hashFunction.applyAsInt(key);
             final V val = get();
             if (val != null) {
                 code ^= val.hashCode();
@@ -199,6 +216,53 @@ public class WeakValueHashMap<K,V> extends AbstractMap<K,V> {
     @SuppressWarnings({"rawtypes", "unchecked"})    // Generic array creation.
     public WeakValueHashMap(final Class<K> keyType) {
         this.keyType = keyType;
+        hashFunction = Object::hashCode;
+        comparator   = Object::equals;
+        lastTimeNormalCapacity = System.nanoTime();
+        table = new WeakValueHashMap.Entry[MIN_CAPACITY];
+    }
+
+    /**
+     * Creates a new {@code WeakValueHashMap} using the given functions for computing hash code and equality.
+     * Commonly used functions are:
+     *
+     * <table class="sis">
+     *   <caption>Frequently used hash and comparison functions</caption>
+     *   <tr>
+     *     <th>Desired behavior</th>
+     *     <th>Hash function</th>
+     *     <th>Comparator</th>
+     *   </tr><tr>
+     *     <td>Standard (like {@link java.util.HashMap})</td>
+     *     <td>{@link Object#hashCode()}</td>
+     *     <td>{@link Object#equals(Object)}</td>
+     *   </tr><tr>
+     *     <td>Robust to arrays</td>
+     *     <td></td>
+     *     <td>{@link Objects#deepEquals(Object, Object)}</td>
+     *   </tr><tr>
+     *     <td>Identity (like {@link java.util.IdentityHashMap})</td>
+     *     <td>{@link System#identityHashCode(Object)}</td>
+     *     <td>{@code (o1,o2) -> o1 == o2}</td>
+     *   </tr>
+     * </table>
+     *
+     * The functions do not need to be null-safe. {@code WeakValueHashMap} will never invoke
+     * {@link ToIntFunction#applyAsInt(Object)} or {@link BiPredicate#test(Object, Object)}
+     * with null arguments.
+     *
+     * @param keyType       the type of keys in the map.
+     * @param hashFunction  the function to invoke for computing hash codes.
+     * @param comparator    the function to invoke for comparing two objects.
+     */
+    @SuppressWarnings({"rawtypes", "unchecked"})    // Generic array creation.
+    public WeakValueHashMap(final Class<K> keyType,
+            final ToIntFunction<Object> hashFunction,
+            final BiPredicate<Object,Object> comparator)
+    {
+        this.keyType      = Objects.requireNonNull(keyType);
+        this.hashFunction = Objects.requireNonNull(hashFunction);
+        this.comparator   = Objects.requireNonNull(comparator);
         lastTimeNormalCapacity = System.nanoTime();
         table = new WeakValueHashMap.Entry[MIN_CAPACITY];
     }
@@ -255,6 +319,31 @@ public class WeakValueHashMap<K,V> extends AbstractMap<K,V> {
     }
 
     /**
+     * Locates the entry for the given key and, if present, invokes the given getter method.
+     *
+     * @param  <R>           type of value returned by the getter method.
+     * @param  key           key of the entry to search in this map.
+     * @param  getter        getter method to invoke on the entry.
+     * @param  defaultValue  value to return if there is no entry for the given key.
+     * @return result of the getter function invoked on the entry, or the default value if there is no entry.
+     */
+    @SuppressWarnings("unchecked")
+    private synchronized <R> R get(final Object key, final Function<Entry,R> getter, final R defaultValue) {
+        assert isValid();
+        if (key != null) {
+            @SuppressWarnings("LocalVariableHidesMemberVariable")
+            final Entry[] table = this.table;
+            final int index = (hashFunction.applyAsInt(key) & HASH_MASK) % table.length;
+            for (Entry e = table[index]; e != null; e = (Entry) e.next) {
+                if (comparator.test(key, e.key)) {
+                    return getter.apply(e);
+                }
+            }
+        }
+        return defaultValue;
+    }
+
+    /**
      * Returns {@code true} if this map contains a mapping for the specified key.
      * Null keys are considered never present.
      *
@@ -263,15 +352,15 @@ public class WeakValueHashMap<K,V> extends AbstractMap<K,V> {
      */
     @Override
     public boolean containsKey(final Object key) {
-        return get(key) != null;
+        return get(key, Function.identity(), null) != null;
     }
 
     /**
-     * Returns {@code true} if this map maps one or more keys to this value.
+     * Returns {@code true} if this map maps one or more keys to the specified value.
      * Null values are considered never present.
      *
      * @param  value  value whose presence in this map is to be tested.
-     * @return {@code true} if this map maps one or more keys to this value.
+     * @return {@code true} if this map maps one or more keys to the specified value.
      */
     @Override
     public synchronized boolean containsValue(final Object value) {
@@ -287,19 +376,22 @@ public class WeakValueHashMap<K,V> extends AbstractMap<K,V> {
      * @return the value to which this map maps the specified key.
      */
     @Override
-    @SuppressWarnings("unchecked")
-    public synchronized V get(final Object key) {
-        assert isValid();
-        if (key != null) {
-            final Entry[] table = this.table;
-            final int index = (key.hashCode() & HASH_MASK) % table.length;
-            for (Entry e = table[index]; e != null; e = (Entry) e.next) {
-                if (key.equals(e.key)) {
-                    return e.get();
-                }
-            }
-        }
-        return null;
+    public V get(final Object key) {
+        return get(key, Entry::get, null);
+    }
+
+    /**
+     * Returns the value to which this map maps the specified key.
+     * Returns {@code defaultValue} if the map contains no mapping for this key.
+     * Null keys are considered never present.
+     *
+     * @param  key  key whose associated value is to be returned.
+     * @param  defaultValue  the default mapping of the key.
+     * @return the value to which this map maps the specified key.
+     */
+    @Override
+    public V getOrDefault(final Object key, final V defaultValue) {
+        return get(key, Entry::get, defaultValue);
     }
 
     /**
@@ -341,12 +433,13 @@ public class WeakValueHashMap<K,V> extends AbstractMap<K,V> {
         /*
          * If `value` is already contained in this WeakValueHashMap, we need to clear it.
          */
-        V oldValue = null;
+        @SuppressWarnings("LocalVariableHidesMemberVariable")
         Entry[] table = this.table;
-        final int hash = key.hashCode() & HASH_MASK;
+        V oldValue = null;
+        final int hash = hashFunction.applyAsInt(key) & HASH_MASK;
         int index = hash % table.length;
         for (Entry e = table[index]; e != null; e = (Entry) e.next) {
-            if (key.equals(e.key)) {
+            if (comparator.test(key, e.key)) {
                 oldValue = e.get();
                 if (condition != null && !condition.equals(oldValue)) {
                     return oldValue;
@@ -409,6 +502,29 @@ public class WeakValueHashMap<K,V> extends AbstractMap<K,V> {
             throw new NullPointerException();
         }
         return intern(key, value, Wildcard.NO_VALUE);
+    }
+
+    /**
+     * Returns the value associated to the given key, computing the value if it does not exist.
+     * This implementation is thread-safe.
+     *
+     * @param  key      key of the value to get.
+     * @param  creator  function to invoke for creating the value if it does not already exist.
+     * @return value (potentially newly created) for the given key.
+     */
+    @Override
+    public V computeIfAbsent(final K key, final Function<? super K, ? extends V> creator) {
+        V value = get(key);
+        if (value == null) {
+            V newValue = creator.apply(key);
+            if (newValue != null) {
+                value = putIfAbsent(key, newValue);     // A value may have been created concurrently.
+                if (value == null) {
+                    return newValue;
+                }
+            }
+        }
+        return value;
     }
 
     /**

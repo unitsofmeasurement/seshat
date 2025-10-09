@@ -21,9 +21,6 @@ package tech.uom.seshat.util;
  * This is used for tests that use {@link java.lang.ref.WeakReference}.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.2
- * @since   1.2
- * @module
  */
 final class IntObject {
     /**

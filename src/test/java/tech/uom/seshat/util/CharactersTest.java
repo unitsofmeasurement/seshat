@@ -15,19 +15,26 @@
  */
 package tech.uom.seshat.util;
 
-import org.junit.Test;
-
-import static org.junit.Assert.*;
 import static tech.uom.seshat.util.Characters.*;
+
+// Test dependencies
+import tech.uom.seshat.TestCase;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 /**
  * Tests the {@link Characters} utility methods.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.0
  */
-public final strictfp class CharactersTest {
+public final class CharactersTest extends TestCase {
+    /**
+     * Creates a new test case.
+     */
+    public CharactersTest() {
+    }
+
     /**
      * Tests {@link Characters#toSuperScript(char)}.
      */
@@ -35,7 +42,7 @@ public final strictfp class CharactersTest {
     public void testSuperScript() {
         for (char c='0'; c<='9'; c++) {
             final char s = toSuperScript(c);
-            assertFalse(s == c);
+            assertNotEquals(s, c);
             assertFalse(isSuperScript(c));
             assertTrue (isSuperScript(s));
             assertEquals(c, toNormalScript(s));

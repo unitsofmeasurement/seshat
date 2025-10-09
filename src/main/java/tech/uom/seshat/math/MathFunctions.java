@@ -17,6 +17,8 @@ package tech.uom.seshat.math;
 
 import java.util.Arrays;
 import java.util.Objects;
+import static java.lang.Math.min;
+import static java.lang.Math.sqrt;
 
 
 /**
@@ -28,8 +30,6 @@ import java.util.Objects;
  *
  * @author  Martin Desruisseaux (MPO, IRD, Geomatys)
  * @author  Johann Sorel (Geomatys)
- * @version 1.2
- * @since   1.0
  */
 public final class MathFunctions {
     /**
@@ -66,10 +66,10 @@ public final class MathFunctions {
      * In the current implementation, this value is {@value}. However, this limit may
      * change in any future Seshat version.
      *
-     * <div class="note"><b>Note:</b>
+     * <h4>Implementation note</h4>
      * The current value is the highest prime number representable as an unsigned 16 bits integer.
      * This is enough for current needs because 16 bits prime numbers are sufficient for finding
-     * the divisors of any 32 bits integers.</div>
+     * the divisors of any 32 bits integers.
      *
      * @see #nextPrimeNumber(int)
      */
@@ -134,6 +134,7 @@ public final class MathFunctions {
      */
     private static int primeNumberAt(final int index) throws IndexOutOfBoundsException {
         Objects.checkIndex(index, PRIMES_LENGTH_16_BITS);
+        @SuppressWarnings("LocalVariableHidesMemberVariable")
         short[] primes = MathFunctions.primes;
         if (index >= primes.length) {
             synchronized (MathFunctions.class) {
@@ -141,11 +142,11 @@ public final class MathFunctions {
                 if (index >= primes.length) {
                     int i = primes.length;
                     int n = Short.toUnsignedInt(primes[i - 1]);
-                    // Compute by block of 16 values, for reducing the amount of array resize.
-                    primes = Arrays.copyOf(primes, Math.min((index | 0xF) + 1, PRIMES_LENGTH_16_BITS));
+                    // Compute by block of 16 values, for reducing the number of array resizes.
+                    primes = Arrays.copyOf(primes, min((index | 0xF) + 1, PRIMES_LENGTH_16_BITS));
                     do {
 testNextNumber:         while (true) {      // Simulate a "goto" statement (usually not recommanded...)
-                            final int stopAt = (int) Math.sqrt(n += 2);
+                            final int stopAt = (int) sqrt(n += 2);
                             int prime;
                             int j = 0;
                             do {
@@ -180,9 +181,10 @@ testNextNumber:         while (true) {      // Simulate a "goto" statement (usua
         if (number < 2 || number > HIGHEST_SUPPORTED_PRIME_NUMBER) {
             throw new IllegalArgumentException(String.valueOf(number));
         }
+        @SuppressWarnings("LocalVariableHidesMemberVariable")
         final short[] primes = MathFunctions.primes;
         int lower = 0;
-        int upper = Math.min(PRIMES_LENGTH_15_BITS, primes.length);
+        int upper = min(PRIMES_LENGTH_15_BITS, primes.length);
         if (number > Short.MAX_VALUE) {
             lower = upper;
             upper = primes.length;
@@ -254,7 +256,7 @@ testNextNumber:         while (true) {      // Simulate a "goto" statement (usua
      * For any non-NaN positive values (including infinity), the following relationship holds:
      *
      * {@snippet lang="java" :
-     *     assert Math.scalb(getSignificand(value), Math.getExponent(value) - SIGNIFICAND_SIZE_OF_FLOAT) == value;
+     *     assert Math.scalb(getSignificand(value), Math.getExponent(value) - (Float.PRECISION - 1)) == value;
      *     }
      *
      * For negative values, this method behaves as if the value was positive.
@@ -265,9 +267,9 @@ testNextNumber:         while (true) {      // Simulate a "goto" statement (usua
     private static int getSignificand(final float value) {
         int bits = Float.floatToRawIntBits(value);
         final int exponent = bits & (0xFF << SIGNIFICAND_SIZE_OF_FLOAT);
-        bits &= (1L << SIGNIFICAND_SIZE_OF_FLOAT) - 1;
+        bits &= (1 << SIGNIFICAND_SIZE_OF_FLOAT) - 1;
         if (exponent != 0) {
-            bits |= (1L << SIGNIFICAND_SIZE_OF_FLOAT);
+            bits |= (1 << SIGNIFICAND_SIZE_OF_FLOAT);
         } else {
             bits <<= 1;
         }
@@ -280,21 +282,21 @@ testNextNumber:         while (true) {      // Simulate a "goto" statement (usua
      * fraction digits to zero.
      * For example, {@code (double) 0.1f} gives 0.10000000149011612 while {@code floatToDouble(0.1f)} returns 0.1.
      *
-     * <div class="note"><b>Note:</b>
+     * <p>This method is equivalent to the following code, except that it is potentially faster
+     * because the actual implementation avoid to format and parse the value:</p>
+     *
+     * {@snippet lang="java" :
+     *   return Double.parseDouble(Float.toString(value));
+     *   }
+     *
+     * <h4>Note on accuracy</h4>
      * This method is <strong>not</strong> more accurate than the standard Java cast – it should be used only when
      * the base 10 representation of the given value may be of special interest. If the value come from a call to
      * {@link Float#parseFloat(String)} (directly or indirectly), and if that call cannot be replaced by a call to
      * {@link Double#parseDouble(String)} (for example because the original {@code String} is not available anymore),
      * then this method may be useful if one consider the {@code String} representation in base 10 as definitive.
      * But if the value come from an instrument measurement or a calculation, then there is probably no reason to use
-     * this method because base 10 is not more "real" than base 2 or any other base for natural phenomenon.</div>
-     *
-     * This method is equivalent to the following code, except that it is potentially faster since the
-     * actual implementation avoid to format and parse the value:
-     *
-     * {@snippet lang="java" :
-     *   return Double.parseDouble(Float.toString(value));
-     *   }
+     * this method because base 10 is not more "real" than base 2 or any other base for natural phenomenon.
      *
      * @param  value  the {@code float} value to convert as a {@code double}.
      * @return the given value as a {@code double} with the extra decimal fraction digits set to zero.

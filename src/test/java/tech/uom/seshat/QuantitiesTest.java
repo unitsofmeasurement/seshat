@@ -19,20 +19,24 @@ import javax.measure.Unit;
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Temperature;
-import org.junit.Test;
 
-import static org.junit.Assert.*;
+// Test dependencies
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 /**
  * Tests {@link Quantities}.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.1
- * @since   1.0
  */
-public final strictfp class QuantitiesTest {
-    private static final double STRICT = 0;
+@SuppressWarnings("exports")
+public final class QuantitiesTest extends TestCase {
+    /**
+     * Creates a new test case.
+     */
+    public QuantitiesTest() {
+    }
 
     /**
      * Tests {@link Quantities#create(double, String)}.
@@ -40,8 +44,8 @@ public final strictfp class QuantitiesTest {
     @Test
     public void testCreate() {
         final Quantity<?> q = Quantities.create(5, "km");
-        assertEquals("value", 5, q.getValue().doubleValue(), STRICT);
-        assertSame  ("unit", Units.KILOMETRE, q.getUnit());
+        assertEquals(5, q.getValue().doubleValue());
+        assertSame  (Units.KILOMETRE, q.getUnit());
     }
 
     /**
@@ -70,8 +74,8 @@ public final strictfp class QuantitiesTest {
         };
         final Length c = Quantities.castOrCopy(q);
         assertNotSame(q, c);
-        assertEquals("value", 8, c.getValue().doubleValue(), STRICT);
-        assertSame  ("unit", Units.CENTIMETRE, c.getUnit());
+        assertEquals(8, c.getValue().doubleValue());
+        assertSame(Units.CENTIMETRE, c.getUnit());
     }
 
     /**
@@ -85,25 +89,25 @@ public final strictfp class QuantitiesTest {
         final Quantity<Temperature> q2 = Quantities.create( 3, Units.KELVIN);
         final Quantity<Temperature> q3 = Quantities.create(-8, Units.CELSIUS);
 
-        assertTrue( "2°C", q1 instanceof DerivedScalar.TemperatureMeasurement);
-        assertTrue( "3 K", q2 instanceof DerivedScalar.Temperature);
-        assertTrue("-8°C", q3 instanceof DerivedScalar.TemperatureMeasurement);
+        assertInstanceOf(DerivedScalar.TemperatureMeasurement.class, q1,  "2°C");
+        assertInstanceOf(DerivedScalar.Temperature.class,            q2,  "3 K");
+        assertInstanceOf(DerivedScalar.TemperatureMeasurement.class, q3, "-8°C");
 
         Quantity<Temperature> r = q1.add(q2);
-        assertSame  ("unit",  Units.CELSIUS, r.getUnit());
-        assertEquals("value", 5, r.getValue().doubleValue(), 1E-13);
+        assertSame(Units.CELSIUS, r.getUnit());
+        assertEquals(5, r.getValue().doubleValue(), 1E-13);
 
         r = q2.add(q1);
-        assertSame  ("unit",  Units.KELVIN, r.getUnit());
-        assertEquals("value", 278.15, r.getValue().doubleValue(), 1E-13);
+        assertSame(Units.KELVIN, r.getUnit());
+        assertEquals(278.15, r.getValue().doubleValue(), 1E-13);
 
         r = q1.add(q3);
-        assertSame  ("unit",  Units.CELSIUS, r.getUnit());
-        assertEquals("value", 267.15, r.getValue().doubleValue(), 1E-13);
+        assertSame(Units.CELSIUS, r.getUnit());
+        assertEquals(267.15, r.getValue().doubleValue(), 1E-13);
 
         r = q1.multiply(3);
-        assertSame  ("unit",  Units.CELSIUS, r.getUnit());
-        assertEquals("value", 552.3, r.getValue().doubleValue(), 1E-13);
+        assertSame(Units.CELSIUS, r.getUnit());
+        assertEquals(552.3, r.getValue().doubleValue(), 1E-13);
 
         r = q1.multiply(1);
         assertSame(q1, r);
@@ -111,14 +115,12 @@ public final strictfp class QuantitiesTest {
 
     /**
      * Tests a multiply operation that result in a quantity for which we have no specialized sub-interface.
-     *
-     * @since 1.1
      */
     @Test
     public void testUnspecialized() {
         final Quantity<?> quantity = Quantities.create(3, Units.CENTIMETRE).multiply(Quantities.create(4, Units.SECOND));
-        assertEquals("value", 12, quantity.getValue().doubleValue(), STRICT);
-        assertEquals("unit", "cm⋅s", quantity.getUnit().toString());
+        assertEquals(12, quantity.getValue().doubleValue());
+        assertEquals("cm⋅s", quantity.getUnit().toString());
     }
 
     /**
@@ -131,17 +133,15 @@ public final strictfp class QuantitiesTest {
         Quantity<?> q1 = Quantities.create(2, Units.VOLT);
         Quantity<?> q2 = Quantities.create(2, Units.VOLT);
         Quantity<?> q3 = Quantities.create(3, Units.VOLT);
-        assertTrue (q1.hashCode() == q2.hashCode());
-        assertFalse(q1.hashCode() == q3.hashCode());
-        assertTrue (q1.hashCode() != 0);
+        assertEquals   (q1.hashCode(), q2.hashCode());
+        assertNotEquals(q1.hashCode(), q3.hashCode());
+        assertNotEquals(0, q1.hashCode());
         assertTrue (q1.equals(q2));
         assertFalse(q1.equals(q3));
     }
 
     /**
      * Tests {@link Quantities#min(Quantity, Quantity)} and {@link Quantities#max(Quantity, Quantity)}.
-     *
-     * @since 1.1
      */
     @Test
     public void testMinAndMax() {

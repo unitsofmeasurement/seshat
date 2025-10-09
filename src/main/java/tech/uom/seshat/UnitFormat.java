@@ -16,22 +16,21 @@
 package tech.uom.seshat;
 
 import java.util.Map;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.MissingResourceException;
+import java.util.ConcurrentModificationException;
 import java.util.Objects;
 import java.text.Format;
 import java.text.FieldPosition;
 import java.text.ParsePosition;
 import java.text.ParseException;
-import java.util.ResourceBundle;
-import java.util.MissingResourceException;
-import java.util.ConcurrentModificationException;
-import java.lang.reflect.InaccessibleObjectException;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.lang.reflect.InaccessibleObjectException;
 import javax.measure.Dimension;
 import javax.measure.Unit;
 import javax.measure.format.MeasurementParseException;
@@ -48,13 +47,17 @@ import tech.uom.seshat.util.WeakValueHashMap;
  * Parses and formats units of measurement as SI symbols, URI in OGC namespace or other symbols.
  * This class combines in a single class the API from {@link java.text} and the API from {@link javax.measure.format}.
  * In addition to the symbols of the <cite>Système international</cite> (SI), this class is also capable to handle
- * some symbols found in <cite>Well Known Text</cite> (WKT) definitions or in XML files.
+ * some symbols found in <i>Well Known Text</i> (WKT) definitions or in XML files.
  *
  * <h2>Parsing authority codes</h2>
  * If a character sequence given to the {@link #parse(CharSequence)} method is of the form {@code "EPSG:####"},
  * {@code "urn:ogc:def:uom:EPSG::####"} or {@code "http://www.opengis.net/def/uom/EPSG/0/####"} (ignoring case
  * and whitespaces around path separators), then {@code "####"} is parsed as an integer and forwarded to the
  * {@link Units#valueOfEPSG(int)} method.
+ *
+ * <p>If a character sequence starts with {@code "http://www.opengis.net/def/uom/UCUM/0/####"} (ignoring case
+ * and whitespaces around path separators), then {@code "####"} is parsed as a symbol as if the URL before it
+ * was absent.</p>
  *
  * <h2>Note on netCDF unit symbols</h2>
  * In netCDF files, values of "unit" attribute are concatenations of an angular unit with an axis direction,
@@ -66,7 +69,7 @@ import tech.uom.seshat.util.WeakValueHashMap;
  * each thread should have its own {@code UnitFormat} instance.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.3
+ * @version 1.5
  *
  * @see Units#valueOf(String)
  *
@@ -79,9 +82,12 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
     private static final long serialVersionUID = -3064428584419360693L;
 
     /**
-     * Whether the parsing of authority codes such as {@code "EPSG:9001"} is allowed.
+     * The authorities to accept, or {@code null} for disabling authority parsing.
+     * Codes may be URLs such as {@code "http://www.opengis.net/def/uom/UCUM/0/d"}
+     * or URNs such as {@code "EPSG:9001"}. The order of authority names matter,
+     * because the index is used for identifying the authority.
      */
-    private static final boolean PARSE_AUTHORITY_CODES = true;
+    private static final String[] AUTHORITIES = {"EPSG", "UCUM"};
 
     /**
      * The unit name for degrees (not necessarily angular), to be handled in a special way.
@@ -123,8 +129,8 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
      *   <li>As a symbol using Unicode characters: <b>m³</b></li>
      *   <li>As a symbol restricted to the ASCII characters set: <b>m3</b></li>
      *   <li>As a long name:<ul>
-     *     <li>in English: <cite>cubic metre</cite></li>
-     *     <li>in French: <cite>mètre cube</cite></li>
+     *     <li>in English: <q>cubic metre</q></li>
+     *     <li>in French: <q>mètre cube</q></li>
      *   </ul></li>
      * </ul>
      *
@@ -257,7 +263,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
      *
      * @see #label(Unit, String)
      */
-    @SuppressWarnings("serial")         // Not statically typed as Serializable.
+    @SuppressWarnings("serial")                         // Various serializable implementations.
     private final Map<Unit<?>,String> unitToLabel;
 
     /**
@@ -268,7 +274,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
      *
      * @see #label(Unit, String)
      */
-    @SuppressWarnings("serial")         // Not statically typed as Serializable.
+    @SuppressWarnings("serial")                         // Various serializable implementations.
     private final Map<String,Unit<?>> labelToUnit;
 
     /**
@@ -312,8 +318,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
      * @param  locale  the locale to use for parsing and formatting units.
      */
     public UnitFormat(final Locale locale) {
-        Objects.requireNonNull(locale);
-        this.locale = locale;
+        this.locale = Objects.requireNonNull(locale);
         style       = Style.SYMBOL;
         unitToLabel = new HashMap<>();
         labelToUnit = new HashMap<>();
@@ -338,8 +343,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
      * @see UnitServices#getUnitFormat(String)
      */
     public void setLocale(final Locale locale) {
-        Objects.requireNonNull(locale);
-        this.locale  = locale;
+        this.locale  = Objects.requireNonNull(locale);
         symbolToName = null;            // Force reloading for the new locale.
         nameToUnit   = null;
     }
@@ -371,12 +375,11 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
      * @param  style  the desired style of units.
      */
     public void setStyle(final Style style) {
-        Objects.requireNonNull(style);
-        this.style = style;
+        this.style = Objects.requireNonNull(style);
     }
 
     /**
-     * Attaches a label to the specified unit. A <cite>label</cite> can be a substitute to either the
+     * Attaches a label to the specified unit. A <i>label</i> can be a substitute to either the
      * {@linkplain AbstractUnit#getSymbol() unit symbol} or the {@link AbstractUnit#getName() unit name},
      * depending on the {@linkplain #getStyle() format style}.
      * If the specified label is already associated to another unit, then the previous association is discarded.
@@ -412,7 +415,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
         }
         Unit<?> labeledUnit = unit;
         if (labeledUnit instanceof ConventionalUnit<?>) {
-            labeledUnit = ((ConventionalUnit<?>) labeledUnit).forSymbol(label);
+            labeledUnit = ((ConventionalUnit<?>) labeledUnit).alternate(label);
         }
         final Unit<?> unitForOldLabel = labelToUnit.remove(unitToLabel.put(unit, label));
         final Unit<?> oldUnitForLabel = labelToUnit.put(label, labeledUnit);
@@ -428,7 +431,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
              * Assuming there is no bug in our algorithm, this exception should never happen
              * unless this UnitFormat has been modified concurrently in another thread.
              * We compared system units because the units may not be strictly equal
-             * as a result of the call to ConventionalUnit.forSymbol(label).
+             * as a result of the call to ConventionalUnit.alternate(label).
              */
             throw new ConcurrentModificationException("labelToUnit");
         }
@@ -540,15 +543,12 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
             nameToUnit = map;
         }
         /*
-         * The `nameToUnit` map contains plural forms (declared in UnitAliases.properties),
-         * but we make a special case for "degrees", "metres" and "meters" because they
-         * appear in numerous places.
+         * The `nameToUnit` map contains plural forms (declared in "UnitAliases.properties" file),
+         * but we make a special case for common units such as "degrees", "radians", "seconds",
+         * "metres" and "meters" because they are repeated in units such as "kilometers".
          */
         uom = uom.replace('_', ' ').toLowerCase(locale);
-        uom = CharSequences.replace(CharSequences.replace(CharSequences.replace(CharSequences.toASCII(uom),
-                "meters",  "meter"),
-                "metres",  "metre"),
-                 DEGREES,  "degree").toString();
+        uom = removePlural(CharSequences.toASCII(uom));
         /*
          * Returns the unit with application of the power if it is part of the name.
          * For example, this method interprets "meter2" as "meter" raised to power 2.
@@ -574,14 +574,30 @@ appPow: if (unit == null) {
     /**
      * Copies all entries from the given "symbols to names" mapping to the given "names to units" mapping.
      * During this copy, keys are converted from symbols to names and values are converted from symbols to
-     * {@code Unit} instance. We use {@code Unit} values instead of their symbols because all {@code Unit}
+     * {@code Unit} instances. We use {@code Unit} values instead of their symbols because all {@code Unit}
      * instances are created at {@link Units} class initialization anyway (so we do not create new instance
-     * here), and it avoid to retain references to the {@link String} instances loaded by the resource bundle.
+     * here), and it avoids to retain references to the {@link String} instances loaded by the resource bundle.
      */
     private static void copy(final Locale locale, final ResourceBundle symbolToName, final Map<String,Unit<?>> nameToUnit) {
         for (final String symbol : symbolToName.keySet()) {
-            nameToUnit.put(CharSequences.toASCII(symbolToName.getString(symbol).toLowerCase(locale)).toString().intern(), Units.get(symbol));
+            String name = CharSequences.toASCII(symbolToName.getString(symbol).toLowerCase(locale)).toString().intern();
+            nameToUnit.put(removePlural(name), Units.get(symbol));
         }
+    }
+
+    /**
+     * Returns the given string with common units such as "degrees", "radians", "seconds", "metres" and "meters"
+     * replaced by their singular forms. All these units may have a prefix, for example as in "kilometres".
+     * The result may not be grammatically correct English, but those strings will not be visible to users.
+     * This is similar to making a string in lower cases before comparison in order to be case-insensitive.
+     */
+    private static String removePlural(CharSequence uom) {
+        uom = CharSequences.replace(uom,  DEGREES,  "degree");
+        uom = CharSequences.replace(uom, "radians", "radian");
+        uom = CharSequences.replace(uom, "seconds", "second");
+        uom = CharSequences.replace(uom, "meters",  "meter");
+        uom = CharSequences.replace(uom, "metres",  "metre");
+        return uom.toString();
     }
 
     /**
@@ -780,7 +796,7 @@ appPow: if (unit == null) {
             throws IOException
     {
         boolean isFirst = true;
-        final List<Map.Entry<?,? extends Number>> deferred = new ArrayList<>(components.size());
+        final var deferred = new ArrayList<Map.Entry<?,? extends Number>>(components.size());
         for (final Map.Entry<?,? extends Number> entry : components.entrySet()) {
             final Number power = entry.getValue();
             final int n = (power instanceof Fraction) ? ((Fraction) power).numerator : power.intValue();
@@ -874,7 +890,7 @@ appPow: if (unit == null) {
                 return;
             }
         }
-        toAppendTo.append('?');
+        toAppendTo.append(SystemUnit.UNFORMATTABLE);
     }
 
     /**
@@ -1056,7 +1072,7 @@ appPow: if (unit == null) {
      */
     @Override
     public Unit<?> parse(final CharSequence symbols) throws MeasurementParseException {
-        final Position position = new Position();
+        final var position = new Position();
         Unit<?> unit = parse(symbols, position);
         final int length = symbols.length();
         int unrecognized;
@@ -1092,7 +1108,8 @@ appPow: if (unit == null) {
      * @return the unit parsed from the specified symbols.
      * @throws MeasurementParseException if a problem occurred while parsing the given symbols.
      */
-    @SuppressWarnings({"null", "fallthrough"})
+    @Override
+    @SuppressWarnings("fallthrough")
     public Unit<?> parse(CharSequence symbols, final ParsePosition position) throws MeasurementParseException {
         Objects.requireNonNull(symbols);
         Objects.requireNonNull(position);
@@ -1103,25 +1120,36 @@ appPow: if (unit == null) {
          */
         int end   = symbols.length();
         int start = CharSequences.skipLeadingWhitespaces(symbols, position.getIndex(), end);
-        if (PARSE_AUTHORITY_CODES) {
+        if (AUTHORITIES != null) {
             final String uom = symbols.toString();
-            final String code = DefinitionURI.codeOf("EPSG", uom);
-            if (code != null) {
+            final Map.Entry<String, String> entry = DefinitionURI.codeOf(AUTHORITIES, uom);
+            if (entry != null) {
+                Unit<?> unit = null;
                 NumberFormatException failure = null;
-                try {
-                    final Unit<?> unit = Units.valueOfEPSG(Integer.parseInt(code));
-                    if (unit != null) {
-                        position.setIndex(end);
-                        finish(position);
-                        return unit;
+                final String code = entry.getValue();
+                final String authority = entry.getKey();
+                switch (authority) {
+                    case "EPSG": {
+                        try {
+                            unit = Units.valueOfEPSG(Integer.parseInt(code));
+                        } catch (NumberFormatException e) {
+                            failure = e;
+                        }
+                        break;
                     }
-                } catch (NumberFormatException e) {
-                    failure = e;
+                    case "UCUM": {
+                        unit = parse(code);
+                        break;
+                    }
                 }
-                throw (MeasurementParseException) new MeasurementParseException(
-                        Errors.format(Errors.Keys.UnknownUnit_1,
-                        "EPSG" + DefinitionURI.SEPARATOR + code),
-                        symbols, start + Math.max(0, uom.lastIndexOf(code))).initCause(failure);
+                if (unit != null) {
+                    position.setIndex(end);
+                    finish(position);
+                    return unit;
+                }
+                String message = Errors.format(Errors.Keys.UnknownUnit_1, authority + DefinitionURI.SEPARATOR + code);
+                int errorOffset = start + Math.max(0, symbols.toString().lastIndexOf(code));
+                throw (MeasurementParseException) new MeasurementParseException(message, symbols, errorOffset).initCause(failure);
             }
         }
         /*
@@ -1130,7 +1158,7 @@ appPow: if (unit == null) {
          *
          * The `start` variable is the index of the first character of the next unit term to parse.
          */
-        final Operation operation = new Operation(symbols);    // Enumeration value: NOOP, IMPLICIT, MULTIPLY, DIVIDE.
+        final var operation = new Operation(symbols);    // Enumeration value: NOOP, IMPLICIT, MULTIPLY, DIVIDE.
         Unit<?> unit = null;
         boolean hasSpaces = false;
         int i = start;
@@ -1214,7 +1242,7 @@ scan:   for (int n; i < end; i += n) {
                  */
                 case Style.OPEN: {
                     final int pos = i + Character.charCount(c);
-                    final ParsePosition sub = new ParsePosition(pos);
+                    final var sub = new ParsePosition(pos);
                     final Unit<?> term = parse(symbols, sub);
                     i = CharSequences.skipLeadingWhitespaces(symbols, sub.getIndex(), end);
                     if (i >= end || Character.codePointAt(symbols, i) != Style.CLOSE) {
@@ -1556,7 +1584,7 @@ search:     while ((i = CharSequences.skipTrailingWhitespaces(symbols, start, i)
                 return Double.parseDouble(term);                     // No exponent symbol and no superscript found.
             }
             // Example: "10⁻⁴". Split in base and exponent.
-            final StringBuilder buffer = new StringBuilder(s);
+            final var buffer = new StringBuilder(s);
             do {
                 buffer.appendCodePoint(Characters.toNormalScript(c));
                 if ((s -= Character.charCount(c)) <= 0) break;
@@ -1616,8 +1644,8 @@ search:     while ((i = CharSequences.skipTrailingWhitespaces(symbols, start, i)
     public UnitFormat clone() {
         final UnitFormat f = (UnitFormat) super.clone();
         try {
-            f.setFinalField("unitToLabel", unitToLabel);
-            f.setFinalField("labelToUnit", labelToUnit);
+            f.clone("unitToLabel");
+            f.clone("labelToUnit");
         } catch (ReflectiveOperationException e) {
             throw (InaccessibleObjectException) new InaccessibleObjectException().initCause(e);
         }
@@ -1625,19 +1653,18 @@ search:     while ((i = CharSequences.skipTrailingWhitespaces(symbols, start, i)
     }
 
     /**
-     * Clones the given map, which can be either a {@link HashMap}
-     * or the instance returned by {@link Collections#emptyMap()}.
-     * Then assigns the cloned map to the field of given name.
+     * Clones the map in the specified field.
+     * The map can be either a {@link HashMap} or the instance returned by {@link Map#of()}.
      */
-    private void setFinalField(final String fieldName, final Map<?,?> value) throws ReflectiveOperationException {
-        final Object clone;
-        if (value instanceof HashMap<?,?>) {
-            clone = ((HashMap<?,?>) value).clone();
-        } else {
-            clone = new HashMap<>();
-        }
-        final java.lang.reflect.Field f = UnitFormat.class.getDeclaredField(fieldName);
+    private void clone(final String field) throws ReflectiveOperationException {
+        final var f = UnitFormat.class.getDeclaredField(field);
         f.setAccessible(true);
-        f.set(this, clone);
+        Object value = f.get(this);
+        if (value instanceof HashMap<?,?>) {
+            value = ((HashMap<?,?>) value).clone();
+        } else {
+            value = new HashMap<>();
+        }
+        f.set(this, value);
     }
 }

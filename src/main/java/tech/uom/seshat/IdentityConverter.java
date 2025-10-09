@@ -31,8 +31,6 @@ import javax.measure.UnitConverter;
  * depending on the parameter sign.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.0
- * @since   1.0
  */
 final class IdentityConverter extends AbstractConverter {
     /**
@@ -51,7 +49,7 @@ final class IdentityConverter extends AbstractConverter {
     private IdentityConverter() {
     }
 
-    /** Straight forward implementation. */
+    @Deprecated
     @Override public boolean       isLinear()                   {return true;}
     @Override public boolean       isIdentity()                 {return true;}
     @Override public UnitConverter inverse()                    {return this;}

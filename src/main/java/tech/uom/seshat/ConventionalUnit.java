@@ -33,11 +33,8 @@ import tech.uom.seshat.resources.Errors;
  * A unit of measure which is related to a base or derived unit through a conversion formula.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.3
  *
  * @param <Q>  the kind of quantity to be measured using this units.
- *
- * @since 1.0
  */
 final class ConventionalUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> {
     /**
@@ -56,7 +53,7 @@ final class ConventionalUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> {
     /**
      * The conversion from this unit to the {@linkplain #target} unit.
      */
-    @SuppressWarnings("serial")         // Not statically typed as Serializable.
+    @SuppressWarnings("serial")         // Most Seshat implementations are serializable.
     final UnitConverter toTarget;
 
     /**
@@ -86,9 +83,9 @@ final class ConventionalUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> {
         }
         /*
          * Verifies if an instance already exists for the given converter.
-         * The 'related' array is populated only by the Units class static initializer.
+         * The `related` array is populated only by the Units class static initializer.
          * The SystemUnitTest.verifyRelatedUnits() method verified that the array does
-         * not contain null element and that all 'toTarget' are instances of LinearConverter.
+         * not contain null element and that all `toTarget` are instances of LinearConverter.
          */
         final ConventionalUnit<Q>[] related = target.related();
         if (related != null && toTarget instanceof LinearConverter) {
@@ -313,15 +310,14 @@ final class ConventionalUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> {
         if (that == this) {
             return IdentityConverter.INSTANCE;
         }
-        Objects.requireNonNull(that);
         UnitConverter c = toTarget;
-        if (target != that) {                           // Optimization for a common case.
+        if (target != Objects.requireNonNull(that)) {               // Optimization for a common case.
             final Unit<Q> step = that.getSystemUnit();
             if (target != step && !target.isCompatible(step)) {
                 // Should never occur unless parameterized type has been compromised.
                 throw new UnconvertibleException(incompatible(that));
             }
-            c = target.getConverterTo(step).concatenate(c);         // Usually leave 'c' unchanged.
+            c = target.getConverterTo(step).concatenate(c);         // Usually leave `c` unchanged.
             c =   step.getConverterTo(that).concatenate(c);
         }
         return c;
@@ -343,14 +339,13 @@ final class ConventionalUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> {
         if (that == this) {
             return IdentityConverter.INSTANCE;
         }
-        Objects.requireNonNull(that);
         UnitConverter c = toTarget;
-        if (target != that) {                           // Optimization for a common case.
+        if (target != Objects.requireNonNull(that)) {               // Optimization for a common case.
             final Unit<?> step = that.getSystemUnit();
             if (target != step && !target.isCompatible(step)) {
                 throw new IncommensurableException(incompatible(that));
             }
-            c = target.getConverterToAny(step).concatenate(c);      // Usually leave 'c' unchanged.
+            c = target.getConverterToAny(step).concatenate(c);      // Usually leave `c` unchanged.
             c =   step.getConverterToAny(that).concatenate(c);
         }
         return c;
@@ -360,26 +355,22 @@ final class ConventionalUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> {
      * Returns a new unit identical to this unit except for the symbol, which is set to the given value.
      * This is used by {@link UnitFormat} mostly; we do not provide public API for setting a unit symbol
      * on a conventional unit.
-     */
-    final ConventionalUnit<Q> forSymbol(final String symbol) {
-        if (symbol.equals(getSymbol())) {
-            return this;
-        }
-        return new ConventionalUnit<>(target, toTarget, symbol, scope, epsg);
-    }
-
-    /**
-     * Unsupported operation for conventional units, as required by JSR-385 specification.
+     *
+     * <h4>Departure from JSR-385 specification</h4>
+     * The JSR-385 specification requires that we throw a {@link MeasurementException} because this unit
+     * is not an unscaled standard unit. This implementation relaxes that restriction.
      *
      * @param  symbol  the new symbol for the alternate unit.
      * @return the alternate unit.
-     * @throws MeasurementException always thrown because this unit is not an unscaled standard unit.
      *
      * @see SystemUnit#alternate(String)
      */
     @Override
     public Unit<Q> alternate(final String symbol) {
-        throw new MeasurementException(Errors.format(Errors.Keys.NonSystemUnit_1, this));
+        if (symbol.equals(getSymbol())) {
+            return this;
+        }
+        return new ConventionalUnit<>(target, toTarget, symbol, scope, epsg);
     }
 
     /**
@@ -506,5 +497,23 @@ final class ConventionalUnit<Q extends Quantity<Q>> extends AbstractUnit<Q> {
     @Override
     public int hashCode() {
         return super.hashCode() + 37 * (target.hashCode() + 31 * toTarget.hashCode());
+    }
+
+    /**
+     * Returns a string representation of this unit of measurement.
+     *
+     * @return a string representation.
+     */
+    @Override
+    public String toString() {
+        if (toTarget instanceof LinearConverter || toTarget.isLinear()) {
+            return super.toString();
+        }
+        final String symbol = getSymbol();
+        if (symbol != null) {
+            return symbol;
+        } else {
+            return "f(" + target + ')';
+        }
     }
 }

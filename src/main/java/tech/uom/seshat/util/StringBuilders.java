@@ -27,12 +27,11 @@ import static java.lang.Character.*;
  * new objects.
  *
  * <h2>Unicode support</h2>
- * Every methods defined in this class work on <cite>code points</cite> instead of characters
- * when appropriate. Consequently, those methods should behave correctly with characters outside
- * the <cite>Basic Multilingual Plane</cite> (BMP).
+ * Every methods defined in this class work on <i>code points</i> instead of characters
+ * when appropriate. Consequently, those methods should behave correctly with characters
+ * outside the <i>Basic Multilingual Plane</i> (BMP).
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.0
  *
  * @see CharSequences
  */
@@ -59,7 +58,7 @@ public final class StringBuilders {
      *
      * <p>More specifically if the given buffer ends with a {@code '.'} character followed by a
      * sequence of {@code '0'} characters, then those characters are removed. Otherwise this
-     * method does nothing. This is a <cite>"all or nothing"</cite> method: either the fractional
+     * method does nothing. This is a <q>all or nothing</q> method: either the fractional
      * part is completely removed, or either it is left unchanged.</p>
      *
      * <h4>Use case</h4>

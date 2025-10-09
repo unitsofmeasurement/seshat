@@ -17,7 +17,6 @@ package tech.uom.seshat;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Objects;
 import javax.measure.UnitConverter;
 
 
@@ -25,8 +24,6 @@ import javax.measure.UnitConverter;
  * The concatenation of two unit converters where at least one of them is not linear.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.0
- * @since   1.0
  */
 final class ConcatenatedConverter extends AbstractConverter {
     /**
@@ -37,11 +34,13 @@ final class ConcatenatedConverter extends AbstractConverter {
     /**
      * The first unit converter to apply.
      */
+    @SuppressWarnings("serial")         // Most Seshat implementations are serializable.
     private final UnitConverter c1;
 
     /**
      * The second unit converter to apply, after {@code c1}.
      */
+    @SuppressWarnings("serial")         // Most Seshat implementations are serializable.
     private final UnitConverter c2;
 
     /**
@@ -71,8 +70,11 @@ final class ConcatenatedConverter extends AbstractConverter {
     /**
      * Returns {@code true} if the two unit converters are linear converters.
      * Should always be {@code false}, otherwise we would not have created a {@code ConcatenatedConverter}.
+     *
+     * @deprecated This method is badly named, but we can't change since it is defined by JSR-385.
      */
     @Override
+    @Deprecated
     public boolean isLinear() {
         return c1.isLinear() && c2.isLinear();
     }
@@ -119,7 +121,6 @@ final class ConcatenatedConverter extends AbstractConverter {
      */
     @Override
     public UnitConverter concatenate(final UnitConverter converter) {
-        Objects.requireNonNull(converter);
         if (equals(converter.inverse())) {
             return IdentityConverter.INSTANCE;
         }

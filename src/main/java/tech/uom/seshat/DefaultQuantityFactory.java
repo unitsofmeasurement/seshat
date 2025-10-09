@@ -22,11 +22,9 @@ import javax.measure.spi.QuantityFactory;
 
 
 /**
- * Default factory when {@link SystemUnit} can not be used directly.
+ * Default factory when {@link SystemUnit} cannot be used directly.
  *
  * @author  Martin Desruisseaux (MPO, Geomatys)
- * @version 1.2
- * @since   1.2
  */
 class DefaultQuantityFactory<Q extends Quantity<Q>> implements QuantityFactory<Q> {
     /**

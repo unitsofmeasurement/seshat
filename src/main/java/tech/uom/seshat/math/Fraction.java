@@ -17,6 +17,7 @@ package tech.uom.seshat.math;
 
 import java.io.Serializable;
 import tech.uom.seshat.util.WeakHashSet;
+import static java.lang.Math.multiplyFull;
 
 
 /**
@@ -25,8 +26,6 @@ import tech.uom.seshat.util.WeakHashSet;
  * All {@code Fraction} instances are immutable and thus inherently thread-safe.
  *
  * @author  Martin Desruisseaux (MPO, Geomatys)
- * @version 1.2
- * @since   1.0
  */
 public final class Fraction extends Number implements Comparable<Fraction>, Serializable {
     /**
@@ -70,12 +69,12 @@ public final class Fraction extends Number implements Comparable<Fraction>, Seri
 
     /**
      * Returns a unique fraction instance equals to {@code this}.
-     * If this method has been invoked previously on another {@code Fraction} with the same value than {@code this},
+     * If this method has been invoked previously on another {@code Fraction} with the same value as {@code this},
      * then that previous instance is returned (provided that it has not yet been garbage collected). Otherwise this
      * method adds this fraction to the pool of fractions that may be returned in next {@code unique()} invocations,
      * then returns {@code this}.
      *
-     * <p>This method is useful for saving memory when a potentially large amount of {@code Fraction} instances will
+     * <p>This method is useful for saving memory when a potentially large number of {@code Fraction} instances will
      * be kept for a long time and many instances are likely to have the same values.
      * It is usually not worth to invoke this method for short-lived instances.</p>
      *
@@ -97,29 +96,26 @@ public final class Fraction extends Number implements Comparable<Fraction>, Seri
 
     /**
      * Returns a fraction equivalent to {@code num} / {@code den} after simplification.
-     * If the simplified fraction is equal to {@code this}, then this method returns {@code this}.
+     * If the simplified fraction is equal to {@code f}, then this method returns {@code f}.
      *
      * <p>The arguments given to this method are the results of multiplications and additions of {@code int} values.
      * This method fails if any argument value is {@link Long#MIN_VALUE} because that value cannot be made positive.
      * However, it should never happen. Even in the worst scenario:</p>
      *
-     * {@prefomat java
+     * {@snippet lang="java" :
      *     long n = Math.multiplyFull(Integer.MIN_VALUE, Integer.MAX_VALUE);
      *     n += n;
-     * }
+     *     }
      *
      * Above result still slightly smaller in magnitude than {@code Long.MIN_VALUE}.
      */
     private Fraction simplify(long num, long den) {
-        if (num == Long.MIN_VALUE || den == Long.MIN_VALUE) {
-            throw new ArithmeticException();
-        }
         if (num == 0) {
             den = Long.signum(den);             // Simplify  0/x  as  0/±1 or 0/0.
         } else if (den == 0) {
-            num = Long.signum(num);             // Simplify  x/0  as  ±1/0
+            num = Long.signum(num);             // Simplify  x/0  as  ±1/0.
         } else if (den % num == 0) {
-            den /= num;                         // Simplify  x/xy  as  1/y
+            den /= num;                         // Simplify  x/xy  as  1/y.
             if (den < 0) {
                 den = -den;                     // Math.negateExact(long) not needed - see javadoc.
                 num = -1;
@@ -131,7 +127,7 @@ public final class Fraction extends Number implements Comparable<Fraction>, Seri
             long gcd = Math.abs(den);
             long remainder = a % gcd;
             if (remainder == 0) {
-                num /= den;                     // Simplify  xy/x  as  y/1
+                num /= den;                     // Simplify  xy/x  as  y/1.
                 den = 1;
             } else {
                 do {                            // Search for greatest common divisor with Euclid's algorithm.
@@ -157,6 +153,8 @@ public final class Fraction extends Number implements Comparable<Fraction>, Seri
      *
      * @return the result of {@code -this}.
      * @throws ArithmeticException if the result overflows.
+     *
+     * @see #subtract(Fraction)
      */
     public Fraction negate() {
         int n = numerator;
@@ -179,10 +177,9 @@ public final class Fraction extends Number implements Comparable<Fraction>, Seri
      * @throws ArithmeticException if the result overflows.
      */
     public Fraction add(final Fraction other) {
-        // Intermediate result must be computed in a type wider that the 'numerator' and 'denominator' type.
-        final long td = this .denominator;
-        final long od = other.denominator;
-        return simplify(Math.addExact(od * numerator, td * other.numerator), od * td);
+        long a = multiplyFull(other.denominator, numerator);
+        long b = multiplyFull(denominator, other.numerator);
+        return simplify(Math.addExact(a, b), multiplyFull(other.denominator, denominator));
     }
 
     /**
@@ -191,12 +188,13 @@ public final class Fraction extends Number implements Comparable<Fraction>, Seri
      * @param  other  the fraction to subtract from this fraction.
      * @return the simplified result of {@code this} - {@code other}.
      * @throws ArithmeticException if the result overflows.
+     *
+     * @see #negate()
      */
     public Fraction subtract(final Fraction other) {
-        // Intermediate result must be computed in a type wider that the 'numerator' and 'denominator' type.
-        final long td = this .denominator;
-        final long od = other.denominator;
-        return simplify(Math.subtractExact(od * numerator, td * other.numerator), od * td);
+        long a = multiplyFull(other.denominator, numerator);
+        long b = multiplyFull(denominator, other.numerator);
+        return simplify(Math.subtractExact(a, b), multiplyFull(other.denominator, denominator));
     }
 
     /**
@@ -207,8 +205,8 @@ public final class Fraction extends Number implements Comparable<Fraction>, Seri
      * @throws ArithmeticException if the result overflows.
      */
     public Fraction multiply(final Fraction other) {
-        return simplify(Math.multiplyFull(numerator,   other.numerator),
-                        Math.multiplyFull(denominator, other.denominator));
+        return simplify(multiplyFull(numerator,   other.numerator),
+                        multiplyFull(denominator, other.denominator));
     }
 
     /**
@@ -219,8 +217,8 @@ public final class Fraction extends Number implements Comparable<Fraction>, Seri
      * @throws ArithmeticException if the result overflows.
      */
     public Fraction divide(final Fraction other) {
-        return simplify(Math.multiplyFull(numerator,   other.denominator),
-                        Math.multiplyFull(denominator, other.numerator));
+        return simplify(multiplyFull(numerator,   other.denominator),
+                        multiplyFull(denominator, other.numerator));
     }
 
     /**
@@ -322,16 +320,27 @@ public final class Fraction extends Number implements Comparable<Fraction>, Seri
 
     /**
      * Returns this fraction rounded toward zero.
+     * If the fraction value is NaN, then this method returns 0.
+     * If the fraction value is positive or negative infinity, then this method returns
+     * {@link Long#MAX_VALUE} or {@link Long#MIN_VALUE} respectively.
      *
      * @return this fraction rounded toward zero.
      */
     @Override
     public long longValue() {
-        return intValue();
+        if (denominator != 0) {
+            return numerator / denominator;
+        }
+        if (numerator < 0) return Long.MIN_VALUE;
+        if (numerator > 0) return Long.MAX_VALUE;
+        return 0;
     }
 
     /**
      * Returns this fraction rounded toward zero.
+     * If the fraction value is NaN, then this method returns 0.
+     * If the fraction value is positive or negative infinity, then this method returns
+     * {@link Integer#MAX_VALUE} or {@link Integer#MIN_VALUE} respectively.
      *
      * @return {@link #numerator} / {@link #denominator} rounded toward zero.
      *
@@ -341,34 +350,20 @@ public final class Fraction extends Number implements Comparable<Fraction>, Seri
      */
     @Override
     public int intValue() {
-        return numerator / denominator;
+        if (denominator != 0) {
+            return numerator / denominator;
+        }
+        if (numerator < 0) return Integer.MIN_VALUE;
+        if (numerator > 0) return Integer.MAX_VALUE;
+        return 0;
     }
 
-    /**
-     * Returns this fraction rounded toward zero, if the result can be represented as a short integer.
-     *
-     * @return this fraction rounded toward zero.
-     * @throws ArithmeticException if the result cannot be represented as a short integer.
+    /*
+     * Do not override `shortValue()` and `byteValue()` in order to keep a behavior
+     * consistent with all `Number` subclasses provided in the standard JDK: first
+     * a narrowing conversion to `int` followed by discarding the high order bits.
+     * Note than even a direct `(short) value` cast implicitly does above steps.
      */
-    @Override
-    public short shortValue() {
-        final int n = intValue();
-        if ((n & ~0xFFFF) == 0) return (short) n;
-        throw new ArithmeticException();
-    }
-
-    /**
-     * Returns this fraction rounded toward zero, if the result can be represented as a signed byte.
-     *
-     * @return this fraction rounded toward zero.
-     * @throws ArithmeticException if the result cannot be represented as a signed byte.
-     */
-    @Override
-    public byte byteValue() {
-        final int n = intValue();
-        if ((n & ~0xFF) == 0) return (byte) n;
-        throw new ArithmeticException();
-    }
 
     /**
      * Returns the sign of this fraction. The return value is -1 if this fraction is negative;
@@ -392,8 +387,8 @@ public final class Fraction extends Number implements Comparable<Fraction>, Seri
      */
     @Override
     public int compareTo(final Fraction other) {
-        return Long.signum(Math.multiplyFull(numerator, other.denominator)
-                         - Math.multiplyFull(other.numerator, denominator));
+        return Long.signum(multiplyFull(numerator, other.denominator)
+                         - multiplyFull(other.numerator, denominator));
     }
 
     /**

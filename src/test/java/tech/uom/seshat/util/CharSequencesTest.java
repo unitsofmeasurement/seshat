@@ -15,10 +15,12 @@
  */
 package tech.uom.seshat.util;
 
-import org.junit.Test;
-
-import static org.junit.Assert.*;
 import static tech.uom.seshat.util.CharSequences.*;
+
+// Test dependencies
+import tech.uom.seshat.TestCase;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 /**
@@ -26,9 +28,14 @@ import static tech.uom.seshat.util.CharSequences.*;
  *
  * @author  Martin Desruisseaux (Geomatys)
  * @author  Johann Sorel (Geomatys)
- * @version 1.2
  */
-public final strictfp class CharSequencesTest {
+public final class CharSequencesTest extends TestCase {
+    /**
+     * Creates a new test case.
+     */
+    public CharSequencesTest() {
+    }
+
     /**
      * Tests the {@link CharSequences#toASCII(CharSequence)} method.
      */
@@ -43,12 +50,13 @@ public final strictfp class CharSequencesTest {
     }
 
     /**
-     * Tests the {@link CharSequences#regionMatches(CharSequence, int, CharSequence)}.
+     * Tests the {@link CharSequences#regionMatches(CharSequence, int, CharSequence)} and
+     * {@link CharSequences#regionMatches(CharSequence, int, CharSequence)} methods.
      */
     @Test
     public void testRegionMatches() {
-        assertTrue(regionMatches(new StringBuilder("Un chasseur sachant chasser sans son chien"), 12, "sachant"));
-        assertTrue(regionMatches(new StringBuilder("Un chasseur sachant chasser sans son chien"), 12, "sacHant"));
+        assertTrue (regionMatches(new StringBuilder("Un chasseur sachant chasser sans son chien"), 12, "sachant"));
+        assertTrue (regionMatches(new StringBuilder("Un chasseur sachant chasser sans son chien"), 12, "sacHant"));
     }
 
     /**

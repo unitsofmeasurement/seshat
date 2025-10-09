@@ -19,8 +19,8 @@ import java.util.OptionalInt;
 import javax.measure.Dimension;
 import javax.measure.Unit;
 import javax.measure.UnitConverter;
-import javax.measure.format.MeasurementParseException;
 import javax.measure.Quantity;
+import javax.measure.format.MeasurementParseException;
 import javax.measure.quantity.*;
 import tech.uom.seshat.resources.Errors;
 
@@ -51,7 +51,7 @@ import static tech.uom.seshat.UnitRegistry.PREFIXABLE;
  *   <tr><td style="padding-top:15px" colspan="4"><b>Fundamental:</b></td></tr>
  *   <tr><td>{@link Length}</td>            <td>(L)</td> <td>{@link #METRE}</td>    <td>{@link #CENTIMETRE}, {@link #KILOMETRE}, {@link #NAUTICAL_MILE}, {@link #STATUTE_MILE}, {@link #FOOT}</td></tr>
  *   <tr><td>{@link Mass}</td>              <td>(M)</td> <td>{@link #KILOGRAM}</td> <td></td></tr>
- *   <tr><td>{@link Time}</td>              <td>(T)</td> <td>{@link #SECOND}</td>   <td>{@link #MILLISECOND}, {@link #MINUTE}, {@link #HOUR}, {@link #DAY}, {@link #WEEK}, {@link #TROPICAL_YEAR}</td></tr>
+ *   <tr><td>{@link Time}</td>              <td>(T)</td> <td>{@link #SECOND}</td>   <td>{@link #NANOSECOND}, {@link #MILLISECOND}, {@link #MINUTE}, {@link #HOUR}, {@link #DAY}, {@link #WEEK}, {@link #TROPICAL_YEAR}</td></tr>
  *   <tr><td>{@link ElectricCurrent}</td>   <td>(I)</td> <td>{@link #AMPERE}</td>   <td></td></tr>
  *   <tr><td>{@link Temperature}</td>       <td>(Θ)</td> <td>{@link #KELVIN}</td>   <td>{@link #CELSIUS}, {@link #FAHRENHEIT}</td></tr>
  *   <tr><td>{@link AmountOfSubstance}</td> <td>(N)</td> <td>{@link #MOLE}</td>     <td></td></tr>
@@ -70,7 +70,7 @@ import static tech.uom.seshat.UnitRegistry.PREFIXABLE;
  *
  * @author  Martin Desruisseaux (IRD, Geomatys)
  * @author  Alexis Manin (Geomatys)
- * @version 1.2
+ * @version 1.5
  * @since   1.0
  */
 public final class Units {
@@ -80,13 +80,12 @@ public final class Units {
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #METRE}
      * and the unlocalized name is "nanometre".
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
-     *   <tr><td>SI units:</td>         <td style="word-spacing:1em"><u>{@code NANOMETRE}</u>, {@link #MILLIMETRE}, {@link #CENTIMETRE}, <b>{@link #METRE}</b>, {@link #KILOMETRE}.</td></tr>
-     *   <tr><td>In other systems:</td> <td style="word-spacing:1em">{@link #POINT}, {@link #INCH}, {@link #FOOT}, {@link #CLARKE_FOOT}, {@link #US_SURVEY_FOOT}, {@link #STATUTE_MILE}, {@link #NAUTICAL_MILE}.</td></tr>
-     *   <tr><td>Derived units:</td>    <td style="word-spacing:1em">{@link #SQUARE_METRE}, {@link #CUBIC_METRE}, {@link #METRES_PER_SECOND}.</td></tr>
-     * </table></div>
+     *   <tr><td>SI length units:</td> <td style="word-spacing:1em"><u>{@code NANOMETRE}</u>, {@link #MILLIMETRE}, {@link #CENTIMETRE}, <b>{@link #METRE}</b>, {@link #KILOMETRE}.</td></tr>
+     *   <tr><td>Non-SI units:</td>    <td style="word-spacing:1em">{@link #POINT}, {@link #INCH}, {@link #FOOT}, {@link #CLARKE_FOOT}, {@link #US_SURVEY_FOOT}, {@link #STATUTE_MILE}, {@link #NAUTICAL_MILE}.</td></tr>
+     *   <tr><td>Derived units:</td>   <td style="word-spacing:1em">{@link #SQUARE_METRE}, {@link #CUBIC_METRE}, {@link #METRES_PER_SECOND}.</td></tr>
+     * </table>
      */
     public static final Unit<Length> NANOMETRE;
 
@@ -95,13 +94,12 @@ public final class Units {
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #METRE},
      * the unlocalized name is “millimetre” and the identifier is EPSG:1025.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
-     *   <tr><td>SI length units:</td>  <td style="word-spacing:1em">{@link #NANOMETRE}, <u>{@code MILLIMETRE}</u>, {@link #CENTIMETRE}, <b>{@link #METRE}</b>, {@link #KILOMETRE}.</td></tr>
-     *   <tr><td>In other systems:</td> <td style="word-spacing:1em">{@link #POINT}, {@link #INCH}, {@link #FOOT}, {@link #CLARKE_FOOT}, {@link #US_SURVEY_FOOT}, {@link #STATUTE_MILE}, {@link #NAUTICAL_MILE}.</td></tr>
-     *   <tr><td>Derived units:</td>    <td style="word-spacing:1em">{@link #SQUARE_METRE}, {@link #CUBIC_METRE}, {@link #METRES_PER_SECOND}.</td></tr>
-     * </table></div>
+     *   <tr><td>SI length units:</td> <td style="word-spacing:1em">{@link #NANOMETRE}, <u>{@code MILLIMETRE}</u>, {@link #CENTIMETRE}, <b>{@link #METRE}</b>, {@link #KILOMETRE}.</td></tr>
+     *   <tr><td>Non-SI units:</td>    <td style="word-spacing:1em">{@link #POINT}, {@link #INCH}, {@link #FOOT}, {@link #CLARKE_FOOT}, {@link #US_SURVEY_FOOT}, {@link #STATUTE_MILE}, {@link #NAUTICAL_MILE}.</td></tr>
+     *   <tr><td>Derived units:</td>   <td style="word-spacing:1em">{@link #SQUARE_METRE}, {@link #CUBIC_METRE}, {@link #METRES_PER_SECOND}.</td></tr>
+     * </table>
      */
     public static final Unit<Length> MILLIMETRE;
 
@@ -110,13 +108,12 @@ public final class Units {
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #METRE},
      * the unlocalized name is “centimetre” and the identifier is EPSG:1033.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
-     *   <tr><td>SI length units:</td>  <td style="word-spacing:1em">{@link #NANOMETRE}, {@link #MILLIMETRE}, <u>{@code CENTIMETRE}</u>, <b>{@link #METRE}</b>, {@link #KILOMETRE}.</td></tr>
-     *   <tr><td>In other systems:</td> <td style="word-spacing:1em">{@link #POINT}, {@link #INCH}, {@link #FOOT}, {@link #CLARKE_FOOT}, {@link #US_SURVEY_FOOT}, {@link #STATUTE_MILE}, {@link #NAUTICAL_MILE}.</td></tr>
-     *   <tr><td>Derived units:</td>    <td style="word-spacing:1em">{@link #SQUARE_METRE}, {@link #CUBIC_METRE}, {@link #METRES_PER_SECOND}.</td></tr>
-     * </table></div>
+     *   <tr><td>SI length units:</td> <td style="word-spacing:1em">{@link #NANOMETRE}, {@link #MILLIMETRE}, <u>{@code CENTIMETRE}</u>, <b>{@link #METRE}</b>, {@link #KILOMETRE}.</td></tr>
+     *   <tr><td>Non-SI units:</td>    <td style="word-spacing:1em">{@link #POINT}, {@link #INCH}, {@link #FOOT}, {@link #CLARKE_FOOT}, {@link #US_SURVEY_FOOT}, {@link #STATUTE_MILE}, {@link #NAUTICAL_MILE}.</td></tr>
+     *   <tr><td>Derived units:</td>   <td style="word-spacing:1em">{@link #SQUARE_METRE}, {@link #CUBIC_METRE}, {@link #METRES_PER_SECOND}.</td></tr>
+     * </table>
      */
     public static final Unit<Length> CENTIMETRE;
 
@@ -125,13 +122,12 @@ public final class Units {
      * The unlocalized name is “metre” and the identifier is EPSG:9001.
      * This is the base of all other {@linkplain #isLinear(Unit) linear} units.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
-     *   <tr><td>SI length units:</td>  <td style="word-spacing:1em">{@link #NANOMETRE}, {@link #MILLIMETRE}, {@link #CENTIMETRE}, <u><b>{@code METRE}</b></u>, {@link #KILOMETRE}.</td></tr>
-     *   <tr><td>In other systems:</td> <td style="word-spacing:1em">{@link #POINT}, {@link #INCH}, {@link #FOOT}, {@link #CLARKE_FOOT}, {@link #US_SURVEY_FOOT}, {@link #STATUTE_MILE}, {@link #NAUTICAL_MILE}.</td></tr>
-     *   <tr><td>Derived units:</td>    <td style="word-spacing:1em">{@link #SQUARE_METRE}, {@link #CUBIC_METRE}, {@link #METRES_PER_SECOND}.</td></tr>
-     * </table></div>
+     *   <tr><td>SI length units:</td> <td style="word-spacing:1em">{@link #NANOMETRE}, {@link #MILLIMETRE}, {@link #CENTIMETRE}, <u><b>{@code METRE}</b></u>, {@link #KILOMETRE}.</td></tr>
+     *   <tr><td>Non-SI units:</td>    <td style="word-spacing:1em">{@link #POINT}, {@link #INCH}, {@link #FOOT}, {@link #CLARKE_FOOT}, {@link #US_SURVEY_FOOT}, {@link #STATUTE_MILE}, {@link #NAUTICAL_MILE}.</td></tr>
+     *   <tr><td>Derived units:</td>   <td style="word-spacing:1em">{@link #SQUARE_METRE}, {@link #CUBIC_METRE}, {@link #METRES_PER_SECOND}.</td></tr>
+     * </table>
      */
     public static final Unit<Length> METRE;
 
@@ -140,13 +136,12 @@ public final class Units {
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #METRE},
      * the unlocalized name is “kilometre” and the identifier is EPSG:9036.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
-     *   <tr><td>SI length units:</td>  <td style="word-spacing:1em">{@link #NANOMETRE}, {@link #MILLIMETRE}, {@link #CENTIMETRE}, <b>{@link #METRE}</b>, <u>{@code KILOMETRE}</u>.</td></tr>
-     *   <tr><td>In other systems:</td> <td style="word-spacing:1em">{@link #POINT}, {@link #INCH}, {@link #FOOT}, {@link #CLARKE_FOOT}, {@link #US_SURVEY_FOOT}, {@link #STATUTE_MILE}, {@link #NAUTICAL_MILE}.</td></tr>
-     *   <tr><td>Derived units:</td>    <td style="word-spacing:1em">{@link #SQUARE_METRE}, {@link #CUBIC_METRE}, {@link #KILOMETRES_PER_HOUR}.</td></tr>
-     * </table></div>
+     *   <tr><td>SI length units:</td> <td style="word-spacing:1em">{@link #NANOMETRE}, {@link #MILLIMETRE}, {@link #CENTIMETRE}, <b>{@link #METRE}</b>, <u>{@code KILOMETRE}</u>.</td></tr>
+     *   <tr><td>Non-SI units:</td>    <td style="word-spacing:1em">{@link #POINT}, {@link #INCH}, {@link #FOOT}, {@link #CLARKE_FOOT}, {@link #US_SURVEY_FOOT}, {@link #STATUTE_MILE}, {@link #NAUTICAL_MILE}.</td></tr>
+     *   <tr><td>Derived units:</td>   <td style="word-spacing:1em">{@link #SQUARE_METRE}, {@link #CUBIC_METRE}, {@link #KILOMETRES_PER_HOUR}.</td></tr>
+     * </table>
      */
     public static final Unit<Length> KILOMETRE;
 
@@ -161,13 +156,12 @@ public final class Units {
      * International Hydrographic Organization (IHO) and the International Bureau of Weights and Measures (BIPM).
      * But “NM” and “nmi” are also in use.</p>
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
-     *   <tr><td>SI length units:</td>  <td style="word-spacing:1em">{@link #NANOMETRE}, {@link #MILLIMETRE}, {@link #CENTIMETRE}, <b>{@link #METRE}</b>, {@link #KILOMETRE}.</td></tr>
-     *   <tr><td>In other systems:</td> <td style="word-spacing:1em">{@link #POINT}, {@link #INCH}, {@link #FOOT}, {@link #CLARKE_FOOT}, {@link #US_SURVEY_FOOT}, {@link #STATUTE_MILE}, <u>{@code NAUTICAL_MILE}</u>.</td></tr>
-     *   <tr><td>Derived units:</td>    <td style="word-spacing:1em">{@link #SQUARE_METRE}, {@link #CUBIC_METRE}, {@link #KILOMETRES_PER_HOUR}.</td></tr>
-     * </table></div>
+     *   <tr><td>SI length units:</td> <td style="word-spacing:1em">{@link #NANOMETRE}, {@link #MILLIMETRE}, {@link #CENTIMETRE}, <b>{@link #METRE}</b>, {@link #KILOMETRE}.</td></tr>
+     *   <tr><td>Non-SI units:</td>    <td style="word-spacing:1em">{@link #POINT}, {@link #INCH}, {@link #FOOT}, {@link #CLARKE_FOOT}, {@link #US_SURVEY_FOOT}, {@link #STATUTE_MILE}, <u>{@code NAUTICAL_MILE}</u>.</td></tr>
+     *   <tr><td>Derived units:</td>   <td style="word-spacing:1em">{@link #SQUARE_METRE}, {@link #CUBIC_METRE}, {@link #KILOMETRES_PER_HOUR}.</td></tr>
+     * </table>
      */
     public static final Unit<Length> NAUTICAL_MILE;
 
@@ -180,13 +174,12 @@ public final class Units {
      * for avoiding confusion with the US survey mile.
      * The identifier is EPSG:9093.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
-     *   <tr><td>SI length units:</td>  <td style="word-spacing:1em">{@link #NANOMETRE}, {@link #MILLIMETRE}, {@link #CENTIMETRE}, <b>{@link #METRE}</b>, {@link #KILOMETRE}.</td></tr>
-     *   <tr><td>In other systems:</td> <td style="word-spacing:1em">{@link #POINT}, {@link #INCH}, {@link #FOOT}, {@link #CLARKE_FOOT}, {@link #US_SURVEY_FOOT}, <u>{@code STATUTE_MILE}</u>, {@link #NAUTICAL_MILE}.</td></tr>
-     *   <tr><td>Derived units:</td>    <td style="word-spacing:1em">{@link #SQUARE_METRE}, {@link #CUBIC_METRE}, {@link #KILOMETRES_PER_HOUR}.</td></tr>
-     * </table></div>
+     *   <tr><td>SI length units:</td> <td style="word-spacing:1em">{@link #NANOMETRE}, {@link #MILLIMETRE}, {@link #CENTIMETRE}, <b>{@link #METRE}</b>, {@link #KILOMETRE}.</td></tr>
+     *   <tr><td>Non-SI units:</td>    <td style="word-spacing:1em">{@link #POINT}, {@link #INCH}, {@link #FOOT}, {@link #CLARKE_FOOT}, {@link #US_SURVEY_FOOT}, <u>{@code STATUTE_MILE}</u>, {@link #NAUTICAL_MILE}.</td></tr>
+     *   <tr><td>Derived units:</td>   <td style="word-spacing:1em">{@link #SQUARE_METRE}, {@link #CUBIC_METRE}, {@link #KILOMETRES_PER_HOUR}.</td></tr>
+     * </table>
      */
     public static final Unit<Length> STATUTE_MILE;
 
@@ -196,13 +189,12 @@ public final class Units {
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #METRE},
      * the unlocalized name is “US survey foot” and the identifier is EPSG:9003.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
-     *   <tr><td>SI length units:</td>  <td style="word-spacing:1em">{@link #NANOMETRE}, {@link #MILLIMETRE}, {@link #CENTIMETRE}, <b>{@link #METRE}</b>, {@link #KILOMETRE}.</td></tr>
-     *   <tr><td>In other systems:</td> <td style="word-spacing:1em">{@link #POINT}, {@link #INCH}, {@link #FOOT}, {@link #CLARKE_FOOT}, <u>{@code US_SURVEY_FOOT}</u>, {@link #STATUTE_MILE}, {@link #NAUTICAL_MILE}.</td></tr>
-     *   <tr><td>Derived units:</td>    <td style="word-spacing:1em">{@link #SQUARE_METRE}, {@link #CUBIC_METRE}, {@link #METRES_PER_SECOND}.</td></tr>
-     * </table></div>
+     *   <tr><td>SI length units:</td> <td style="word-spacing:1em">{@link #NANOMETRE}, {@link #MILLIMETRE}, {@link #CENTIMETRE}, <b>{@link #METRE}</b>, {@link #KILOMETRE}.</td></tr>
+     *   <tr><td>Non-SI units:</td>    <td style="word-spacing:1em">{@link #POINT}, {@link #INCH}, {@link #FOOT}, {@link #CLARKE_FOOT}, <u>{@code US_SURVEY_FOOT}</u>, {@link #STATUTE_MILE}, {@link #NAUTICAL_MILE}.</td></tr>
+     *   <tr><td>Derived units:</td>   <td style="word-spacing:1em">{@link #SQUARE_METRE}, {@link #CUBIC_METRE}, {@link #METRES_PER_SECOND}.</td></tr>
+     * </table>
      */
     public static final Unit<Length> US_SURVEY_FOOT;
 
@@ -211,13 +203,12 @@ public final class Units {
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #METRE},
      * the unlocalized name is “Clarke’s foot” and the identifier is EPSG:9005.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
-     *   <tr><td>SI length units:</td>  <td style="word-spacing:1em">{@link #NANOMETRE}, {@link #MILLIMETRE}, {@link #CENTIMETRE}, <b>{@link #METRE}</b>, {@link #KILOMETRE}.</td></tr>
-     *   <tr><td>In other systems:</td> <td style="word-spacing:1em">{@link #POINT}, {@link #INCH}, {@link #FOOT}, <u>{@code CLARKE_FOOT}</u>, {@link #US_SURVEY_FOOT}, {@link #STATUTE_MILE}, {@link #NAUTICAL_MILE}.</td></tr>
-     *   <tr><td>Derived units:</td>    <td style="word-spacing:1em">{@link #SQUARE_METRE}, {@link #CUBIC_METRE}, {@link #METRES_PER_SECOND}.</td></tr>
-     * </table></div>
+     *   <tr><td>SI length units:</td> <td style="word-spacing:1em">{@link #NANOMETRE}, {@link #MILLIMETRE}, {@link #CENTIMETRE}, <b>{@link #METRE}</b>, {@link #KILOMETRE}.</td></tr>
+     *   <tr><td>Non-SI units:</td>    <td style="word-spacing:1em">{@link #POINT}, {@link #INCH}, {@link #FOOT}, <u>{@code CLARKE_FOOT}</u>, {@link #US_SURVEY_FOOT}, {@link #STATUTE_MILE}, {@link #NAUTICAL_MILE}.</td></tr>
+     *   <tr><td>Derived units:</td>   <td style="word-spacing:1em">{@link #SQUARE_METRE}, {@link #CUBIC_METRE}, {@link #METRES_PER_SECOND}.</td></tr>
+     * </table>
      */
     public static final Unit<Length> CLARKE_FOOT;
 
@@ -226,13 +217,12 @@ public final class Units {
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #METRE},
      * the unlocalized name is “foot” and the identifier is EPSG:9002.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
-     *   <tr><td>SI length units:</td>  <td style="word-spacing:1em">{@link #NANOMETRE}, {@link #MILLIMETRE}, {@link #CENTIMETRE}, <b>{@link #METRE}</b>, {@link #KILOMETRE}.</td></tr>
-     *   <tr><td>In other systems:</td> <td style="word-spacing:1em">{@link #POINT}, {@link #INCH}, <u>{@code FOOT}</u>, {@link #CLARKE_FOOT}, {@link #US_SURVEY_FOOT}, {@link #STATUTE_MILE}, {@link #NAUTICAL_MILE}.</td></tr>
-     *   <tr><td>Derived units:</td>    <td style="word-spacing:1em">{@link #SQUARE_METRE}, {@link #CUBIC_METRE}, {@link #METRES_PER_SECOND}.</td></tr>
-     * </table></div>
+     *   <tr><td>SI length units:</td> <td style="word-spacing:1em">{@link #NANOMETRE}, {@link #MILLIMETRE}, {@link #CENTIMETRE}, <b>{@link #METRE}</b>, {@link #KILOMETRE}.</td></tr>
+     *   <tr><td>Non-SI units:</td>    <td style="word-spacing:1em">{@link #POINT}, {@link #INCH}, <u>{@code FOOT}</u>, {@link #CLARKE_FOOT}, {@link #US_SURVEY_FOOT}, {@link #STATUTE_MILE}, {@link #NAUTICAL_MILE}.</td></tr>
+     *   <tr><td>Derived units:</td>   <td style="word-spacing:1em">{@link #SQUARE_METRE}, {@link #CUBIC_METRE}, {@link #METRES_PER_SECOND}.</td></tr>
+     * </table>
      */
     public static final Unit<Length> FOOT;
 
@@ -241,13 +231,12 @@ public final class Units {
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #METRE}
      * and the unlocalized name is “inch”.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
-     *   <tr><td>SI length units:</td>  <td style="word-spacing:1em">{@link #NANOMETRE}, {@link #MILLIMETRE}, {@link #CENTIMETRE}, <b>{@link #METRE}</b>, {@link #KILOMETRE}.</td></tr>
-     *   <tr><td>In other systems:</td> <td style="word-spacing:1em">{@link #POINT}, <u>{@code INCH}</u>, {@link #FOOT}, {@link #CLARKE_FOOT}, {@link #US_SURVEY_FOOT}, {@link #STATUTE_MILE}, {@link #NAUTICAL_MILE}.</td></tr>
-     *   <tr><td>Derived units:</td>    <td style="word-spacing:1em">{@link #SQUARE_METRE}, {@link #CUBIC_METRE}, {@link #METRES_PER_SECOND}.</td></tr>
-     * </table></div>
+     *   <tr><td>SI length units:</td> <td style="word-spacing:1em">{@link #NANOMETRE}, {@link #MILLIMETRE}, {@link #CENTIMETRE}, <b>{@link #METRE}</b>, {@link #KILOMETRE}.</td></tr>
+     *   <tr><td>Non-SI units:</td>    <td style="word-spacing:1em">{@link #POINT}, <u>{@code INCH}</u>, {@link #FOOT}, {@link #CLARKE_FOOT}, {@link #US_SURVEY_FOOT}, {@link #STATUTE_MILE}, {@link #NAUTICAL_MILE}.</td></tr>
+     *   <tr><td>Derived units:</td>   <td style="word-spacing:1em">{@link #SQUARE_METRE}, {@link #CUBIC_METRE}, {@link #METRES_PER_SECOND}.</td></tr>
+     * </table>
      */
     public static final Unit<Length> INCH;
 
@@ -257,13 +246,12 @@ public final class Units {
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #METRE}
      * and the unlocalized name is “point”.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
-     *   <tr><td>SI length units:</td>  <td style="word-spacing:1em">{@link #NANOMETRE}, {@link #MILLIMETRE}, {@link #CENTIMETRE}, <b>{@link #METRE}</b>, {@link #KILOMETRE}.</td></tr>
-     *   <tr><td>In other systems:</td> <td style="word-spacing:1em"><u>{@code POINT}</u>, {@link #INCH}, {@link #FOOT}, {@link #CLARKE_FOOT}, {@link #US_SURVEY_FOOT}, {@link #STATUTE_MILE}, {@link #NAUTICAL_MILE}.</td></tr>
-     *   <tr><td>Derived units:</td>    <td style="word-spacing:1em">{@link #SQUARE_METRE}, {@link #CUBIC_METRE}, {@link #METRES_PER_SECOND}.</td></tr>
-     * </table></div>
+     *   <tr><td>SI length units:</td> <td style="word-spacing:1em">{@link #NANOMETRE}, {@link #MILLIMETRE}, {@link #CENTIMETRE}, <b>{@link #METRE}</b>, {@link #KILOMETRE}.</td></tr>
+     *   <tr><td>Non-SI units:</td>    <td style="word-spacing:1em"><u>{@code POINT}</u>, {@link #INCH}, {@link #FOOT}, {@link #CLARKE_FOOT}, {@link #US_SURVEY_FOOT}, {@link #STATUTE_MILE}, {@link #NAUTICAL_MILE}.</td></tr>
+     *   <tr><td>Derived units:</td>   <td style="word-spacing:1em">{@link #SQUARE_METRE}, {@link #CUBIC_METRE}, {@link #METRES_PER_SECOND}.</td></tr>
+     * </table>
      */
     public static final Unit<Length> POINT;
 
@@ -271,12 +259,11 @@ public final class Units {
      * The SI derived unit for area (m²).
      * The unlocalized name is “square metre”.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
      *   <tr><td>SI area units:</td> <td style="word-spacing:1em"><u><b>{@code SQUARE_METRE}</b></u>, {@link #HECTARE}.</td></tr>
      *   <tr><td>Derived units:</td> <td style="word-spacing:1em">{@link #CUBIC_METRE}.</td></tr>
-     * </table></div>
+     * </table>
      */
     public static final Unit<Area> SQUARE_METRE;
 
@@ -286,12 +273,11 @@ public final class Units {
      * While not an SI unit, the hectare is often used in the measurement of land.
      * The unlocalized name is “hectare”.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
      *   <tr><td>SI area units:</td> <td style="word-spacing:1em"><b>{@link #SQUARE_METRE}</b>, <u>{@code HECTARE}</u>.</td></tr>
      *   <tr><td>Derived units:</td> <td style="word-spacing:1em">{@link #CUBIC_METRE}.</td></tr>
-     * </table></div>
+     * </table>
      */
     public static final Unit<Area> HECTARE;
 
@@ -319,13 +305,12 @@ public final class Units {
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #RADIAN},
      * the unlocalized name is “microradian” and the identifier is EPSG:9109.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
-     *   <tr><td>SI angle units:</td>   <td style="word-spacing:1em"><u>{@code MICRORADIAN}</u>, <b>{@link #RADIAN}</b>.</td></tr>
-     *   <tr><td>In other systems:</td> <td style="word-spacing:1em">{@link #DEGREE}, {@link #ARC_MINUTE}, {@link #ARC_SECOND}, {@link #GRAD}.</td></tr>
-     *   <tr><td>Derived units:</td>    <td style="word-spacing:1em">{@link #STERADIAN}.</td></tr>
-     * </table></div>
+     *   <tr><td>SI angle units:</td> <td style="word-spacing:1em"><u>{@code MICRORADIAN}</u>, <b>{@link #RADIAN}</b>.</td></tr>
+     *   <tr><td>Non-SI units:</td>   <td style="word-spacing:1em">{@link #DEGREE}, {@link #ARC_MINUTE}, {@link #ARC_SECOND}, {@link #GRAD}.</td></tr>
+     *   <tr><td>Derived units:</td>  <td style="word-spacing:1em">{@link #STERADIAN}.</td></tr>
+     * </table>
      */
     public static final Unit<Angle> MICRORADIAN;
 
@@ -335,13 +320,12 @@ public final class Units {
      * The unlocalized name is “radian” and the identifier is EPSG:9101.
      * This is the base of all other {@linkplain #isAngular(Unit) angular} units.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
-     *   <tr><td>SI angle units:</td>   <td style="word-spacing:1em">{@link #MICRORADIAN}, <u><b>{@code RADIAN}</b></u>.</td></tr>
-     *   <tr><td>In other systems:</td> <td style="word-spacing:1em">{@link #DEGREE}, {@link #ARC_MINUTE}, {@link #ARC_SECOND}, {@link #GRAD}.</td></tr>
-     *   <tr><td>Derived units:</td>    <td style="word-spacing:1em">{@link #STERADIAN}.</td></tr>
-     * </table></div>
+     *   <tr><td>SI angle units:</td> <td style="word-spacing:1em">{@link #MICRORADIAN}, <u><b>{@code RADIAN}</b></u>.</td></tr>
+     *   <tr><td>Non-SI units:</td>   <td style="word-spacing:1em">{@link #DEGREE}, {@link #ARC_MINUTE}, {@link #ARC_SECOND}, {@link #GRAD}.</td></tr>
+     *   <tr><td>Derived units:</td>  <td style="word-spacing:1em">{@link #STERADIAN}, {@link #RADIANS_PER_SECOND}.</td></tr>
+     * </table>
      */
     public static final Unit<Angle> RADIAN;
 
@@ -351,13 +335,12 @@ public final class Units {
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #RADIAN},
      * the unlocalized name is “degree” and the identifier is EPSG:9102.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
-     *   <tr><td>SI angle units:</td>   <td style="word-spacing:1em">{@link #MICRORADIAN}, <b>{@link #RADIAN}</b>.</td></tr>
-     *   <tr><td>In other systems:</td> <td style="word-spacing:1em"><u>{@code DEGREE}</u>, {@link #ARC_MINUTE}, {@link #ARC_SECOND}, {@link #GRAD}.</td></tr>
-     *   <tr><td>Derived units:</td>    <td style="word-spacing:1em">{@link #STERADIAN}.</td></tr>
-     * </table></div>
+     *   <tr><td>SI angle units:</td> <td style="word-spacing:1em">{@link #MICRORADIAN}, <b>{@link #RADIAN}</b>.</td></tr>
+     *   <tr><td>Non-SI units:</td>   <td style="word-spacing:1em"><u>{@code DEGREE}</u>, {@link #ARC_MINUTE}, {@link #ARC_SECOND}, {@link #GRAD}.</td></tr>
+     *   <tr><td>Derived units:</td>  <td style="word-spacing:1em">{@link #STERADIAN}.</td></tr>
+     * </table>
      */
     public static final Unit<Angle> DEGREE;
 
@@ -368,13 +351,12 @@ public final class Units {
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #RADIAN},
      * the unlocalized name is “arc-minute” and the identifier is EPSG:9103.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
-     *   <tr><td>SI angle units:</td>   <td style="word-spacing:1em">{@link #MICRORADIAN}, <b>{@link #RADIAN}</b>.</td></tr>
-     *   <tr><td>In other systems:</td> <td style="word-spacing:1em">{@link #DEGREE}, <u>{@code ARC_MINUTE}</u>, {@link #ARC_SECOND}, {@link #GRAD}.</td></tr>
-     *   <tr><td>Derived units:</td>    <td style="word-spacing:1em">{@link #STERADIAN}.</td></tr>
-     * </table></div>
+     *   <tr><td>SI angle units:</td> <td style="word-spacing:1em">{@link #MICRORADIAN}, <b>{@link #RADIAN}</b>.</td></tr>
+     *   <tr><td>Non-SI units:</td>   <td style="word-spacing:1em">{@link #DEGREE}, <u>{@code ARC_MINUTE}</u>, {@link #ARC_SECOND}, {@link #GRAD}.</td></tr>
+     *   <tr><td>Derived units:</td>  <td style="word-spacing:1em">{@link #STERADIAN}.</td></tr>
+     * </table>
      */
     public static final Unit<Angle> ARC_MINUTE;
 
@@ -384,13 +366,12 @@ public final class Units {
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #RADIAN},
      * the unlocalized name is “arc-second” and the identifier is EPSG:9104.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
-     *   <tr><td>SI angle units:</td>   <td style="word-spacing:1em">{@link #MICRORADIAN}, <b>{@link #RADIAN}</b>.</td></tr>
-     *   <tr><td>In other systems:</td> <td style="word-spacing:1em">{@link #DEGREE}, {@link #ARC_MINUTE}, <u>{@code ARC_SECOND}</u>, {@link #GRAD}.</td></tr>
-     *   <tr><td>Derived units:</td>    <td style="word-spacing:1em">{@link #STERADIAN}.</td></tr>
-     * </table></div>
+     *   <tr><td>SI angle units:</td> <td style="word-spacing:1em">{@link #MICRORADIAN}, <b>{@link #RADIAN}</b>.</td></tr>
+     *   <tr><td>Non-SI units:</td>   <td style="word-spacing:1em">{@link #DEGREE}, {@link #ARC_MINUTE}, <u>{@code ARC_SECOND}</u>, {@link #GRAD}.</td></tr>
+     *   <tr><td>Derived units:</td>  <td style="word-spacing:1em">{@link #STERADIAN}.</td></tr>
+     * </table>
      */
     public static final Unit<Angle> ARC_SECOND;
 
@@ -401,15 +382,33 @@ public final class Units {
      * the unlocalized name is “grad”, but the “gon” alias is also accepted.
      * The identifier is EPSG:9105.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
-     *   <tr><td>SI angle units:</td>   <td style="word-spacing:1em">{@link #MICRORADIAN}, <b>{@link #RADIAN}</b>.</td></tr>
-     *   <tr><td>In other systems:</td> <td style="word-spacing:1em">{@link #DEGREE}, {@link #ARC_MINUTE}, {@link #ARC_SECOND}, <u>{@code GRAD}</u>.</td></tr>
-     *   <tr><td>Derived units:</td>    <td style="word-spacing:1em">{@link #STERADIAN}.</td></tr>
-     * </table></div>
+     *   <tr><td>SI angle units:</td> <td style="word-spacing:1em">{@link #MICRORADIAN}, <b>{@link #RADIAN}</b>.</td></tr>
+     *   <tr><td>Non-SI units:</td>   <td style="word-spacing:1em">{@link #DEGREE}, {@link #ARC_MINUTE}, {@link #ARC_SECOND}, <u>{@code GRAD}</u>.</td></tr>
+     *   <tr><td>Derived units:</td>  <td style="word-spacing:1em">{@link #STERADIAN}.</td></tr>
+     * </table>
      */
     public static final Unit<Angle> GRAD;
+
+    /**
+     * Unit of measurement defined as 10<sup>-9</sup> seconds (1 ms).
+     * This unit is useful for inter-operability with various methods from the standard Java library.
+     * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #SECOND}
+     * and the unlocalized name is “nanosecond”.
+     *
+     * <table class="compact" style="margin-left:30px; line-height:1.25">
+     *   <caption>Related units</caption>
+     *   <tr><td>SI time units:</td> <td style="word-spacing:1em"><u>{@code NANOSECOND}</u>, {@link #MILLISECOND}, <b>{@link #SECOND}</b>.</td></tr>
+     *   <tr><td>Non-SI units:</td>  <td style="word-spacing:1em">{@link #MINUTE}, {@link #HOUR}, {@link #DAY}, {@link #WEEK}, {@link #TROPICAL_YEAR}.</td></tr>
+     *   <tr><td>Derived units:</td> <td style="word-spacing:1em">{@link #METRES_PER_SECOND}, {@link #HERTZ}, {@link #BECQUEREL}.</td></tr>
+     * </table>
+     *
+     * @see java.util.concurrent.TimeUnit#NANOSECONDS
+     *
+     * @since 1.5
+     */
+    public static final Unit<Time> NANOSECOND;
 
     /**
      * Unit of measurement defined as 10<sup>-3</sup> seconds (1 ms).
@@ -417,13 +416,12 @@ public final class Units {
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #SECOND}
      * and the unlocalized name is “millisecond”.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
-     *   <tr><td>SI time units:</td>    <td style="word-spacing:1em"><u>{@code MILLISECOND}</u>, <b>{@link #SECOND}</b>.</td></tr>
-     *   <tr><td>In other systems:</td> <td style="word-spacing:1em">{@link #MINUTE}, {@link #HOUR}, {@link #DAY}, {@link #WEEK}, {@link #TROPICAL_YEAR}.</td></tr>
-     *   <tr><td>Derived units:</td>    <td style="word-spacing:1em">{@link #METRES_PER_SECOND}, {@link #HERTZ}.</td></tr>
-     * </table></div>
+     *   <tr><td>SI time units:</td> <td style="word-spacing:1em"><u>{@link #NANOSECOND}, {@code MILLISECOND}</u>, <b>{@link #SECOND}</b>.</td></tr>
+     *   <tr><td>Non-SI units:</td>  <td style="word-spacing:1em">{@link #MINUTE}, {@link #HOUR}, {@link #DAY}, {@link #WEEK}, {@link #TROPICAL_YEAR}.</td></tr>
+     *   <tr><td>Derived units:</td> <td style="word-spacing:1em">{@link #METRES_PER_SECOND}, {@link #HERTZ}, {@link #BECQUEREL}.</td></tr>
+     * </table>
      *
      * @see java.util.concurrent.TimeUnit#MILLISECONDS
      */
@@ -434,13 +432,12 @@ public final class Units {
      * The unlocalized name is “second” and the identifier is EPSG:1040.
      * This is the base of all other {@linkplain #isTemporal(Unit) temporal} units.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
-     *   <tr><td>SI time units:</td>    <td style="word-spacing:1em">{@link #MILLISECOND}, <u><b>{@link #SECOND}</b></u>.</td></tr>
-     *   <tr><td>In other systems:</td> <td style="word-spacing:1em">{@link #MINUTE}, {@link #HOUR}, {@link #DAY}, {@link #WEEK}, {@link #TROPICAL_YEAR}.</td></tr>
-     *   <tr><td>Derived units:</td>    <td style="word-spacing:1em">{@link #METRES_PER_SECOND}, {@link #HERTZ}.</td></tr>
-     * </table></div>
+     *   <tr><td>SI time units:</td> <td style="word-spacing:1em">{@link #NANOSECOND}, {@link #MILLISECOND}, <u><b>{@link #SECOND}</b></u>.</td></tr>
+     *   <tr><td>Non-SI units:</td>  <td style="word-spacing:1em">{@link #MINUTE}, {@link #HOUR}, {@link #DAY}, {@link #WEEK}, {@link #TROPICAL_YEAR}.</td></tr>
+     *   <tr><td>Derived units:</td> <td style="word-spacing:1em">{@link #METRES_PER_SECOND}, {@link #HERTZ}, {@link #BECQUEREL}.</td></tr>
+     * </table>
      */
     public static final Unit<Time> SECOND;
 
@@ -449,13 +446,12 @@ public final class Units {
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #SECOND}
      * and the unlocalized name is “minute”.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
-     *   <tr><td>SI time units:</td>    <td style="word-spacing:1em">{@link #MILLISECOND}, <b>{@link #SECOND}</b>.</td></tr>
-     *   <tr><td>In other systems:</td> <td style="word-spacing:1em"><u>{@code MINUTE}</u>, {@link #HOUR}, {@link #DAY}, {@link #WEEK}, {@link #TROPICAL_YEAR}.</td></tr>
-     *   <tr><td>Derived units:</td>    <td style="word-spacing:1em">{@link #METRES_PER_SECOND}, {@link #HERTZ}.</td></tr>
-     * </table></div>
+     *   <tr><td>SI time units:</td> <td style="word-spacing:1em">{@link #NANOSECOND}, {@link #MILLISECOND}, <b>{@link #SECOND}</b>.</td></tr>
+     *   <tr><td>Non-SI units:</td>  <td style="word-spacing:1em"><u>{@code MINUTE}</u>, {@link #HOUR}, {@link #DAY}, {@link #WEEK}, {@link #TROPICAL_YEAR}.</td></tr>
+     *   <tr><td>Derived units:</td> <td style="word-spacing:1em">{@link #METRES_PER_SECOND}, {@link #HERTZ}, {@link #BECQUEREL}.</td></tr>
+     * </table>
      */
     public static final Unit<Time> MINUTE;
 
@@ -464,13 +460,12 @@ public final class Units {
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #SECOND}
      * and the unlocalized name is “hour”.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
-     *   <tr><td>SI time units:</td>    <td style="word-spacing:1em">{@link #MILLISECOND}, <b>{@link #SECOND}</b>.</td></tr>
-     *   <tr><td>In other systems:</td> <td style="word-spacing:1em">{@link #MINUTE}, <u>{@code HOUR}</u>, {@link #DAY}, {@link #WEEK}, {@link #TROPICAL_YEAR}.</td></tr>
-     *   <tr><td>Derived units:</td>    <td style="word-spacing:1em">{@link #KILOMETRES_PER_HOUR}, {@link #HERTZ}.</td></tr>
-     * </table></div>
+     *   <tr><td>SI time units:</td> <td style="word-spacing:1em">{@link #NANOSECOND}, {@link #MILLISECOND}, <b>{@link #SECOND}</b>.</td></tr>
+     *   <tr><td>Non-SI units:</td>  <td style="word-spacing:1em">{@link #MINUTE}, <u>{@code HOUR}</u>, {@link #DAY}, {@link #WEEK}, {@link #TROPICAL_YEAR}.</td></tr>
+     *   <tr><td>Derived units:</td> <td style="word-spacing:1em">{@link #KILOMETRES_PER_HOUR}, {@link #HERTZ}, {@link #BECQUEREL}.</td></tr>
+     * </table>
      */
     public static final Unit<Time> HOUR;
 
@@ -479,13 +474,12 @@ public final class Units {
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #SECOND}
      * and the unlocalized name is “day”.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
-     *   <tr><td>SI time units:</td>    <td style="word-spacing:1em">{@link #MILLISECOND}, <b>{@link #SECOND}</b>.</td></tr>
-     *   <tr><td>In other systems:</td> <td style="word-spacing:1em">{@link #MINUTE}, {@link #HOUR}, <u>{@code DAY}</u>, {@link #WEEK}, {@link #TROPICAL_YEAR}.</td></tr>
-     *   <tr><td>Derived units:</td>    <td style="word-spacing:1em">{@link #KILOMETRES_PER_HOUR}, {@link #HERTZ}.</td></tr>
-     * </table></div>
+     *   <tr><td>SI time units:</td> <td style="word-spacing:1em">{@link #NANOSECOND}, {@link #MILLISECOND}, <b>{@link #SECOND}</b>.</td></tr>
+     *   <tr><td>Non-SI units:</td>  <td style="word-spacing:1em">{@link #MINUTE}, {@link #HOUR}, <u>{@code DAY}</u>, {@link #WEEK}, {@link #TROPICAL_YEAR}.</td></tr>
+     *   <tr><td>Derived units:</td> <td style="word-spacing:1em">{@link #KILOMETRES_PER_HOUR}, {@link #HERTZ}, {@link #BECQUEREL}.</td></tr>
+     * </table>
      */
     public static final Unit<Time> DAY;
 
@@ -494,30 +488,28 @@ public final class Units {
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #SECOND}
      * and the unlocalized name is “week”.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
-     *   <tr><td>SI time units:</td>    <td style="word-spacing:1em">{@link #MILLISECOND}, <b>{@link #SECOND}</b>.</td></tr>
-     *   <tr><td>In other systems:</td> <td style="word-spacing:1em">{@link #MINUTE}, {@link #HOUR}, {@link #DAY}, <u>{@link #WEEK}</u>, {@link #TROPICAL_YEAR}.</td></tr>
-     *   <tr><td>Derived units:</td>    <td style="word-spacing:1em">{@link #KILOMETRES_PER_HOUR}, {@link #HERTZ}.</td></tr>
-     * </table></div>
+     *   <tr><td>SI time units:</td> <td style="word-spacing:1em">{@link #NANOSECOND}, {@link #MILLISECOND}, <b>{@link #SECOND}</b>.</td></tr>
+     *   <tr><td>Non-SI units:</td>  <td style="word-spacing:1em">{@link #MINUTE}, {@link #HOUR}, {@link #DAY}, <u>{@link #WEEK}</u>, {@link #TROPICAL_YEAR}.</td></tr>
+     *   <tr><td>Derived units:</td> <td style="word-spacing:1em">{@link #KILOMETRES_PER_HOUR}, {@link #HERTZ}, {@link #BECQUEREL}.</td></tr>
+     * </table>
      */
     public static final Unit<Time> WEEK;
 
     /**
      * Unit of measurement approximately equals to 365.24219 days (1 a).
      * This is defined by the International Union of Geological Sciences (IUGS) as exactly 31556925.445 seconds,
-     * taken as the length of the tropical year in the the year 2000.
+     * taken as the length of the tropical year in the year 2000.
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #SECOND},
      * the unlocalized name is “year” and the identifier is EPSG:1029.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
-     *   <tr><td>SI time units:</td>    <td style="word-spacing:1em">{@link #MILLISECOND}, <b>{@link #SECOND}</b>.</td></tr>
-     *   <tr><td>In other systems:</td> <td style="word-spacing:1em">{@link #MINUTE}, {@link #HOUR}, {@link #DAY}, {@link #WEEK}, <u>{@code TROPICAL_YEAR}</u>.</td></tr>
-     *   <tr><td>Derived units:</td>    <td style="word-spacing:1em">{@link #KILOMETRES_PER_HOUR}, {@link #HERTZ}.</td></tr>
-     * </table></div>
+     *   <tr><td>SI time units:</td> <td style="word-spacing:1em">{@link #NANOSECOND}, {@link #MILLISECOND}, <b>{@link #SECOND}</b>.</td></tr>
+     *   <tr><td>Non-SI units:</td>  <td style="word-spacing:1em">{@link #MINUTE}, {@link #HOUR}, {@link #DAY}, {@link #WEEK}, <u>{@code TROPICAL_YEAR}</u>.</td></tr>
+     *   <tr><td>Derived units:</td> <td style="word-spacing:1em">{@link #KILOMETRES_PER_HOUR}, {@link #HERTZ}, {@link #BECQUEREL}.</td></tr>
+     * </table>
      */
     public static final Unit<Time> TROPICAL_YEAR;
 
@@ -526,25 +518,36 @@ public final class Units {
      * One hertz is equal to one cycle per {@linkplain #SECOND second}.
      * The unlocalized name is “hertz”.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
      *   <tr><td>Components:</td><td style="word-spacing:0.5em">{@link #SECOND}<sup>-1</sup></td></tr>
-     * </table></div>
+     * </table>
      */
     public static final Unit<Frequency> HERTZ;
+
+    /**
+     * The unit for angular velocity (rad/s).
+     * The identifier is EPSG:1035.
+     *
+     * <table class="compact" style="margin-left:30px; line-height:1.25">
+     *   <caption>Related units</caption>
+     *   <tr><td>Components:</td> <td style="word-spacing:0.5em">{@link #RADIAN} ∕ {@link #SECOND}</td></tr>
+     * </table>
+     *
+     * @since 1.5
+     */
+    public static final Unit<AngularVelocity> RADIANS_PER_SECOND;
 
     /**
      * The SI derived unit for speed (m/s).
      * The unlocalized name is “metres per second” and the identifier is EPSG:1026.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
-     *   <tr><td>SI speed units:</td>   <td style="word-spacing:1em"><u><b>{@code METRES_PER_SECOND}</b></u>.</td></tr>
-     *   <tr><td>In other systems:</td> <td style="word-spacing:1em">{@link #KILOMETRES_PER_HOUR}.</td></tr>
-     *   <tr><td>Components:</td>       <td style="word-spacing:0.5em">{@link #METRE} ∕ {@link #SECOND}</td></tr>
-     * </table></div>
+     *   <tr><td>SI speed units:</td> <td style="word-spacing:1em"><u><b>{@code METRES_PER_SECOND}</b></u>.</td></tr>
+     *   <tr><td>Non-SI units:</td>   <td style="word-spacing:1em">{@link #KILOMETRES_PER_HOUR}, {@link #KNOT}.</td></tr>
+     *   <tr><td>Components:</td>     <td style="word-spacing:0.5em">{@link #METRE} ∕ {@link #SECOND}</td></tr>
+     * </table>
      */
     public static final Unit<Speed> METRES_PER_SECOND;
 
@@ -553,29 +556,41 @@ public final class Units {
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #METRES_PER_SECOND}
      * and the unlocalized name is “kilometres per hour”.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
-     *   <tr><td>SI speed units:</td>   <td style="word-spacing:1em"><b>{@link #METRES_PER_SECOND}</b>.</td></tr>
-     *   <tr><td>In other systems:</td> <td style="word-spacing:1em"><u>{@code KILOMETRES_PER_HOUR}</u>.</td></tr>
-     *   <tr><td>Components:</td>       <td style="word-spacing:0.5em">{@link #KILOMETRE} ∕ {@link #HOUR}</td></tr>
-     * </table></div>
+     *   <tr><td>SI speed units:</td> <td style="word-spacing:1em"><b>{@link #METRES_PER_SECOND}</b>.</td></tr>
+     *   <tr><td>Non-SI units:</td>   <td style="word-spacing:1em"><u>{@code KILOMETRES_PER_HOUR}</u>, {@link #KNOT}.</td></tr>
+     *   <tr><td>Components:</td>     <td style="word-spacing:0.5em">{@link #KILOMETRE} ∕ {@link #HOUR}</td></tr>
+     * </table>
      */
     public static final Unit<Speed> KILOMETRES_PER_HOUR;
+
+    /**
+     * Unit of measurement defined as 1.852 km/h.
+     * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #METRES_PER_SECOND}
+     * and the unlocalized name is “knot”.
+     *
+     * <table class="compact" style="margin-left:30px; line-height:1.25">
+     *   <caption>Related units</caption>
+     *   <tr><td>SI speed units:</td> <td style="word-spacing:1em"><b>{@link #METRES_PER_SECOND}</b>.</td></tr>
+     *   <tr><td>Non-SI units:</td>   <td style="word-spacing:1em">{@link #KILOMETRES_PER_HOUR}, <u>{@code #KNOT}</u>.</td></tr>
+     *   <tr><td>Components:</td>     <td style="word-spacing:0.5em">{@link #KILOMETRE} ∕ {@link #HOUR}</td></tr>
+     * </table>
+     *
+     * @since 1.5
+     */
+    public static final Unit<Speed> KNOT;
 
     /**
      * The SI derived unit for acceleration (m/s²).
      * The unlocalized name is “metres per second squared”.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
      *   <tr><td>SI acceleration units:</td> <td style="word-spacing:1em"><u><b>{@code METRES_PER_SECOND_SQUARED}</b></u>.</td></tr>
-     *   <tr><td>In other systems:</td>      <td style="word-spacing:1em">{@link #GAL}.</td></tr>
+     *   <tr><td>Non-SI units:</td>          <td style="word-spacing:1em">{@link #GAL}.</td></tr>
      *   <tr><td>Components:</td>            <td style="word-spacing:0.5em">{@link #METRES_PER_SECOND} ∕ {@link #SECOND}</td></tr>
-     * </table></div>
-     *
-     * @since 1.2
+     * </table>
      */
     public static final Unit<Acceleration> METRES_PER_SECOND_SQUARED;
 
@@ -585,15 +600,12 @@ public final class Units {
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #METRES_PER_SECOND_SQUARED},
      * the symbol is "Gal" (upper-case first letter) and the unlocalized name is “gal” (lower-case letter).
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
      *   <tr><td>SI acceleration units:</td> <td style="word-spacing:1em"><u><b>{@link #METRES_PER_SECOND_SQUARED}</b></u>.</td></tr>
-     *   <tr><td>In other systems:</td>      <td style="word-spacing:1em">{@code GAL}.</td></tr>
+     *   <tr><td>Non-SI units:</td>          <td style="word-spacing:1em">{@code GAL}.</td></tr>
      *   <tr><td>Components:</td>            <td style="word-spacing:0.5em">{@link #CENTIMETRE} ∕ {@link #SECOND}²</td></tr>
-     * </table></div>
-     *
-     * @since 1.2
+     * </table>
      */
     public static final Unit<Acceleration> GAL;
 
@@ -603,13 +615,12 @@ public final class Units {
      * Pressures are often used for height measurements on a vertical axis.
      * The unlocalized name is “pascal”.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
      *   <tr><td>SI pressure units:</td> <td style="word-spacing:1em"><u><b>{@code PASCAL}</b></u>, {@link #HECTOPASCAL}.</td></tr>
-     *   <tr><td>In other systems:</td>  <td style="word-spacing:1em">{@link #DECIBAR}, {@link #BAR}, {@link #ATMOSPHERE}.</td></tr>
+     *   <tr><td>Non-SI units:</td>      <td style="word-spacing:1em">{@link #DECIBAR}, {@link #BAR}, {@link #ATMOSPHERE}.</td></tr>
      *   <tr><td>Components:</td>        <td style="word-spacing:0.5em">{@link #NEWTON} ∕ {@link #SQUARE_METRE}</td></tr>
-     * </table></div>
+     * </table>
      */
     public static final Unit<Pressure> PASCAL;
 
@@ -620,13 +631,12 @@ public final class Units {
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #PASCAL}
      * and the unlocalized name is “hectopascal”.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
      *   <tr><td>SI pressure units:</td> <td style="word-spacing:1em"><b>{@link #PASCAL}</b>, <u>{@code HECTOPASCAL}</u>.</td></tr>
-     *   <tr><td>In other systems:</td>  <td style="word-spacing:1em">{@link #DECIBAR}, {@link #BAR}, {@link #ATMOSPHERE}.</td></tr>
+     *   <tr><td>Non-SI units:</td>      <td style="word-spacing:1em">{@link #DECIBAR}, {@link #BAR}, {@link #ATMOSPHERE}.</td></tr>
      *   <tr><td>Components:</td>        <td style="word-spacing:0.5em">{@link #NEWTON} ∕ {@link #SQUARE_METRE}</td></tr>
-     * </table></div>
+     * </table>
      */
     public static final Unit<Pressure> HECTOPASCAL;
 
@@ -637,13 +647,12 @@ public final class Units {
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #PASCAL}
      * and the unlocalized name is “decibar”.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
      *   <tr><td>SI pressure units:</td> <td style="word-spacing:1em"><b>{@link #PASCAL}</b>, {@link #HECTOPASCAL}.</td></tr>
-     *   <tr><td>In other systems:</td>  <td style="word-spacing:1em"><u>{@code DECIBAR}</u>, {@link #BAR}, {@link #ATMOSPHERE}.</td></tr>
+     *   <tr><td>Non-SI units:</td>      <td style="word-spacing:1em"><u>{@code DECIBAR}</u>, {@link #BAR}, {@link #ATMOSPHERE}.</td></tr>
      *   <tr><td>Components:</td>        <td style="word-spacing:0.5em">{@link #NEWTON} ∕ {@link #SQUARE_METRE}</td></tr>
-     * </table></div>
+     * </table>
      */
     public static final Unit<Pressure> DECIBAR;
 
@@ -654,13 +663,12 @@ public final class Units {
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #PASCAL}
      * and the unlocalized name is “bar”.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
      *   <tr><td>SI pressure units:</td> <td style="word-spacing:1em"><b>{@link #PASCAL}</b>, {@link #HECTOPASCAL}.</td></tr>
-     *   <tr><td>In other systems:</td>  <td style="word-spacing:1em">{@link #DECIBAR}, <u>{@code BAR}</u>, {@link #ATMOSPHERE}.</td></tr>
+     *   <tr><td>Non-SI units:</td>      <td style="word-spacing:1em">{@link #DECIBAR}, <u>{@code BAR}</u>, {@link #ATMOSPHERE}.</td></tr>
      *   <tr><td>Components:</td>        <td style="word-spacing:0.5em">{@link #NEWTON} ∕ {@link #SQUARE_METRE}</td></tr>
-     * </table></div>
+     * </table>
      */
     public static final Unit<Pressure> BAR;
 
@@ -670,13 +678,12 @@ public final class Units {
      * The {@linkplain ConventionalUnit#getSystemUnit() system unit} is {@link #PASCAL}
      * and the unlocalized name is “atmosphere”.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
      *   <tr><td>SI pressure units:</td> <td style="word-spacing:1em"><b>{@link #PASCAL}</b>, {@link #HECTOPASCAL}.</td></tr>
-     *   <tr><td>In other systems:</td>  <td style="word-spacing:1em">{@link #DECIBAR}, {@link #BAR}, <u>{@code ATMOSPHERE}</u>.</td></tr>
+     *   <tr><td>Non-SI units:</td>      <td style="word-spacing:1em">{@link #DECIBAR}, {@link #BAR}, <u>{@code ATMOSPHERE}</u>.</td></tr>
      *   <tr><td>Components:</td>        <td style="word-spacing:0.5em">{@link #NEWTON} ∕ {@link #SQUARE_METRE}</td></tr>
-     * </table></div>
+     * </table>
      */
     public static final Unit<Pressure> ATMOSPHERE;
 
@@ -685,12 +692,11 @@ public final class Units {
      * One newton is the force required to give a mass of 1 kg an acceleration of 1 m/s².
      * The unlocalized name is “newton”.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
      *   <tr><td>Components:</td>    <td style="word-spacing:0.5em">{@link #KILOGRAM} ⋅ {@link #METRES_PER_SECOND} ∕ {@link #SECOND}</td></tr>
      *   <tr><td>Derived units:</td> <td style="word-spacing:1em">{@link #PASCAL}, {@link #JOULE}, {@link #WATT}.</td></tr>
-     * </table></div>
+     * </table>
      */
     public static final Unit<Force> NEWTON;
 
@@ -698,12 +704,11 @@ public final class Units {
      * The SI derived unit for energy (J).
      * The unlocalized name is “joule”.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
      *   <tr><td>Components:</td>    <td style="word-spacing:0.5em">{@link #NEWTON} ⋅ {@link #METRE}</td></tr>
      *   <tr><td>Derived units:</td> <td style="word-spacing:1em">{@link #WATT}.</td></tr>
-     * </table></div>
+     * </table>
      */
     public static final Unit<Energy> JOULE;
 
@@ -712,12 +717,11 @@ public final class Units {
      * One watt is equal to one joule per second.
      * The unlocalized name is “watt”.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
      *   <tr><td>Components:</td>    <td style="word-spacing:0.5em">{@link #JOULE} ∕ {@link #SECOND}</td></tr>
      *   <tr><td>Derived units:</td> <td style="word-spacing:1em">{@link #VOLT}.</td></tr>
-     * </table></div>
+     * </table>
      */
     public static final Unit<Power> WATT;
 
@@ -725,12 +729,11 @@ public final class Units {
      * The SI derived unit for electric potential difference (V).
      * The unlocalized name is “volt”.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
      *   <tr><td>Components:</td>    <td style="word-spacing:0.5em">{@link #WATT} ∕ {@link #AMPERE}</td></tr>
      *   <tr><td>Derived units:</td> <td style="word-spacing:1em">{@link #FARAD}, {@link #OHM}, {@link #SIEMENS}, {@link #WEBER}.</td></tr>
-     * </table></div>
+     * </table>
      */
     public static final Unit<ElectricPotential> VOLT;
 
@@ -738,11 +741,10 @@ public final class Units {
      * The SI base unit for electric current (A).
      * The unlocalized name is “ampere”.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
      *   <tr><td>Derived units:</td> <td style="word-spacing:1em">{@link #COULOMB}, {@link #VOLT}, {@link #OHM}, {@link #SIEMENS}, {@link #HENRY}.</td></tr>
-     * </table></div>
+     * </table>
      */
     public static final Unit<ElectricCurrent> AMPERE;
 
@@ -751,12 +753,11 @@ public final class Units {
      * One coulomb is the charge transferred by a current of one ampere during one second.
      * The unlocalized name is “coulomb”.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
      *   <tr><td>Components:</td>    <td style="word-spacing:0.5em">{@link #AMPERE} ⋅ {@link #SECOND}</td></tr>
      *   <tr><td>Derived units:</td> <td style="word-spacing:1em">{@link #FARAD}.</td></tr>
-     * </table></div>
+     * </table>
      */
     public static final Unit<ElectricCharge> COULOMB;
 
@@ -764,11 +765,10 @@ public final class Units {
      * The SI derived unit for electric capacitance (F).
      * The unlocalized name is “farad”.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
      *   <tr><td>Components:</td> <td style="word-spacing:0.5em">{@link #COULOMB} ∕ {@link #VOLT}</td></tr>
-     * </table></div>
+     * </table>
      */
     public static final Unit<ElectricCapacitance> FARAD;
 
@@ -777,12 +777,11 @@ public final class Units {
      * This is the inverse of electric conductance.
      * The unlocalized name is “ohm”.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
      *   <tr><td>Components:</td>    <td style="word-spacing:0.5em">{@link #VOLT} ∕ {@link #AMPERE}</td></tr>
      *   <tr><td>Derived units:</td> <td style="word-spacing:1em">{@link #SIEMENS}.</td></tr>
-     * </table></div>
+     * </table>
      */
     public static final Unit<ElectricResistance> OHM;
 
@@ -791,12 +790,11 @@ public final class Units {
      * This is the inverse of electric resistance.
      * The unlocalized name is “siemens”.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
      *   <tr><td>Components:</td>    <td style="word-spacing:0.5em">{@link #AMPERE} ∕ {@link #VOLT}</td></tr>
      *   <tr><td>Derived units:</td> <td style="word-spacing:1em">{@link #OHM}.</td></tr>
-     * </table></div>
+     * </table>
      */
     public static final Unit<ElectricConductance> SIEMENS;
 
@@ -804,12 +802,11 @@ public final class Units {
      * The SI derived unit for magnetic flux (Wb).
      * The unlocalized name is “weber”.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
      *   <tr><td>Components:</td>    <td style="word-spacing:0.5em">{@link #VOLT} ⋅ {@link #SECOND}</td></tr>
      *   <tr><td>Derived units:</td> <td style="word-spacing:1em">{@link #TESLA}, {@link #HENRY}.</td></tr>
-     * </table></div>
+     * </table>
      */
     public static final Unit<MagneticFlux> WEBER;
 
@@ -817,11 +814,10 @@ public final class Units {
      * The SI derived unit for magnetic flux density (T).
      * The unlocalized name is “tesla”.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
      *   <tr><td>Components:</td> <td style="word-spacing:0.5em">{@link #WEBER} ∕ {@link #SQUARE_METRE}</td></tr>
-     * </table></div>
+     * </table>
      */
     public static final Unit<MagneticFluxDensity> TESLA;
 
@@ -829,11 +825,10 @@ public final class Units {
      * The SI derived unit for inductance (H).
      * The unlocalized name is “henry”.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
      *   <tr><td>Components:</td> <td style="word-spacing:0.5em">{@link #WEBER} ∕ {@link #AMPERE}</td></tr>
-     * </table></div>
+     * </table>
      */
     public static final Unit<ElectricInductance> HENRY;
 
@@ -841,12 +836,11 @@ public final class Units {
      * The SI base unit for thermodynamic temperature (K).
      * The unlocalized name is “kelvin”.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
      *   <tr><td>SI temperature units:</td> <td style="word-spacing:1em"><u><b>{@code KELVIN}</b></u>.</td></tr>
-     *   <tr><td>In other systems:</td>     <td style="word-spacing:1em">{@link #CELSIUS}, {@link #FAHRENHEIT}.</td></tr>
-     * </table></div>
+     *   <tr><td>Non-SI units:</td>         <td style="word-spacing:1em">{@link #CELSIUS}, {@link #FAHRENHEIT}.</td></tr>
+     * </table>
      */
     public static final Unit<Temperature> KELVIN;
 
@@ -855,12 +849,11 @@ public final class Units {
      * The symbol is °C and the unlocalized name is “Celsius”.
      * Note that this is the only SI unit with an upper-case letter in its name.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
      *   <tr><td>SI temperature units:</td> <td style="word-spacing:1em"><b>{@link #KELVIN}</b>.</td></tr>
-     *   <tr><td>In other systems:</td>     <td style="word-spacing:1em"><u>{@code CELSIUS}</u>, {@link #FAHRENHEIT}.</td></tr>
-     * </table></div>
+     *   <tr><td>Non-SI units:</td>         <td style="word-spacing:1em"><u>{@code CELSIUS}</u>, {@link #FAHRENHEIT}.</td></tr>
+     * </table>
      */
     public static final Unit<Temperature> CELSIUS;
 
@@ -869,12 +862,11 @@ public final class Units {
      * The symbol is °F and the unlocalized name is “Fahrenheit”
      * (note the upper-case "F" letter).
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
      *   <tr><td>SI temperature units:</td> <td style="word-spacing:1em"><b>{@link #KELVIN}</b>.</td></tr>
-     *   <tr><td>In other systems:</td>     <td style="word-spacing:1em">{@link #CELSIUS}, <u>{@code FAHRENHEIT}</u>.</td></tr>
-     * </table></div>
+     *   <tr><td>Non-SI units:</td>         <td style="word-spacing:1em">{@link #CELSIUS}, <u>{@code FAHRENHEIT}</u>.</td></tr>
+     * </table>
      */
     public static final Unit<Temperature> FAHRENHEIT;
 
@@ -882,11 +874,10 @@ public final class Units {
      * The SI base unit for luminous intensity (cd).
      * The unlocalized name is “candela”.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
      *   <tr><td>Derived units:</td> <td style="word-spacing:1em">{@link #LUMEN}, {@link #LUX}.</td></tr>
-     * </table></div>
+     * </table>
      */
     public static final Unit<LuminousIntensity> CANDELA;
 
@@ -894,12 +885,11 @@ public final class Units {
      * The SI derived unit for luminous flux (lm).
      * The unlocalized name is “lumen”.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
      *   <tr><td>Components:</td> <td style="word-spacing:0.5em">{@link #CANDELA} ⋅ {@link #STERADIAN}</td></tr>
      *   <tr><td>Derived units:</td> <td style="word-spacing:1em">{@link #LUX}.</td></tr>
-     * </table></div>
+     * </table>
      */
     public static final Unit<LuminousFlux> LUMEN;
 
@@ -907,31 +897,84 @@ public final class Units {
      * The SI derived unit for illuminance (lx).
      * The unlocalized name is “lux”.
      *
-     * <div class="note">
      * <table class="compact" style="margin-left:30px; line-height:1.25">
      *   <caption>Related units</caption>
      *   <tr><td>Components:</td> <td style="word-spacing:0.5em">{@link #LUX} ∕ {@link #SQUARE_METRE}</td></tr>
-     * </table></div>
+     * </table>
      */
     public static final Unit<Illuminance> LUX;
 
     /**
      * A SI conventional unit for mass (g).
      * The unlocalized name is “gram”.
+     *
+     * <table class="compact" style="margin-left:30px; line-height:1.25">
+     *   <caption>Related units</caption>
+     *   <tr><td>SI mass units:</td> <td style="word-spacing:1em"><u>{@code GRAM}</u>, <b>{@link #KILOGRAM}</b>.</td></tr>
+     *   <tr><td>Non-SI units:</td>  <td style="word-spacing:1em">{@link #TONNE}.</td></tr>
+     * </table>
      */
     public static final Unit<Mass> GRAM;
 
     /**
      * The SI base unit for mass (kg).
      * The unlocalized name is “kilogram”.
+     *
+     * <table class="compact" style="margin-left:30px; line-height:1.25">
+     *   <caption>Related units</caption>
+     *   <tr><td>SI mass units:</td> <td style="word-spacing:1em">{@link #GRAM}, <u><b>{@code KILOGRAM}</b></u>.</td></tr>
+     *   <tr><td>Non-SI units:</td>  <td style="word-spacing:1em">{@link #TONNE}.</td></tr>
+     * </table>
      */
     public static final Unit<Mass> KILOGRAM;
+
+    /**
+     * The SI convention unit for mass (t).
+     * The unlocalized name is “tonne”.
+     *
+     * <table class="compact" style="margin-left:30px; line-height:1.25">
+     *   <caption>Related units</caption>
+     *   <tr><td>SI mass units:</td> <td style="word-spacing:1em">{@link #GRAM}, <b>{@link #KILOGRAM}</b>.</td></tr>
+     *   <tr><td>Non-SI units:</td>  <td style="word-spacing:1em"><u>{@code TONNE}</u>.</td></tr>
+     * </table>
+     *
+     * @since 1.5
+     */
+    public static final Unit<Mass> TONNE;
 
     /**
      * The SI base unit for amount of substance (mol).
      * The unlocalized name is “mole”.
      */
     public static final Unit<AmountOfSubstance> MOLE;
+
+    /**
+     * The SI derived unit for radioactivity (Bq).
+     * The unlocalized name is “becquerel”.
+     *
+     * <table class="compact" style="margin-left:30px; line-height:1.25">
+     *   <caption>Related units</caption>
+     *   <tr><td>Components:</td><td style="word-spacing:0.5em">{@link #SECOND}<sup>-1</sup></td></tr>
+     *   <tr><td>Non-SI units:</td> <td style="word-spacing:1em">{@link #CURIE}.</td></tr>
+     * </table>
+     *
+     * @since 1.4
+     */
+    public static final Unit<Radioactivity> BECQUEREL;
+
+    /**
+     * Unit of measurement defined as 3.7 × 10¹⁰ becquerel
+     * The symbol is Ci and the unlocalized name is “curie”.
+     *
+     * <table class="compact" style="margin-left:30px; line-height:1.25">
+     *   <caption>Related units</caption>
+     *   <tr><td>Components:</td><td style="word-spacing:0.5em">{@link #SECOND}<sup>-1</sup></td></tr>
+     *   <tr><td>SI radioactivity units:</td> <td style="word-spacing:1em"><b>{@link #BECQUEREL}</b>.</td></tr>
+     * </table>
+     *
+     * @since 1.4
+     */
+    public static final Unit<Radioactivity> CURIE;
 
     /**
      * The base dimensionless unit for scale measurements.
@@ -969,6 +1012,14 @@ public final class Units {
      * Sub-division of logarithm of ratio of the measured quantity to a reference quantity (dB).
      */
     public static final Unit<Dimensionless> DECIBEL;
+
+    /**
+     * Salinity measured using PSS-78. While this is a dimensionless measurement, the {@code "psu"} symbol
+     * is sometimes added to PSS-78 measurement. However, this is officially discouraged.
+     *
+     * @since 1.5
+     */
+    public static final Unit<Salinity> PSU;
 
     /**
      * Dimensionless unit for pixels (px).
@@ -1076,20 +1127,23 @@ public final class Units {
          */
         s.related(5);
         SECOND         = s;
+        NANOSECOND     = add(s, nano,                                       "ns",  SI,       (short) 0);
         MILLISECOND    = add(s, milli,                                      "ms",  SI,       (short) 0);
-        MINUTE         = add(s, LinearConverter.scale(         60,      1), "min", ACCEPTED, (short) 0);
-        HOUR           = add(s, LinearConverter.scale(      60*60,      1), "h",   ACCEPTED, (short) 0);
+        MINUTE         = add(s, LinearConverter.scale(           60,    1), "min", ACCEPTED, (short) 0);
+        HOUR           = add(s, LinearConverter.scale(        60*60,    1), "h",   ACCEPTED, (short) 0);
         DAY            = add(s, LinearConverter.scale(   24*60*60,      1), "d",   ACCEPTED, (short) 0);
         WEEK           = add(s, LinearConverter.scale( 7*24*60*60,      1), "wk",  OTHER,    (short) 0);
         TROPICAL_YEAR  = add(s, LinearConverter.scale(31556925445.0, 1000), "a",   OTHER,    (short) 1029);
         /*
-         * All Unit<Speed>.
+         * All Unit<Speed>, Unit<Acceleration> and Unit<AngularVelocity>.
          */
-        mps .related(1);
+        mps .related(2);
         mps2.related(1);
         METRES_PER_SECOND         = mps;
         METRES_PER_SECOND_SQUARED = mps2;
         KILOMETRES_PER_HOUR       = add(mps, LinearConverter.scale(10, 36),     "km∕h",  ACCEPTED, (short) 0);
+        KNOT                      = add(mps, LinearConverter.scale(1852, 3600), "kn",    OTHER,    (short) 0);
+        RADIANS_PER_SECOND        = add(AngularVelocity.class, null, frequency, "rad∕s", SI,       (short) 1035);
         GAL                       = add(mps2, centi, "Gal", (byte) (CGS | PREFIXABLE | ACCEPTED),  (short) 0);
         /*
          * All Unit<Pressure>.
@@ -1115,9 +1169,19 @@ public final class Units {
         SQUARE_METRE = m2;
         CUBIC_METRE  = m3;
         KILOGRAM     = kg;
+        TONNE        = add(kg, kilo,  "t",         ACCEPTED,               (short) 0);
         HECTARE      = add(m2, ten4,  "ha",        ACCEPTED,               (short) 0);
         LITRE        = add(m3, milli, "L", (byte) (ACCEPTED | PREFIXABLE), (short) 0);
         GRAM         = add(kg, milli, "g", (byte) (ACCEPTED | PREFIXABLE), (short) 0);
+        /*
+         * Radioactivity must be defined after angular velocities, because it has the same dimensions.
+         * The dimensions are also the same as frequency.
+         */
+        final SystemUnit<Radioactivity> Bq;
+        Bq = add(Radioactivity.class, null, frequency, "Bq",  (byte) (SI | PREFIXABLE), (short) 0);
+        Bq.related(1);
+        BECQUEREL = Bq;
+        CURIE     = add(Bq, LinearConverter.scale(3.7E10, 1), "Ci", OTHER, (short) 0);
         /*
          * Force, energy, electricity, magnetism and other units.
          * Frequency must be defined after angular velocities.
@@ -1143,8 +1207,11 @@ public final class Units {
         /*
          * All Unit<Dimensionless>.
          */
+        final SystemUnit<Salinity> sal;
         ConventionalUnit<Dimensionless> bel;
         PIXEL   = add(Dimensionless.class, Scalar.Dimensionless::new, dimensionless, "px",    OTHER, (short) 0);
+        sal     = add(Salinity.class,      null,                      dimensionless, null,    OTHER, (short) 0);
+        PSU     = add(sal, milli,                                                    "psu",   OTHER, (short) 0);
         PERCENT = add(one, centi,                                                    "%",     OTHER, (short) 0);
         PPM     = add(one, micro,                                                    "ppm",   OTHER, (short) 9202);
         bel     = add(one, PowerOf10.belToOne(), "B", (byte) (ACCEPTED | PREFIXABLE), (short) 0);
@@ -1155,6 +1222,7 @@ public final class Units {
         UnitRegistry.alias(DEGREE,      Short.valueOf((short) 9122));
         UnitRegistry.alias(ARC_MINUTE,  "'");
         UnitRegistry.alias(ARC_SECOND, "\"");
+        UnitRegistry.alias(KNOT,       "kt");       // Symbol used in aviation.
         UnitRegistry.alias(KELVIN,      "K");       // Ordinary "K" letter (not the dedicated Unicode character).
         UnitRegistry.alias(CELSIUS,     "℃");
         UnitRegistry.alias(CELSIUS,   "Cel");
@@ -1164,6 +1232,7 @@ public final class Units {
         UnitRegistry.alias(HECTARE,   "hm²");
         UnitRegistry.alias(LITRE,       "l");
         UnitRegistry.alias(LITRE,       "ℓ");
+        UnitRegistry.alias(PSU,       "PSU");
         UnitRegistry.alias(UNITY, SystemUnit.ONE);
 
         initialized = true;
@@ -1415,19 +1484,42 @@ public final class Units {
     }
 
     /**
+     * Creates an unit for values computed by the logarithm in base 10 of values in the given unit.
+     * Conversions from the given unit to the returned unit is done by {@link Math#log10(double)}.
+     *
+     * <p><strong>The given unit should be dimensionless.</strong>
+     * However, this method does not enforce this constraint in order to allow the creation of
+     * units such as <a href="https://en.wikipedia.org/wiki/Decibel_watt">decibel watt</a>.
+     * For example:</p>
+     *
+     * {@snippet lang="java" :
+     * Unit<Power> dBW = Units.logarithm(Units.WATT).divide(10);
+     * }
+     *
+     * @param  <Q>   the quantity measured by the unit.
+     * @param  unit  the unit from which to convert.
+     * @return an unit which is the logarithm in base 10 of the given unit.
+     *
+     * @since 1.5
+     */
+    public static <Q extends Quantity<Q>> Unit<Q> logarithm(final Unit<Q> unit) {
+        return unit.transform(PowerOf10.INSTANCE);
+    }
+
+    /**
      * Returns the factor by which to multiply the standard unit in order to get the given unit.
      * The "standard" unit is usually the SI unit on which the given unit is based, as given by
      * {@link Unit#getSystemUnit()}.
      *
-     * <div class="note"><b>Example:</b>
-     * if the given unit is {@link #KILOMETRE}, then this method returns 1000 since a measurement in kilometres
+     * <p>If the given unit is {@code null} or if the conversion to the "standard" unit cannot be expressed
+     * by a single multiplication factor, then this method returns {@link Double#NaN}.</p>
+     *
+     * <h4>Example</h4>
+     * If the given unit is {@link #KILOMETRE}, then this method returns 1000 since a measurement in kilometres
      * must be multiplied by 1000 in order to give the equivalent measurement in the "standard" units
-     * (here {@link #METRE}).</div>
+     * (here {@link #METRE}).
      *
-     * If the given unit is {@code null} or if the conversion to the "standard" unit cannot be expressed
-     * by a single multiplication factor, then this method returns {@link Double#NaN}.
-     *
-     * @param  <Q>   the quantity measured by the unit, or {@code null}.
+     * @param  <Q>   the quantity measured by the unit.
      * @param  unit  the unit for which we want the multiplication factor to standard unit, or {@code null}.
      * @return the factor by which to multiply a measurement in the given unit in order to get an equivalent
      *         measurement in the standard unit, or NaN if the conversion cannot be expressed by a scale factor.
@@ -1584,15 +1676,13 @@ public final class Units {
      *   </tr>
      * </table>
      *
-     * <div class="note"><b>Note:</b>
+     * <h4>Axis units special case</h4>
      * EPSG uses code 9102 (<cite>degree</cite>) for prime meridian and coordinate operation parameters,
      * and code 9122 (<cite>degree (supplier to define representation)</cite>) for coordinate system axes.
-     * But Seshat considers those two codes as synonymous.</div>
+     * But Seshat considers those two codes as synonymous.
      *
      * @param  code  the EPSG code for a unit of measurement.
      * @return the unit, or {@code null} if the code is unrecognized.
-     *
-     * @since 1.1
      */
     public static Unit<?> valueOfEPSG(final int code) {
         /*

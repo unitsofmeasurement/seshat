@@ -15,59 +15,78 @@
  */
 package tech.uom.seshat.util;
 
-import org.junit.Test;
+import java.util.Map;
 
-import static org.junit.Assert.*;
+// Test dependencies
+import tech.uom.seshat.TestCase;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 /**
  * Tests {@link DefinitionURI}.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.2
- * @since   1.2
- * @module
  */
-public final strictfp class DefinitionURITest {
+public final class DefinitionURITest extends TestCase {
     /**
-     * Tests {@link DefinitionURI#codeOf(String, String)}
+     * Creates a new test case.
+     */
+    public DefinitionURITest() {
+    }
+
+    /**
+     * Convenience method invoking {@link DefinitionURI#codeOf(String[], String)}
+     * with a single authority.
+     */
+    private static String codeOf(final String uri) {
+        Map.Entry<String, String> entry = DefinitionURI.codeOf(new String[] {"EPSG"}, uri);
+        if (entry == null) {
+            return null;
+        }
+        assertEquals("EPSG", entry.getKey());
+        return entry.getValue();
+    }
+
+    /**
+     * Tests {@link DefinitionURI#codeOf(String[], String)}
      * with URI like {@code "EPSG:9102"} (the code for meters).
      */
     @Test
     public void testCodeOfEPSG() {
-        assertNull  (        DefinitionURI.codeOf("EPSG", "9102"));
-        assertEquals("9102", DefinitionURI.codeOf("EPSG", "EPSG:9102"));
-        assertEquals("9102", DefinitionURI.codeOf("EPSG", "EPSG::9102"));
-        assertNull  (        DefinitionURI.codeOf("EPSG", "EPSG:::9102"));
-        assertEquals("9102", DefinitionURI.codeOf("EPSG", "EPSG:8.2:9102"));
-        assertEquals("9102", DefinitionURI.codeOf("EPSG", " epsg : 9102 "));
-        assertEquals("9102", DefinitionURI.codeOf("EPSG", " epsg :: 9102 "));
-        assertEquals("9102", DefinitionURI.codeOf("EPSG", " epsg : : 9102 "));
+        assertNull  (        codeOf("9102"));
+        assertEquals("9102", codeOf("EPSG:9102"));
+        assertEquals("9102", codeOf("EPSG::9102"));
+        assertNull  (        codeOf("EPSG:::9102"));
+        assertEquals("9102", codeOf("EPSG:8.2:9102"));
+        assertEquals("9102", codeOf(" epsg : 9102 "));
+        assertEquals("9102", codeOf(" epsg :: 9102 "));
+        assertEquals("9102", codeOf(" epsg : : 9102 "));
     }
 
     /**
-     * Tests {@link DefinitionURI#codeOf(String, String)}
+     * Tests {@link DefinitionURI#codeOf(String[], String)}
      * with URN like {@code "urn:ogc:def:crs:EPSG::9102"}.
      */
     @Test
     public void testCodeOfURN() {
-        assertEquals("9102",  DefinitionURI.codeOf("EPSG", "urn:ogc:def:uom:EPSG:9102"));
-        assertEquals("9102",  DefinitionURI.codeOf("EPSG", "urn:ogc:def:uom:EPSG::9102"));
-        assertEquals("9102",  DefinitionURI.codeOf("EPSG", "urn:ogc:def:uom:EPSG:8.2:9102"));
-        assertEquals("9102",  DefinitionURI.codeOf("EPSG", "urn:x-ogc:def:uom:EPSG::9102"));
-        assertNull  (         DefinitionURI.codeOf("EPSG", "urn:n-ogc:def:crs:EPSG::4326"));
-        assertEquals("9102",  DefinitionURI.codeOf("EPSG", " urn : ogc : def : uom : epsg : : 9102"));
-        assertEquals("9102",  DefinitionURI.codeOf("EPSG", "urn:ogc:def:uom:EPSG:9102"));
+        assertEquals("9102",  codeOf("urn:ogc:def:uom:EPSG:9102"));
+        assertEquals("9102",  codeOf("urn:ogc:def:uom:EPSG::9102"));
+        assertEquals("9102",  codeOf("urn:ogc:def:uom:EPSG:8.2:9102"));
+        assertEquals("9102",  codeOf("urn:x-ogc:def:uom:EPSG::9102"));
+        assertNull  (         codeOf("urn:n-ogc:def:crs:EPSG::4326"));
+        assertEquals("9102",  codeOf(" urn : ogc : def : uom : epsg : : 9102"));
+        assertEquals("9102",  codeOf("urn:ogc:def:uom:EPSG:9102"));
     }
 
     /**
-     * Tests {@link DefinitionURI#codeOf(String, String)}
+     * Tests {@link DefinitionURI#codeOf(String[], String)}
      * with URL like {@code "http://www.opengis.net/def/uom/EPSG/0/9102"}.
      */
     @Test
     public void testCodeOfDefinitionServer() {
-        assertEquals("9102", DefinitionURI.codeOf("EPSG", "http://www.opengis.net/def/uom/EPSG/0/9102"));
-        assertNull  (        DefinitionURI.codeOf("EPSG", "http://www.opengis.net/def/crs/EPSG/0/4326"));
-        assertEquals("9102", DefinitionURI.codeOf("EPSG", "https://www.opengis.net/def/uom/EPSG/0/9102"));
+        assertEquals("9102", codeOf("http://www.opengis.net/def/uom/EPSG/0/9102"));
+        assertNull  (        codeOf("http://www.opengis.net/def/crs/EPSG/0/4326"));
+        assertEquals("9102", codeOf("https://www.opengis.net/def/uom/EPSG/0/9102"));
     }
 }

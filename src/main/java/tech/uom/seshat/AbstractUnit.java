@@ -51,11 +51,8 @@ import tech.uom.seshat.resources.Errors;
  * All unit instances shall be immutable and thread-safe.
  *
  * @author  Martin Desruisseaux (MPO, Geomatys)
- * @version 1.2
  *
  * @param <Q>  the kind of quantity to be measured using this units.
- *
- * @since 1.0
  */
 abstract class AbstractUnit<Q extends Quantity<Q>> implements Unit<Q>, Serializable {
     /**
@@ -255,9 +252,10 @@ abstract class AbstractUnit<Q extends Quantity<Q>> implements Unit<Q>, Serializa
      */
     final <R extends Quantity<R>> Unit<R> inferSymbol(Unit<R> result, final char operation, final Unit<?> other) {
         if (result instanceof ConventionalUnit<?> && result.getSymbol() == null) {
+            @SuppressWarnings("LocalVariableHidesMemberVariable")
             final String symbol = inferSymbol(operation, other);
             if (symbol != null) {
-                result = ((ConventionalUnit<R>) result).forSymbol(symbol);
+                result = ((ConventionalUnit<R>) result).alternate(symbol);
             }
         }
         return result;
@@ -267,10 +265,10 @@ abstract class AbstractUnit<Q extends Quantity<Q>> implements Unit<Q>, Serializa
      * Returns the symbol (if any) of this unit. A unit may have no symbol, in which case
      * the {@link #toString()} method is responsible for creating a string representation.
      *
-     * <div class="note"><b>Example:</b>
+     * <h4>Example</h4>
      * {@link Units#METRE} has the {@code "m"} symbol and the same string representation.
      * But {@link Units#METRES_PER_SECOND} has no symbol; it has only the {@code "m/s"}
-     * string representation.</div>
+     * string representation.
      *
      * @return the unit symbol, or {@code null} if this unit has no specific symbol.
      *
@@ -574,7 +572,7 @@ abstract class AbstractUnit<Q extends Quantity<Q>> implements Unit<Q>, Serializa
      * @see #getSymbol()
      */
     @Override
-    public final String toString() {
+    public String toString() {
         if (symbol != null) {
             return symbol;
         } else {

@@ -26,11 +26,8 @@ import java.lang.reflect.Modifier;
  * from its name and conversely.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.0
  *
  * @see IndexedResourceBundle#getKeyConstants()
- *
- * @since 1.0
  */
 class KeyConstants {
     /**
@@ -43,22 +40,14 @@ class KeyConstants {
      * This is usually not needed, but may be created from the {@code Keys} inner class in some occasions.
      *
      * @see #getKeyNames()
-     * @see #getKeyName(short)
      */
     private transient String[] keys;
 
     /**
      * For sub-classes constructors only.
      */
-    protected KeyConstants() {
+    KeyConstants() {
         keysClass = getClass();
-    }
-
-    /**
-     * Creates a new instance for key constants defined in an independent class.
-     */
-    KeyConstants(final Class<?> keysClass) {
-        this.keysClass = keysClass;
     }
 
     /**
@@ -92,23 +81,6 @@ class KeyConstants {
             keys = Arrays.copyOf(names, length);
         }
         return keys;
-    }
-
-    /**
-     * Returns the name of the key at the given index. If there is no name at that given
-     * index, formats the index as a decimal number. Those decimal numbers are parsed by
-     * our {@link IndexedResourceBundle#handleGetObject(String)} implementation.
-     */
-    final String getKeyName(final short index) {
-        final int i = Short.toUnsignedInt(index) - IndexedResourceBundle.FIRST;
-        final String[] keys = getKeyNames();
-        if (i >= 0 && i < keys.length) {
-            final String key = keys[i];
-            if (key != null) {
-                return key;
-            }
-        }
-        return String.valueOf(index);
     }
 
     /**

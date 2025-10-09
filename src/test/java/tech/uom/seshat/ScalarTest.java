@@ -22,20 +22,24 @@ import javax.measure.quantity.Frequency;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Speed;
 import javax.measure.quantity.Time;
-import org.junit.Test;
 
-import static org.junit.Assert.*;
+// Test dependencies
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 /**
  * Tests {@link Scalar} and its subclasses.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.0
- * @since   1.0
  */
-public final strictfp class ScalarTest {
-    private static final double STRICT = 0;
+@SuppressWarnings("exports")
+public final class ScalarTest extends TestCase {
+    /**
+     * Creates a new test case.
+     */
+    public ScalarTest() {
+    }
 
     /**
      * Tests {@link Scalar#add(Quantity)} and {@link Scalar#subtract(Quantity)}.
@@ -50,12 +54,12 @@ public final strictfp class ScalarTest {
         assertSame(q2, q2.subtract(q0));
 
         final Quantity<Length> q3 = q1.add(q2);
-        assertSame  ("unit",  Units.METRE, q3.getUnit());
-        assertEquals("value", 3024, q3.getValue().doubleValue(), STRICT);
+        assertSame  (Units.METRE, q3.getUnit());
+        assertEquals(3024, q3.getValue().doubleValue());
 
         final Quantity<Length> q4 = q2.subtract(q1);
-        assertSame  ("unit",  Units.KILOMETRE, q4.getUnit());
-        assertEquals("value", 2.976, q4.getValue().doubleValue(), STRICT);
+        assertSame  (Units.KILOMETRE, q4.getUnit());
+        assertEquals(2.976, q4.getValue().doubleValue());
     }
 
     /**
@@ -69,12 +73,12 @@ public final strictfp class ScalarTest {
         assertSame(q1, q1.divide  (1));
 
         final Quantity<Length> q2 = q1.multiply(2);
-        assertSame  ("unit",  Units.KILOMETRE, q2.getUnit());
-        assertEquals("value", 48, q2.getValue().doubleValue(), STRICT);
+        assertSame  (Units.KILOMETRE, q2.getUnit());
+        assertEquals(48, q2.getValue().doubleValue());
 
         final Quantity<Length> q3 = q1.divide(3);
-        assertSame  ("unit",  Units.KILOMETRE, q3.getUnit());
-        assertEquals("value", 8, q3.getValue().doubleValue(), STRICT);
+        assertSame  (Units.KILOMETRE, q3.getUnit());
+        assertEquals(8, q3.getValue().doubleValue());
     }
 
     /**
@@ -87,19 +91,19 @@ public final strictfp class ScalarTest {
         final Quantity<Length> q1 = new Scalar.Length(24, Units.METRE);
         final Quantity<Time>   q2 = new Scalar.Time  ( 4, Units.SECOND);
         final Quantity<Speed>  q3 = q1.divide(q2).asType(Speed.class);
-        assertSame  ("unit", Units.METRES_PER_SECOND, q3.getUnit());
-        assertEquals("value", 6, q3.getValue().doubleValue(), STRICT);
-        assertTrue("Length/Time", q3 instanceof Scalar.Speed);
+        assertSame(Units.METRES_PER_SECOND, q3.getUnit());
+        assertEquals(6, q3.getValue().doubleValue());
+        assertInstanceOf(Scalar.Speed.class, q3);
 
         final Quantity<Area> q4 = q1.multiply(q1).asType(Area.class);
-        assertSame  ("unit", Units.SQUARE_METRE, q4.getUnit());
-        assertEquals("value", 576, q4.getValue().doubleValue(), STRICT);
-        assertTrue("Length⋅Length", q4 instanceof Scalar.Area);
+        assertSame(Units.SQUARE_METRE, q4.getUnit());
+        assertEquals(576, q4.getValue().doubleValue());
+        assertInstanceOf(Scalar.Area.class, q4);
 
         final Quantity<Frequency> q5 = q2.inverse().asType(Frequency.class);
-        assertSame  ("unit", Units.HERTZ, q5.getUnit());
-        assertEquals("value", 0.25, q5.getValue().doubleValue(), STRICT);
-        assertTrue("1/Time", q5 instanceof Scalar.Frequency);
+        assertSame(Units.HERTZ, q5.getUnit());
+        assertEquals(0.25, q5.getValue().doubleValue());
+        assertInstanceOf(Scalar.Frequency.class, q5);
     }
 
     /**
@@ -107,9 +111,9 @@ public final strictfp class ScalarTest {
      */
     @Test
     public void testToString() {
-        assertEquals("toString()", "24 km",   new Scalar.Length       (24.00, Units.KILOMETRE).toString());
-        assertEquals("toString()", "10.25 h", new Scalar.Time         (10.25, Units.HOUR)     .toString());
-        assertEquals("toString()", "0.25",    new Scalar.Dimensionless( 0.25, Units.UNITY)    .toString());
+        assertEquals("24 km",   new Scalar.Length       (24.00, Units.KILOMETRE).toString());
+        assertEquals("10.25 h", new Scalar.Time         (10.25, Units.HOUR)     .toString());
+        assertEquals("0.25",    new Scalar.Dimensionless( 0.25, Units.UNITY)    .toString());
     }
 
     /**
@@ -119,16 +123,16 @@ public final strictfp class ScalarTest {
     public void testEqualsAndHashCode() {
         final Quantity<Length> q1 = new Scalar.Length(24, Units.METRE);
         Quantity<Length> q2 = new Scalar.Length(24, Units.METRE);
-        assertEquals("hashCode()", q1.hashCode(), q2.hashCode());
-        assertEquals("equals(…)", q1, q2);
+        assertEquals(q1.hashCode(), q2.hashCode());
+        assertEquals(q1, q2);
 
         q2 = new Scalar.Length(12, Units.METRE);
-        assertNotEquals("hashCode()", q1.hashCode(), q2.hashCode());
-        assertNotEquals("equals(…)", q1, q2);
+        assertNotEquals(q1.hashCode(), q2.hashCode());
+        assertNotEquals(q1, q2);
 
         q2 = new Scalar.Length(24, Units.CENTIMETRE);
-        assertNotEquals("hashCode()", q1.hashCode(), q2.hashCode());
-        assertNotEquals("equals(…)", q1, q2);
+        assertNotEquals(q1.hashCode(), q2.hashCode());
+        assertNotEquals(q1, q2);
     }
 
     /**
@@ -137,26 +141,26 @@ public final strictfp class ScalarTest {
     @Test
     public void testFallback() {
         final Quantity<Length> q1 = ScalarFallback.factory(24, Units.KILOMETRE, Length.class);
-        assertTrue("Dynamic proxy", q1 instanceof Proxy);
-        assertTrue("Dynamic proxy", q1 instanceof Length);
-        assertSame  ("unit", Units.KILOMETRE, q1.getUnit());
-        assertEquals("value", 24, q1.getValue().doubleValue(), STRICT);
-        assertEquals("toString()", "24 km", q1.toString());
+        assertInstanceOf(Proxy .class, q1);
+        assertInstanceOf(Length.class, q1);
+        assertSame(Units.KILOMETRE, q1.getUnit());
+        assertEquals(24, q1.getValue().doubleValue());
+        assertEquals("24 km", q1.toString());
 
         final Quantity<Length> q2 = ScalarFallback.factory(24, Units.KILOMETRE, Length.class);
-        assertEquals("hashCode()", q1.hashCode(), q2.hashCode());
-        assertEquals("equals(…)", q1, q2);
+        assertEquals(q1.hashCode(), q2.hashCode());
+        assertEquals(q1, q2);
 
         final Quantity<Length> q3 = ScalarFallback.factory(1500, Units.METRE, Length.class);
         final Quantity<Length> q4 = q1.add(q3);
-        assertTrue("Dynamic proxy", q4 instanceof Proxy);
-        assertTrue("Dynamic proxy", q4 instanceof Length);
-        assertSame  ("unit", Units.KILOMETRE, q4.getUnit());
-        assertEquals("value", 25.5, q4.getValue().doubleValue(), STRICT);
-        assertEquals("toString()", "25.5 km", q4.toString());
+        assertInstanceOf(Proxy .class, q4);
+        assertInstanceOf(Length.class, q4);
+        assertSame(Units.KILOMETRE, q4.getUnit());
+        assertEquals(25.5, q4.getValue().doubleValue());
+        assertEquals("25.5 km", q4.toString());
 
         final Quantity<Length> q5 = q1.multiply(q3).divide(q2).asType(Length.class);
-        assertSame  ("unit", Units.METRE, q5.getUnit());
-        assertEquals("value", 1500, q5.getValue().doubleValue(), STRICT);
+        assertSame(Units.METRE, q5.getUnit());
+        assertEquals(1500, q5.getValue().doubleValue());
     }
 }

@@ -18,25 +18,30 @@ package tech.uom.seshat;
 import java.util.OptionalInt;
 import javax.measure.Unit;
 import javax.measure.Quantity;
+import javax.measure.IncommensurableException;
 import javax.measure.quantity.*;
 import javax.measure.quantity.Angle;
-import javax.measure.IncommensurableException;
-import org.junit.Test;
-
 import static tech.uom.seshat.SexagesimalConverter.*;
 import static tech.uom.seshat.Units.*;
-import static org.junit.Assert.*;
+
+// Test dependencies
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 /**
- * Test conversions using the units declared in {@link Units}.
+ * Test parsing, formatting and other operations on the units declared in {@link Units}.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.2
- * @since   1.0
+ * @author  Alexis Manin (Geomatys)
  */
-public final strictfp class UnitsTest {
-    private static final double STRICT = 0;
+@SuppressWarnings("exports")
+public final class UnitsTest extends TestCase {
+    /**
+     * Creates a new test case.
+     */
+    public UnitsTest() {
+    }
 
     /**
      * Verifies that the {@link Units#initialized} flag has been set.
@@ -159,6 +164,7 @@ public final strictfp class UnitsTest {
         assertEquals(1000.0,               toStandardUnit(KILOMETRE), 1E-15);
         assertEquals(0.017453292519943295, toStandardUnit(DEGREE),    1E-15);
         assertEquals(0.01,                 toStandardUnit(GAL),       1E-15);
+        assertEquals(3.7E10,               toStandardUnit(CURIE),     1E-3);
     }
 
     /**
@@ -166,8 +172,23 @@ public final strictfp class UnitsTest {
      */
     @Test
     public void testConversionFactors() {
-        assertEquals(1000, KILOMETRE        .getConverterTo(METRE)              .convert(1), STRICT);
-        assertEquals( 3.6, METRES_PER_SECOND.getConverterTo(KILOMETRES_PER_HOUR).convert(1), STRICT);
+        assertEquals(1000,  KILOMETRE        .getConverterTo(METRE)              .convert(    1));
+        assertEquals( 3.6,  METRES_PER_SECOND.getConverterTo(KILOMETRES_PER_HOUR).convert(    1));
+        assertEquals(18.52, KNOT             .getConverterTo(KILOMETRES_PER_HOUR).convert(   10));
+        assertEquals(1E-6,  BECQUEREL        .getConverterTo(CURIE)              .convert(37000), 1E-20);
+    }
+
+    /**
+     * Verifies the conversion factory of {@link Units#PSU}.
+     *
+     * @see <a href="https://issues.apache.org/jira/browse/SIS-413">SIS-413</a>
+     *
+     * @throws IncommensurableException if the conversion cannot be applied.
+     */
+    @Test
+    public void testSalinityConversionFactor() throws IncommensurableException {
+        assertEquals(0.001, PSU.getConverterToAny(UNITY)  .convert(1));
+        assertEquals(0.1,   PSU.getConverterToAny(PERCENT).convert(1));
     }
 
     /**
@@ -180,8 +201,8 @@ public final strictfp class UnitsTest {
     @Test
     public void testDecibelConversionFactor() throws IncommensurableException {
         final Unit<?> bel = Units.valueOf("B");
-        assertEquals(10,      bel.getConverterToAny(DECIBEL).convert(1), STRICT);
-        assertEquals(0.1,     DECIBEL.getConverterToAny(bel).convert(1), STRICT);
+        assertEquals(10,      bel.getConverterToAny(DECIBEL).convert(1));
+        assertEquals(0.1,     DECIBEL.getConverterToAny(bel).convert(1));
         assertEquals(3.16228,     bel.getConverterToAny(UNITY).convert(1), 5E-6);
         assertEquals(1.12202, DECIBEL.getConverterToAny(UNITY).convert(1), 5E-6);
         /*
@@ -235,14 +256,14 @@ public final strictfp class UnitsTest {
      * For a given {@code test} quantity class, verifies that {@link Units#get(Class)} gives the expected value.
      */
     private static <Q extends Quantity<Q>> void verifyGetFromQuantity(final Class<Q> test, final Unit<Q> expected) {
-        assertSame(test.getSimpleName(), expected, Units.get(test));
+        assertSame(expected, Units.get(test), test.getSimpleName());
     }
 
     /**
      * For a given {@code test} dimension, verifies that {@link Units#get(Dimension)} gives the expected value.
      */
     private static <Q extends Quantity<Q>> void verifyGetFromDimension(final Class<Q> label, final Unit<?> expected, final Unit<Q> test) {
-        assertSame(label.getSimpleName(), expected, Units.get(test.getDimension()));
+        assertSame(expected, Units.get(test.getDimension()), label.getSimpleName());
     }
 
     /**
@@ -325,6 +346,7 @@ public final strictfp class UnitsTest {
         assertEquals(KILOGRAM.divide(KILOGRAM),     valueOf("kg/kg"));
         assertEquals(KILOGRAM.divide(KILOGRAM),     valueOf("kg.kg-1"));
         assertSame  (PPM,                           valueOf("ppm"));            // Parts per million
+        assertSame  (PSU,                           valueOf("psu"));            // Pratical Salinity Unit
 
         // Potential vorticity surface
         assertEquals(KELVIN.multiply(SQUARE_METRE).divide(KILOGRAM.multiply(SECOND)), valueOf("K.m2.kg-1.s-1"));

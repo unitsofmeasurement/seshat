@@ -18,26 +18,30 @@ package tech.uom.seshat;
 import javax.measure.Unit;
 import javax.measure.Quantity;
 import javax.measure.UnitConverter;
-import org.junit.Test;
-
 import static tech.uom.seshat.SexagesimalConverter.*;
-import static org.junit.Assert.*;
+
+// Test dependencies
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 /**
  * Test the {@link SexagesimalConverter} class.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.2
- * @since   1.1
  */
-public final strictfp class SexagesimalConverterTest {
-    private static final double STRICT = 0;
-
+@SuppressWarnings("exports")
+public final class SexagesimalConverterTest extends TestCase {
     /**
      * Tolerance value for the comparisons of floating point numbers.
      */
     private static final double TOLERANCE = 1E-12;
+
+    /**
+     * Creates a new test case.
+     */
+    public SexagesimalConverterTest() {
+    }
 
     /**
      * Converts the given value to another unit, compares with the expected value, and verify
@@ -97,14 +101,10 @@ public final strictfp class SexagesimalConverterTest {
     @Test
     public void testErrorMessage() {
         final UnitConverter converter = DMS.getConverterTo(Units.DEGREE);
-        assertEquals(10.5, converter.convert(10.3), STRICT);
-        try {
-            converter.convert(10.7);
-            fail("Conversion of illegal value should not be allowed.");
-        } catch (IllegalArgumentException e) {
-            final String message = e.getMessage();
-            assertNotNull(message);     // Cannot test message content because it is locale-sensitive.
-        }
+        assertEquals(10.5, converter.convert(10.3));
+        var e = assertThrows(IllegalArgumentException.class, () -> converter.convert(10.7),
+                             "Conversion of illegal value should not be allowed.");
+        assertMessageContains(e);     // Cannot check message content because it is locale-sensitive.
     }
 
     /**
@@ -115,7 +115,7 @@ public final strictfp class SexagesimalConverterTest {
     @Test
     public void testRoundingErrorFix() {
         final UnitConverter c = DMS.getConverterTo(Units.DEGREE);
-        assertEquals(46.95240555555556, c.convert(46.570866), STRICT);
+        assertEquals(46.95240555555556, c.convert(46.570866));
     }
 
     /**

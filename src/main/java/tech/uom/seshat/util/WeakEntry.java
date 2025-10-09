@@ -26,7 +26,6 @@ import tech.uom.seshat.math.MathFunctions;
  * from the enclosing collection.
  *
  * @author  Martin Desruisseaux (MPO, IRD, Geomatys)
- * @version 1.0
  *
  * @param <E>  the type of elements in the collection.
  */

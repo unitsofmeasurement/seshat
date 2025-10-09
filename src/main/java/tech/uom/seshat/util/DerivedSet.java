@@ -22,7 +22,7 @@ import java.util.function.Function;
 
 
 /**
- * A set whose values are derived <cite>on-the-fly</cite> from another set.
+ * A set whose values are derived <i>on-the-fly</i> from another set.
  *
  * <h2>Constraints</h2>
  * <ul>
@@ -36,7 +36,6 @@ import java.util.function.Function;
  * </ul>
  *
  * @author  Martin Desruisseaux (IRD, Geomatys)
- * @version 1.0
  *
  * @param <S>  the type of elements in the storage set.
  * @param <E>  the type of elements in this set.

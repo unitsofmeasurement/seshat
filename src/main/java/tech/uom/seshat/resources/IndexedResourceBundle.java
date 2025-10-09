@@ -15,9 +15,9 @@
  */
 package tech.uom.seshat.resources;
 
-import java.io.InputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.Enumeration;
 import java.util.Locale;
@@ -51,8 +51,6 @@ import java.util.ResourceBundle;
  * multiple threads.
  *
  * @author  Martin Desruisseaux (IRD, Geomatys)
- * @version 1.2
- * @since   1.0
  */
 public abstract class IndexedResourceBundle extends ResourceBundle {
     /**
@@ -67,11 +65,13 @@ public abstract class IndexedResourceBundle extends ResourceBundle {
     static final int FIRST = 1;
 
     /**
-     * The array of resources. Keys are an array index plus {@value #FIRST}. For example, the value for key "14" is
-     * {@code values[13]}. This array will be loaded only when first needed. We should not load it at construction
-     * time, because some {@code ResourceBundle} objects will never ask for values.  This is particularly the case
-     * for parent resources of {@code Resources_fr_CA}, {@code Resources_en}, {@code Resources_de}, etc. which will
-     * only be used if a key has not been found in the child resources.
+     * The array of resources. Keys are an array index plus {@value #FIRST}.
+     * For example, the value for key "14" is {@code values[13]}.
+     *
+     * This array will be loaded only when first needed. We should not load it at construction time,
+     * because some {@code ResourceBundle} instances will never ask for values. In particular, parent
+     * of {@code Resources_en}, {@code Resources_fr}, <i>etc.</i> which will only be queries if a key
+     * has not been found in the child resources.
      *
      * @see #ensureLoaded(String)
      */
@@ -92,7 +92,7 @@ public abstract class IndexedResourceBundle extends ResourceBundle {
     private transient short lastKey;
 
     /**
-     * Constructs a new resource bundle loading data from a file inferred from the class name.
+     * Constructs a new resource bundle loading data from a UTF file derived from the class name.
      */
     IndexedResourceBundle() {
     }
@@ -106,7 +106,7 @@ public abstract class IndexedResourceBundle extends ResourceBundle {
      * @return resources in the given locale.
      * @throws MissingResourceException if resources cannot be found.
      *
-     * @see Errors#getResources(Locale)
+     * @see Errors#forLocale(Locale)
      */
     protected static <T extends IndexedResourceBundle> T getBundle(Class<T> base, Locale locale)
             throws MissingResourceException
@@ -180,6 +180,7 @@ public abstract class IndexedResourceBundle extends ResourceBundle {
      * @throws MissingResourceException if this method failed to load resources.
      */
     private String[] ensureLoaded(final String key) throws MissingResourceException {
+        @SuppressWarnings("LocalVariableHidesMemberVariable")
         String[] values = this.values;
         if (values == null) synchronized (this) {
             values = this.values;
@@ -233,15 +234,13 @@ public abstract class IndexedResourceBundle extends ResourceBundle {
         /*
          * Note: Synchronization is performed by 'ensureLoaded'
          */
+        @SuppressWarnings("LocalVariableHidesMemberVariable")
         final String[] values = ensureLoaded(key);
         int keyID;
         try {
             keyID = Short.parseShort(key);
         } catch (NumberFormatException exception) {
-            /*
-             * Maybe the full key name has been specified instead. We do that for localized
-             * LogRecords, for easier debugging if the message has not been properly formatted.
-             */
+            // Maybe the full key name has been specified instead.
             try {
                 keyID = getKeyConstants().getKeyValue(key);
             } catch (ReflectiveOperationException e) {

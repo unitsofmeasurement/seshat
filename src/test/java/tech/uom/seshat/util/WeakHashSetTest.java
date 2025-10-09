@@ -17,9 +17,11 @@ package tech.uom.seshat.util;
 
 import java.util.HashSet;
 import java.util.Random;
-import org.junit.Test;
 
-import static org.junit.Assert.*;
+// Test dependencies
+import tech.uom.seshat.TestCase;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 /**
@@ -27,9 +29,8 @@ import static org.junit.Assert.*;
  * A standard {@link HashSet} object is used for comparison purpose.
  *
  * @author  Martin Desruisseaux (IRD, Geomatys)
- * @version 1.2
  */
-public final strictfp class WeakHashSetTest {
+public final class WeakHashSetTest extends TestCase {
     /**
      * The size of the test sets to be created.
      */
@@ -41,29 +42,35 @@ public final strictfp class WeakHashSetTest {
     private static final int NUM_RETRY = 4;
 
     /**
+     * Creates a new test case.
+     */
+    public WeakHashSetTest() {
+    }
+
+    /**
      * Tests the {@link WeakHashSet} using strong references.
      * The tested {@code WeakHashSet} shall behave like a standard {@link HashSet},
      * except for element order.
      */
     @Test
     public void testStrongReferences() {
-        final Random random = new Random();
+        final var random = new Random();
         for (int pass=0; pass<NUM_RETRY; pass++) {
-            final WeakHashSet<IntObject> weakSet = new WeakHashSet<>(IntObject.class);
-            final HashSet<IntObject> strongSet = new HashSet<>();
+            final var weakSet = new WeakHashSet<IntObject>(IntObject.class);
+            final var strongSet = new HashSet<IntObject>();
             for (int i=0; i<SAMPLE_SIZE; i++) {
-                final IntObject value = new IntObject(random.nextInt(SAMPLE_SIZE));
+                final var value = new IntObject(random.nextInt(SAMPLE_SIZE));
                 if (random.nextBoolean()) {
                     /*
                      * Tests addition.
                      */
                     final boolean   weakModified = weakSet  .add(value);
                     final boolean strongModified = strongSet.add(value);
-                    assertEquals("add:", strongModified, weakModified);
+                    assertEquals(strongModified, weakModified, "add:");
                     if (strongModified) {
-                        assertSame("get:", value, weakSet.get(value));
+                        assertSame(value, weakSet.get(value), "get:");
                     } else {
-                        assertEquals("get:",  value, weakSet.get(value));
+                        assertEquals(value, weakSet.get(value), "get:");
                     }
                 } else {
                     /*
@@ -71,11 +78,11 @@ public final strictfp class WeakHashSetTest {
                      */
                     final boolean   weakModified = weakSet  .remove(value);
                     final boolean strongModified = strongSet.remove(value);
-                    assertEquals("remove:", strongModified, weakModified);
-                    assertNull("get:", weakSet.get(value));
+                    assertEquals(strongModified, weakModified, "remove:");
+                    assertNull(weakSet.get(value), "get:");
                 }
-                assertEquals("contains:", strongSet.contains(value), weakSet.contains(value));
-                assertEquals("equals:", strongSet, weakSet);
+                assertEquals(strongSet.contains(value), weakSet.contains(value), "contains:");
+                assertEquals(strongSet, weakSet, "equals:");
             }
             assertEquals(strongSet, weakSet);
         }
@@ -84,15 +91,16 @@ public final strictfp class WeakHashSetTest {
     /**
      * Tests the {@link WeakHashSet} using weak references. In this test, we have to keep
      * in mind that some elements in {@code weakSet} may disappear at any time!
+     *
+     * @throws InterruptedException if the test has been interrupted.
      */
     @Test
-    public void testWeakReferences() {
-        final Random random = new Random();
+    public void testWeakReferences() throws InterruptedException {
+        final var random = new Random();
         for (int pass=0; pass<NUM_RETRY; pass++) {
-            final WeakHashSet<IntObject> weakSet = new WeakHashSet<>(IntObject.class);
-            final HashSet<IntObject> strongSet = new HashSet<>();
+            final var weakSet = new WeakHashSet<IntObject>(IntObject.class);
+            final var strongSet = new HashSet<IntObject>();
             for (int i=0; i<SAMPLE_SIZE; i++) {
-                @SuppressWarnings("UnnecessaryBoxing")
                 final IntObject value = new IntObject(random.nextInt(SAMPLE_SIZE));     // Really need new instances.
                 if (random.nextBoolean()) {
                     /*
@@ -103,11 +111,11 @@ public final strictfp class WeakHashSetTest {
                     if (weakModified) {
                         /*
                          * The element was not in the WeakHashSet, possibly GC collected it.
-                         * Consequently that element can not be in the HashSet neither, otherwise
+                         * Consequently, that element cannot be in the HashSet neither, otherwise
                          * a strong reference would exist which should have prevented the element
                          * from being removed from the WeakHashSet.
                          */
-                        assertTrue("add:", strongModified);
+                        assertTrue(strongModified, "add:");
                     } else {
                         assertNotSame(value, weakSet.get(value));
                         if (strongModified) {
@@ -131,10 +139,10 @@ public final strictfp class WeakHashSetTest {
                      */
                     final boolean c = weakSet.contains(value);
                     if (strongSet.remove(value)) {
-                        assertTrue("contains:", c);
+                        assertTrue(c, "contains:");
                     }
                 }
-                assertTrue("containsAll:", weakSet.containsAll(strongSet));
+                assertTrue(weakSet.containsAll(strongSet), "containsAll:");
             }
         }
     }

@@ -17,38 +17,57 @@ package tech.uom.seshat.resources;
 
 import java.util.Locale;
 import java.util.Enumeration;
-import org.junit.Test;
 
-import static org.junit.Assert.*;
+// Test dependencies
+import tech.uom.seshat.TestCase;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 /**
  * Tests the {@link IndexedResourceBundle} subclasses.
+ * This class arbitrarily use the following keys:
+ *
+ * <ul>
+ *   <li>{@link tech.uom.seshat.resources.Errors.Keys#UnknownUnit_1}</li>
+ * </ul>
+ *
+ * If the localized strings associated to those keys are modified,
+ * then this {@code IndexedResourceBundleTest} class will need to be updated.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.0
  */
-public final strictfp class IndexedResourceBundleTest {
+public final class IndexedResourceBundleTest extends TestCase {
     /**
      * The resource bundle in process of being tested.
      */
     private IndexedResourceBundle testing;
 
     /**
-     * Tests the {@link Errors#getResources(Locale)} method on different locales.
+     * Creates a new test case.
+     */
+    public IndexedResourceBundleTest() {
+    }
+
+    /**
+     * Tests the {@link Errors#forLocale(Locale)} method on different locales.
      */
     @Test
-    public void testGetResources() {
-        final Errors english = Errors.getResources(Locale.ENGLISH);
-        final Errors french  = Errors.getResources(Locale.FRENCH);
-        final Errors canada  = Errors.getResources(Locale.CANADA);
-        final Errors quebec  = Errors.getResources(Locale.CANADA_FRENCH);
+    public void testForLocale() {
+        final Errors english = Errors.forLocale(Locale.ENGLISH);
+        final Errors french  = Errors.forLocale(Locale.FRENCH);
+        final Errors canada  = Errors.forLocale(Locale.CANADA);
+        final Errors quebec  = Errors.forLocale(Locale.CANADA_FRENCH);
+        assertSame   (english, Errors.forLocale(Locale.US));
+        assertSame   (english, Errors.forLocale(Locale.UK));
         assertNotSame(english, french);
+        assertSame   (english, canada);
+        assertSame   (french,  quebec);
 
-        assertSame(english, Errors.getResources(Locale.ENGLISH));
-        assertSame(canada,  Errors.getResources(Locale.CANADA));
-        assertSame(french,  Errors.getResources(Locale.FRENCH));
-        assertSame(quebec,  Errors.getResources(Locale.CANADA_FRENCH));
+        assertSame(english, Errors.forLocale(Locale.ENGLISH));
+        assertSame(canada,  Errors.forLocale(Locale.CANADA));
+        assertSame(french,  Errors.forLocale(Locale.FRENCH));
+        assertSame(quebec,  Errors.forLocale(Locale.CANADA_FRENCH));
     }
 
     /**
@@ -56,19 +75,19 @@ public final strictfp class IndexedResourceBundleTest {
      */
     @Test
     public void testGetKeys() {
-        testing = Errors.getResources(Locale.ENGLISH);
+        testing = Errors.forLocale(Locale.ENGLISH);
         final Enumeration<String> e = testing.getKeys();
         int count = 0;
-        boolean foundUnknownUnit_1 = false;
+        boolean foundNullArgument_1 = false;
         while (e.hasMoreElements()) {
             final String key = e.nextElement();
             if (key.equals("UnknownUnit_1")) {
-                foundUnknownUnit_1 = true;
+                foundNullArgument_1 = true;
             }
             count++;
         }
-        assertTrue("foundUnknownUnit_1:", foundUnknownUnit_1);
-        assertTrue("count > 5", count > 5);
+        assertTrue(foundNullArgument_1);
+        assertTrue(count > 5);
         testing = null;
     }
 
@@ -77,8 +96,8 @@ public final strictfp class IndexedResourceBundleTest {
      */
     @Test
     public void testGetString() {
-        final Errors english = Errors.getResources(Locale.ENGLISH);
-        final Errors french  = Errors.getResources(Locale.FRENCH);
+        final Errors english = Errors.forLocale(Locale.ENGLISH);
+        final Errors french  = Errors.forLocale(Locale.FRENCH);
 
         assertEquals("Unit “{0}” is not recognized.",             (testing = english).getString(Errors.Keys.UnknownUnit_1));
         assertEquals("Les unités « {0} » ne sont pas reconnues.", (testing = french) .getString(Errors.Keys.UnknownUnit_1));
@@ -90,8 +109,8 @@ public final strictfp class IndexedResourceBundleTest {
      */
     @Test
     public void testGetStringByName() {
-        final Errors english = Errors.getResources(Locale.ENGLISH);
-        final Errors french  = Errors.getResources(Locale.FRENCH);
+        final Errors english = Errors.forLocale(Locale.ENGLISH);
+        final Errors french  = Errors.forLocale(Locale.FRENCH);
 
         assertEquals("Unit “{0}” is not recognized.",             (testing = english).getString("UnknownUnit_1"));
         assertEquals("Les unités « {0} » ne sont pas reconnues.", (testing = french) .getString("UnknownUnit_1"));
@@ -103,9 +122,9 @@ public final strictfp class IndexedResourceBundleTest {
      */
     @Test
     public void testGetStringWithParameter() {
-        testing = Errors.getResources(Locale.ENGLISH);
+        testing = Errors.forLocale(Locale.ENGLISH);
         assertEquals("Unit “X” is not recognized.", testing.getString(Errors.Keys.UnknownUnit_1, "X"));
-        testing = Errors.getResources(Locale.FRENCH);
+        testing = Errors.forLocale(Locale.FRENCH);
         assertEquals("Les unités « X » ne sont pas reconnues.", testing.getString(Errors.Keys.UnknownUnit_1, "X"));
         testing = null;
     }

@@ -15,13 +15,15 @@
  */
 package tech.uom.seshat.util;
 
+import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
-import java.util.Arrays;
 import java.util.function.Function;
-import org.junit.Test;
 
-import static org.junit.Assert.*;
+// Test dependencies
+import tech.uom.seshat.TestCase;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 /**
@@ -31,29 +33,33 @@ import static org.junit.Assert.*;
  * converted set).
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.0
  */
-public final strictfp class DerivedSetTest implements Function<Integer,Integer> {
+public final class DerivedSetTest extends TestCase implements Function<Integer,Integer> {
     /**
      * The value to replace by {@code null}.
      */
     protected static final int EXCLUDED = 19;                   // non-private for javadoc purpose.
 
     /**
+     * Creates a new test case.
+     */
+    public DerivedSetTest() {
+    }
+
+    /**
      * Tests {@link DerivedSet} without excluded value.
      */
     @Test
     public void testNoExclusion() {
-        final Set<Integer> source = new HashSet<>(Arrays.asList(2,  7,  12,  17,  20 ));
-        final Set<Integer> target = new HashSet<>(Arrays.asList(20, 70, 120, 170, 200));
+        final Set<Integer> source = new HashSet<>(List.of(2,  7,  12,  17,  20 ));
+        final Set<Integer> target = new HashSet<>(List.of(20, 70, 120, 170, 200));
         final Set<Integer> tested = new DerivedSet<>(source, this);
         assertEquals(target.size(), tested.size());
         assertEquals(target, tested);
 
-        assertFalse(tested.contains(2 ));
-        assertTrue (tested.contains(20));
-        assertFalse(source.contains(3 ));
-        assertTrue (source.contains(7 ));
+        assertFalse(tested.contains(2 ));           // Original value.
+        assertTrue (tested.contains(20));           // Derived value.
+        assertEquals(target, tested);
     }
 
     /**
@@ -61,8 +67,8 @@ public final strictfp class DerivedSetTest implements Function<Integer,Integer> 
      */
     @Test
     public void testWithExclusion() {
-        final Set<Integer> source = new HashSet<>(Arrays.asList(2,  7,  12,  EXCLUDED, 20));
-        final Set<Integer> target = new HashSet<>(Arrays.asList(20, 70, 120, 200));
+        final Set<Integer> source = new HashSet<>(List.of(2,  7,  12,  EXCLUDED, 20));
+        final Set<Integer> target = new HashSet<>(List.of(20, 70, 120, 200));
         final Set<Integer> tested = new DerivedSet<>(source, this);
         assertEquals(target.size(), tested.size());
         assertEquals(target, tested);

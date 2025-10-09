@@ -183,7 +183,7 @@ public class Errors extends IndexedResourceBundle {
      * @return resources in the given locale.
      * @throws MissingResourceException if resources can not be found.
      */
-    public static Errors getResources(final Locale locale) throws MissingResourceException {
+    public static Errors forLocale(final Locale locale) throws MissingResourceException {
         return getBundle(Errors.class, locale);
     }
 
@@ -199,7 +199,7 @@ public class Errors extends IndexedResourceBundle {
     public static String format(final short  key,
                                 final Object arg0) throws MissingResourceException
     {
-        return getResources((Locale) null).getString(key, arg0);
+        return forLocale((Locale) null).getString(key, arg0);
     }
 
     /**
@@ -216,7 +216,7 @@ public class Errors extends IndexedResourceBundle {
                                 final Object arg0,
                                 final Object arg1) throws MissingResourceException
     {
-        return getResources((Locale) null).getString(key, arg0, arg1);
+        return forLocale((Locale) null).getString(key, arg0, arg1);
     }
 
 

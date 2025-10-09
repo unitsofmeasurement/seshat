@@ -15,6 +15,7 @@
  */
 package tech.uom.seshat.util;
 
+import java.util.Map;
 import static tech.uom.seshat.util.CharSequences.*;
 
 
@@ -41,9 +42,6 @@ import static tech.uom.seshat.util.CharSequences.*;
  * This class should not be loaded in the common case where authority codes for UOMs are not used.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.2
- * @since   1.2
- * @module
  */
 public final class DefinitionURI {
     /**
@@ -61,10 +59,10 @@ public final class DefinitionURI {
      * Returns {@code true} if a sub-region of {@code urn} matches the given {@code part},
      * ignoring case, leading and trailing whitespaces.
      *
-     * @param  part       the expected part ({@code "urn"}, {@code "ogc"}, {@code "def"}, <i>etc.</i>)
-     * @param  urn        the URN for which to test a subregion.
-     * @param  lower      index of the first character in {@code urn} to compare, after skipping whitespaces.
-     * @param  upper      index after the last character in {@code urn} to compare, ignoring whitespaces.
+     * @param  part   the expected part ({@code "urn"}, {@code "ogc"}, {@code "def"}, <i>etc.</i>)
+     * @param  urn    the URN for which to test a subregion.
+     * @param  lower  index of the first character in {@code urn} to compare, after skipping whitespaces.
+     * @param  upper  index after the last character in {@code urn} to compare, ignoring whitespaces.
      * @return {@code true} if the given sub-region of {@code urn} match the given part.
      */
     private static boolean regionMatches(final String part, final String urn, int lower, int upper) {
@@ -111,7 +109,7 @@ public final class DefinitionURI {
      * This method is useful when:
      *
      * <ul>
-     *   <li>the URI is expected to have a specific <cite>object type</cite> and <cite>authority</cite>;</li>
+     *   <li>the URI is expected to have a specific <i>object type</i> and <i>authority</i>;</li>
      *   <li>the version number is considered irrelevant;</li>
      *   <li>the code is expected to have no parameters.</li>
      * </ul>
@@ -122,72 +120,69 @@ public final class DefinitionURI {
      *   <li>The given authority followed by the code (e.g. {@code "EPSG:4326"}).</li>
      *   <li>The URN form (e.g. {@code "urn:ogc:def:crs:EPSG::4326"}), ignoring version number.
      *       This method accepts also the former {@code "x-ogc"} in place of {@code "ogc"}.</li>
-     *   <li>The HTTP form (e.g. {@code "http://www.opengis.net/def/uom/EPSG/0/9102"}).</li>
+     *   <li>The HTTP form (e.g. {@code "http://www.opengis.net/def/crs/EPSG/0/4326"}).</li>
      * </ul>
      *
-     * @param  authority  the expected authority, typically {@code "EPSG"}. See class javadoc for a list of authorities.
-     * @param  uri        the URI to parse.
-     * @return the code part of the given URI, or {@code null} if the codespace does not match
-     *         the given authority, the code is empty, or the code is followed by parameters.
+     * @param  authorities  the expected authorities, typically {@code "EPSG"}. See class javadoc for a list of authorities.
+     * @param  uri          the URI to parse.
+     * @return the code part of the given URI together with the authority as key, or {@code null} if the codespace
+     *         does not match any given type and authority, the code is empty, or the code is followed by parameters.
      */
-    public static String codeOf(final String authority, final String uri) {
+    public static Map.Entry<String, String> codeOf(final String[] authorities, final String uri) {
         int upper = uri.indexOf(SEPARATOR);
         if (upper < 0) {
             return null;
         }
         int lower  = skipLeadingWhitespaces(uri, 0, upper);
         int length = skipTrailingWhitespaces(uri, lower, upper) - lower;
-        if (length == authority.length() && uri.regionMatches(true, lower, authority, 0, length)) {
-            return codeIgnoreVersion(uri, upper+1, SEPARATOR);
+        for (final String authority : authorities) {
+            if (length == authority.length() && uri.regionMatches(true, lower, authority, 0, length)) {
+                String code = codeIgnoreVersion(uri, upper+1, SEPARATOR);
+                return (code == null) ? null : Map.entry(authority, code);
+            }
         }
         /*
          * Check for supported protocols: only "urn" and "http(s)" at this time.
          * All other protocols are rejected as unrecognized.
          */
-        String part;
+        String expected;
         switch (length) {
-            case 3:  part = "urn";   break;
-            case 4:  part = "http";  break;
-            case 5:  part = "https"; break;
+            case 3:  expected = "urn";   break;
+            case 4:  expected = "http";  break;
+            case 5:  expected = "https"; break;
             default: return null;
         }
-        if (!uri.regionMatches(true, lower, part, 0, length)) {
+        if (!uri.regionMatches(true, lower, expected, 0, length)) {
             return null;
         }
-        final boolean isURN = (length == 3);
-        final char separator = isURN ? SEPARATOR : '/';
-        int skipSeparator = isURN ? 1 : 3;                  // Skip ":" or "://".
-        /*
-         * At this point we have determined that the protocol is URN. The next parts after "urn"
-         * shall be "ogc" or "x-ogc", then "def", then the type and authority given in arguments.
-         */
-        for (int p=0; p!=4; p++) {
-            lower = upper + 1;
-            upper = uri.indexOf(separator, upper + skipSeparator);
-            if (upper < 0) {
-                return null;                                                    // No more parts.
-            }
-            switch (p) {
-                case 0: {
-                    if (isURN) {
-                        // "ogc" is tested before "x-ogc" because more common.
-                        if (regionMatches("ogc", uri, lower, upper)) continue;
-                        part = "x-ogc";
-                    } else {
-                        part = "//www.opengis.net";
-                        skipSeparator = 1;
-                    }
-                    break;
-                }
-                case 1: part = "def";     break;
-                case 2: part = "uom";     break;
-                case 3: part = authority; break;
-                default: throw new AssertionError(p);
-            }
-            if (!regionMatches(part, uri, lower, upper)) {
-                return null;
-            }
+        final String[][] expectedParts = {
+            new String[] {"ogc", "x-ogc"},
+            new String[] {"def"},
+            new String[] {"uom"},
+            authorities
+        };
+        char separator = SEPARATOR;
+        int skipAfterSeparator = 0;
+        if (expected.startsWith("http")) {
+            expectedParts[0] = new String[] {"//www.opengis.net"};
+            separator = '/';
+            skipAfterSeparator = 2;         // Skip "://" instead of ":".
         }
-        return codeIgnoreVersion(uri, upper+1, separator);
+verify: for (final String[] expectOneOf : expectedParts) {
+            lower = upper + 1;
+            upper = uri.indexOf(separator, lower + skipAfterSeparator);
+            if (upper < 0) return null;    // No more parts in the URN.
+            skipAfterSeparator = 0;
+            for (int i=0; i < expectOneOf.length; i++) {
+                expected = expectOneOf[i];
+                if (regionMatches(expected, uri, lower, upper)) {
+                    continue verify;
+                }
+            }
+            return null;
+        }
+        // In the last iteration, the expected part is an authority.
+        String code = codeIgnoreVersion(uri, upper+1, separator);
+        return (code == null) ? null : Map.entry(expected, code);
     }
 }

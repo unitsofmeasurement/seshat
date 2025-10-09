@@ -23,8 +23,6 @@ import tech.uom.seshat.resources.Errors;
  * Handles conversions from {@link Fraction} to other kind of numbers.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.0
- * @since   1.0
  */
 public final class FractionConverter implements Function<Fraction,Integer> {
     /**

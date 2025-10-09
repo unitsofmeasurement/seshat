@@ -21,19 +21,25 @@ import javax.measure.Unit;
 import javax.measure.format.UnitFormat;
 import javax.measure.spi.FormatService;
 import javax.measure.spi.ServiceProvider;
-import org.junit.Test;
 
-import static org.junit.Assert.*;
+// Test dependencies
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 /**
  * Test {@link UnitServices}.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.0
- * @since   1.0
  */
-public final strictfp class UnitServicesTest {
+@SuppressWarnings("exports")
+public final class UnitServicesTest extends TestCase {
+    /**
+     * Creates a new test case.
+     */
+    public UnitServicesTest() {
+    }
+
     /**
      * Tests the default system of units.
      */
@@ -41,16 +47,16 @@ public final strictfp class UnitServicesTest {
     public void testDefaultSystemOfUnits() {
         final ServiceProvider provider = ServiceProvider.current();
         Set<? extends Unit<?>> units = provider.getSystemOfUnitsService().getSystemOfUnits().getUnits();
-        assertTrue("METRE",                units.contains(Units.METRE));
-        assertTrue("KILOMETRE",            units.contains(Units.KILOMETRE));
-        assertTrue("CUBIC_METRE",          units.contains(Units.CUBIC_METRE));
-        assertTrue("METRES_PER_SECOND",    units.contains(Units.METRES_PER_SECOND));
-        assertTrue("KILOMETRES_PER_HOUR",  units.contains(Units.KILOMETRES_PER_HOUR));
-        assertTrue("NAUTICAL_MILE",        units.contains(Units.NAUTICAL_MILE));
-        assertTrue("STATUTE_MILE",         units.contains(Units.STATUTE_MILE));
-        assertTrue("DEGREE",               units.contains(Units.DEGREE));
-        assertTrue("RADIAN",               units.contains(Units.RADIAN));
-        assertTrue("GRAD",                 units.contains(Units.GRAD));
+        assertTrue(units.contains(Units.METRE));
+        assertTrue(units.contains(Units.KILOMETRE));
+        assertTrue(units.contains(Units.CUBIC_METRE));
+        assertTrue(units.contains(Units.METRES_PER_SECOND));
+        assertTrue(units.contains(Units.KILOMETRES_PER_HOUR));
+        assertTrue(units.contains(Units.NAUTICAL_MILE));
+        assertTrue(units.contains(Units.STATUTE_MILE));
+        assertTrue(units.contains(Units.DEGREE));
+        assertTrue(units.contains(Units.RADIAN));
+        assertTrue(units.contains(Units.GRAD));
     }
 
     /**
@@ -60,16 +66,16 @@ public final strictfp class UnitServicesTest {
     public void testSI() {
         final ServiceProvider provider = ServiceProvider.current();
         Set<? extends Unit<?>> units = provider.getSystemOfUnitsService().getSystemOfUnits("SI").getUnits();
-        assertTrue ("METRE",                units.contains(Units.METRE));
-        assertTrue ("KILOMETRE",            units.contains(Units.KILOMETRE));
-        assertTrue ("CUBIC_METRE",          units.contains(Units.CUBIC_METRE));
-        assertTrue ("METRES_PER_SECOND",    units.contains(Units.METRES_PER_SECOND));
-        assertFalse("KILOMETRES_PER_HOUR",  units.contains(Units.KILOMETRES_PER_HOUR));
-        assertFalse("NAUTICAL_MILE",        units.contains(Units.NAUTICAL_MILE));
-        assertFalse("STATUTE_MILE",         units.contains(Units.STATUTE_MILE));
-        assertFalse("DEGREE",               units.contains(Units.DEGREE));
-        assertTrue ("RADIAN",               units.contains(Units.RADIAN));
-        assertFalse("GRAD",                 units.contains(Units.GRAD));
+        assertTrue (units.contains(Units.METRE));
+        assertTrue (units.contains(Units.KILOMETRE));
+        assertTrue (units.contains(Units.CUBIC_METRE));
+        assertTrue (units.contains(Units.METRES_PER_SECOND));
+        assertFalse(units.contains(Units.KILOMETRES_PER_HOUR));
+        assertFalse(units.contains(Units.NAUTICAL_MILE));
+        assertFalse(units.contains(Units.STATUTE_MILE));
+        assertFalse(units.contains(Units.DEGREE));
+        assertTrue (units.contains(Units.RADIAN));
+        assertFalse(units.contains(Units.GRAD));
     }
 
     /**
@@ -79,16 +85,16 @@ public final strictfp class UnitServicesTest {
     public void testAccepted() {
         final ServiceProvider provider = ServiceProvider.current();
         Set<? extends Unit<?>> units = provider.getSystemOfUnitsService().getSystemOfUnits("SI + accepted").getUnits();
-        assertTrue ("METRE",                units.contains(Units.METRE));
-        assertTrue ("KILOMETRE",            units.contains(Units.KILOMETRE));
-        assertTrue ("CUBIC_METRE",          units.contains(Units.CUBIC_METRE));
-        assertTrue ("METRES_PER_SECOND",    units.contains(Units.METRES_PER_SECOND));
-        assertTrue ("KILOMETRES_PER_HOUR",  units.contains(Units.KILOMETRES_PER_HOUR));
-        assertFalse("NAUTICAL_MILE",        units.contains(Units.NAUTICAL_MILE));
-        assertFalse("STATUTE_MILE",         units.contains(Units.STATUTE_MILE));
-        assertTrue ("DEGREE",               units.contains(Units.DEGREE));
-        assertTrue ("RADIAN",               units.contains(Units.RADIAN));
-        assertFalse("GRAD",                 units.contains(Units.GRAD));
+        assertTrue (units.contains(Units.METRE));
+        assertTrue (units.contains(Units.KILOMETRE));
+        assertTrue (units.contains(Units.CUBIC_METRE));
+        assertTrue (units.contains(Units.METRES_PER_SECOND));
+        assertTrue (units.contains(Units.KILOMETRES_PER_HOUR));
+        assertFalse(units.contains(Units.NAUTICAL_MILE));
+        assertFalse(units.contains(Units.STATUTE_MILE));
+        assertTrue (units.contains(Units.DEGREE));
+        assertTrue (units.contains(Units.RADIAN));
+        assertFalse(units.contains(Units.GRAD));
     }
 
     /**
@@ -98,15 +104,15 @@ public final strictfp class UnitServicesTest {
     public void testImperial() {
         final ServiceProvider provider = ServiceProvider.current();
         Set<? extends Unit<?>> units = provider.getSystemOfUnitsService().getSystemOfUnits("Imperial").getUnits();
-        assertFalse("METRE",                units.contains(Units.METRE));
-        assertFalse("KILOMETRE",            units.contains(Units.KILOMETRE));
-        assertFalse("CUBIC_METRE",          units.contains(Units.CUBIC_METRE));
-        assertFalse("METRES_PER_SECOND",    units.contains(Units.METRES_PER_SECOND));
-        assertFalse("KILOMETRES_PER_HOUR",  units.contains(Units.KILOMETRES_PER_HOUR));
-        assertTrue ("STATUTE_MILE",         units.contains(Units.STATUTE_MILE));
-        assertFalse("DEGREE",               units.contains(Units.DEGREE));
-        assertFalse("RADIAN",               units.contains(Units.RADIAN));
-        assertFalse("GRAD",                 units.contains(Units.GRAD));
+        assertFalse(units.contains(Units.METRE));
+        assertFalse(units.contains(Units.KILOMETRE));
+        assertFalse(units.contains(Units.CUBIC_METRE));
+        assertFalse(units.contains(Units.METRES_PER_SECOND));
+        assertFalse(units.contains(Units.KILOMETRES_PER_HOUR));
+        assertTrue (units.contains(Units.STATUTE_MILE));
+        assertFalse(units.contains(Units.DEGREE));
+        assertFalse(units.contains(Units.RADIAN));
+        assertFalse(units.contains(Units.GRAD));
     }
 
     /**
@@ -128,6 +134,6 @@ public final strictfp class UnitServicesTest {
         final ServiceProvider provider = ServiceProvider.current();
         final UnitFormat f = provider.getFormatService().getUnitFormat("name");
         ((tech.uom.seshat.UnitFormat) f).setLocale(Locale.US);
-        assertEquals("CUBIC_METRE", "cubic meter", f.format(Units.CUBIC_METRE));
+        assertEquals("cubic meter", f.format(Units.CUBIC_METRE));
     }
 }

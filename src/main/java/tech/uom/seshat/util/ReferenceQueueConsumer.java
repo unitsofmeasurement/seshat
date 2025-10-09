@@ -22,12 +22,11 @@ import tech.uom.seshat.resources.Errors;
 
 /**
  * A thread processing all {@link Reference} instances enqueued in a {@link ReferenceQueue}.
- * This is the central place where <em>every</em> weak references produced by the Seshat library
- * are consumed. This thread will invoke the {@link WeakEntry#dispose()} method for each
- * references enqueued by the garbage collector.
+ * This is the central place where weak references produced by Seshat are consumed.
+ * This thread will invoke the {@link WeakEntry#dispose()} method for each reference
+ * enqueued by the garbage collector.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.2
  */
 final class ReferenceQueueConsumer extends Thread {
     /**
@@ -40,7 +39,7 @@ final class ReferenceQueueConsumer extends Thread {
      * Creates the singleton instance of the {@code ReferenceQueueConsumer} thread.
      */
     static {
-        final ReferenceQueueConsumer thread = new ReferenceQueueConsumer();
+        final var thread = new ReferenceQueueConsumer();
         /*
          * Call to Thread.start() must be outside the constructor
          * (Reference: Goetz et al.: "Java Concurrency in Practice").
@@ -52,10 +51,10 @@ final class ReferenceQueueConsumer extends Thread {
      * Constructs a new thread as a daemon thread. This thread will be sleeping most of the time.
      * It will run only only a few nanoseconds every time a new {@link Reference} is enqueued.
      *
-     * <div class="note"><b>Note:</b>
+     * <h4>Implementation note</h4>
      * We give to this thread a priority higher than the normal one since this thread shall
      * execute only tasks to be completed very shortly. Quick execution of those tasks is at
-     * the benefit of the rest of the system, since they make more resources available sooner.</div>
+     * the benefit of the rest of the system, since they make more resources available sooner.
      */
     private ReferenceQueueConsumer() {
         super(null, null, "Seshat disposer", 16*1024);        // Small (16 kb) stack size is sufficient.
@@ -87,9 +86,9 @@ final class ReferenceQueueConsumer extends Thread {
                 final Reference<?> ref = queue.remove();
                 if (ref != null) {
                     /*
-                     * If the reference does not extend the WeakEntry<?> class, we want the
-                     * ClassCastException to be logged in the "catch" block since it would be
-                     * a programming error that we want to know about.
+                     * If the reference does not implement the WeakEntry class, we want
+                     * the ClassCastException to be logged in the "catch" block since
+                     * it would be a programming error that we want to know about.
                      */
                     ((WeakEntry<?>) ref).dispose();
                 }

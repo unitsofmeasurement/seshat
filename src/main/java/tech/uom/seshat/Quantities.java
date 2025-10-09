@@ -38,7 +38,7 @@ import tech.uom.seshat.resources.Errors;
  * </ul>
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.2
+ * @version 1.3
  * @since   1.0
  */
 public final class Quantities {
@@ -74,7 +74,6 @@ public final class Quantities {
      * @see UnitServices#getQuantityFactory(Class)
      */
     public static <Q extends Quantity<Q>> Q create(final double value, final Unit<Q> unit) {
-        Objects.requireNonNull(unit);
         final Unit<Q> system = unit.getSystemUnit();
         if (system instanceof SystemUnit<?>) {
             final UnitConverter c = unit.getConverterTo(system);
@@ -123,7 +122,7 @@ public final class Quantities {
             if (type != null) {
                 return DerivedScalar.Fallback.factory(value, unit, system, c, type);
             } else {
-                @SuppressWarnings("unchecked")  // Same reason than for `new Scalar(…)`.
+                @SuppressWarnings("unchecked")  // Same reason as for `new Scalar(…)`.
                 final Q quantity = (Q) new DerivedScalar<>(value, unit, system, c);
                 return quantity;
             }
@@ -218,22 +217,6 @@ public final class Quantities {
     }
 
     /**
-     * Compares the two given number, without casting to {@code double} if we can avoid that cast.
-     * The intent is to avoid loosing precision for example by casting a {@code BigDecimal}.
-     */
-    @SuppressWarnings("unchecked")
-    private static int compare(final Number v1, final Number v2) {
-        if (v1 instanceof Comparable<?>) {
-            if (v1.getClass().isInstance(v2)) {
-                return ((Comparable) v1).compareTo(v2);
-            } else if (v2 instanceof Comparable<?> && v2.getClass().isInstance(v1)) {
-                return -((Comparable) v2).compareTo(v1);
-            }
-        }
-        return Double.compare(v1.doubleValue(), v2.doubleValue());
-    }
-
-    /**
      * Returns {@code true} if the given number is null or NaN.
      * Current implementation recognizes {@link Float} and {@link Double} types.
      *
@@ -248,5 +231,21 @@ public final class Quantities {
         if (value instanceof Double) return ((Double) value).isNaN();
         if (value instanceof Float)  return ((Float)  value).isNaN();
         return false;
+    }
+
+    /**
+     * Compares the two given number, without casting to {@code double} if we can avoid that cast.
+     * The intent is to avoid loosing precision for example by casting a {@code BigDecimal}.
+     */
+    @SuppressWarnings("unchecked")
+    private static int compare(final Number v1, final Number v2) {
+        if (v1 instanceof Comparable<?>) {
+            if (v1.getClass().isInstance(v2)) {
+                return ((Comparable) v1).compareTo(v2);
+            } else if (v2 instanceof Comparable<?> && v2.getClass().isInstance(v1)) {
+                return -((Comparable) v2).compareTo(v1);
+            }
+        }
+        return Double.compare(v1.doubleValue(), v2.doubleValue());
     }
 }

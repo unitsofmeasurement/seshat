@@ -16,23 +16,25 @@
 package tech.uom.seshat;
 
 import javax.measure.Unit;
-import javax.measure.quantity.Angle;
 import javax.measure.UnitConverter;
+import javax.measure.quantity.Angle;
 import tech.uom.seshat.math.MathFunctions;
 import tech.uom.seshat.resources.Errors;
 
 
 /**
  * A converter from decimal degrees to sexagesimal degrees. Sexagesimal degrees are pseudo-unit
- * in the <cite>sign - degrees - decimal point - minutes (two digits) - integer seconds (two digits) -
- * fraction of seconds (any precision)</cite> format.
+ * in the <i>sign - degrees - decimal point - minutes (two digits) - integer seconds (two digits) -
+ * fraction of seconds (any precision)</i> format.
+ *
+ * <p>When possible, Seshat always handles angles in radians, decimal degrees or any other proportional units.
+ * Sexagesimal angles are considered a string representation issue (handled by rather than a unit issue.
+ * Unfortunately, this pseudo-unit is extensively used in the EPSG database, so we have to support it.</p>
  *
  * <h2>Immutability and thread safety</h2>
  * This class and all inner classes are immutable, and thus inherently thread-safe.
  *
  * @author  Martin Desruisseaux (IRD, Geomatys)
- * @version 1.2
- * @since   1.1
  */
 class SexagesimalConverter extends AbstractConverter {
     /**
@@ -49,7 +51,7 @@ class SexagesimalConverter extends AbstractConverter {
     /**
      * Pseudo-unit for sexagesimal degree. Numbers in this pseudo-unit have the following format:
      *
-     * <cite>sign - degrees - decimal point - minutes (two digits) - fraction of minutes (any precision)</cite>.
+     * <i>sign - degrees - decimal point - minutes (two digits) - fraction of minutes (any precision)</i>.
      *
      * Using this unit is loosely equivalent to formatting decimal degrees with the
      * {@code "D.MMm"} {@code AngleFormat} pattern.
@@ -63,8 +65,8 @@ class SexagesimalConverter extends AbstractConverter {
     /**
      * Pseudo-unit for sexagesimal degree. Numbers in this pseudo-unit have the following format:
      *
-     * <cite>sign - degrees - decimal point - minutes (two digits) - integer seconds (two digits) -
-     * fraction of seconds (any precision)</cite>.
+     * <i>sign - degrees - decimal point - minutes (two digits) - integer seconds (two digits) -
+     * fraction of seconds (any precision)</i>.
      *
      * Using this unit is loosely equivalent to formatting decimal degrees with the
      * {@code "D.MMSSs"} {@code AngleFormat} pattern.
@@ -79,8 +81,8 @@ class SexagesimalConverter extends AbstractConverter {
      * Pseudo-unit for degree - minute - second.
      * Numbers in this pseudo-unit have the following format:
      *
-     * <cite>signed degrees (integer) - arc-minutes (integer) - arc-seconds
-     * (real, any precision)</cite>.
+     * <i>signed degrees (integer) - arc-minutes (integer) - arc-seconds
+     * (real, any precision)</i>.
      *
      * Using this unit is loosely equivalent to formatting decimal degrees with the
      * {@code "DMMSS.s"} {@code AngleFormat} pattern.
@@ -118,7 +120,7 @@ class SexagesimalConverter extends AbstractConverter {
     /**
      * The inverse of this converter.
      */
-    private final UnitConverter inverse;
+    private final SexagesimalConverter inverse;
 
     /**
      * Constructs a converter for sexagesimal units.

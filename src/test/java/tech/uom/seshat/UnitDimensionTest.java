@@ -20,19 +20,19 @@ import java.util.HashMap;
 import javax.measure.Unit;
 import javax.measure.Dimension;
 import tech.uom.seshat.math.Fraction;
-import org.junit.Test;
 
-import static org.junit.Assert.*;
+// Test dependencies
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 /**
  * Tests the {@link UnitDimension} class.
  *
  * @author  Martin Desruisseaux (Geomatys)
- * @version 1.0
- * @since   1.0
  */
-public final strictfp class UnitDimensionTest {
+@SuppressWarnings("exports")
+public final class UnitDimensionTest extends TestCase {
     /**
      * The dimension declared by the base {@link Units} constant.
      * We should not create our own instance for avoiding to pollute the {@link UnitDimension} cache.
@@ -45,6 +45,12 @@ public final strictfp class UnitDimensionTest {
                            AREA          = Units.SQUARE_METRE     .getDimension(),
                            VOLUME        = Units.CUBIC_METRE      .getDimension(),
                            DIMENSIONLESS = Units.UNITY            .getDimension();
+
+    /**
+     * Creates a new test case.
+     */
+    public UnitDimensionTest() {
+    }
 
     /**
      * Tests {@link UnitDimension#multiply(Dimension)}.
@@ -79,9 +85,9 @@ public final strictfp class UnitDimensionTest {
      */
     @Test
     public void testPow() {
-        assertSame("DIMENSIONLESS", DIMENSIONLESS, DIMENSIONLESS.pow(4));
-        assertSame("AREA",          AREA,          LENGTH.pow(2));
-        assertSame("VOLUME",        VOLUME,        LENGTH.pow(3));
+        assertSame(DIMENSIONLESS, DIMENSIONLESS.pow(4));
+        assertSame(AREA,          LENGTH.pow(2));
+        assertSame(VOLUME,        LENGTH.pow(3));
     }
 
     /**
@@ -89,9 +95,9 @@ public final strictfp class UnitDimensionTest {
      */
     @Test
     public void testRoot() {
-        assertSame("DIMENSIONLESS", DIMENSIONLESS, DIMENSIONLESS.root(4));
-        assertSame("AREA",          LENGTH,        AREA.root(2));
-        assertSame("VOLUME",        LENGTH,        VOLUME.root(3));
+        assertSame(DIMENSIONLESS, DIMENSIONLESS.root(4));
+        assertSame(LENGTH,        AREA.root(2));
+        assertSame(LENGTH,        VOLUME.root(3));
     }
 
     /**
@@ -112,13 +118,8 @@ public final strictfp class UnitDimensionTest {
         assertNull(expected.put(MASS,   new Fraction(-1, 1)));
         assertNull(expected.put(LENGTH, new Fraction(-1, 1)));
         assertEquals(expected, ((UnitDimension) dim).components);
-        try {
-            dim.getBaseDimensions().toString();
-            fail("Mapping from Fraction to Integer should not be allowed.");
-        } catch (IllegalArgumentException e) {
-            final String message = e.getMessage();
-            assertTrue(message, message.contains("Integer"));
-        }
+        var e = assertThrows(IllegalArgumentException.class, () -> dim.getBaseDimensions().toString());
+        assertMessageContains(e, "Integer");
         // 'toString()' formatting tested in UnitFormatTest.testRationalPower().
     }
 
@@ -130,9 +131,9 @@ public final strictfp class UnitDimensionTest {
      */
     @Test
     public void testGetBaseDimensions() {
-        assertNull("LENGTH",        LENGTH       .getBaseDimensions());     // Null value as per JSR-385 specification.
-        assertNull("TIME",          TIME         .getBaseDimensions());
-        assertTrue("DIMENSIONLESS", DIMENSIONLESS.getBaseDimensions().isEmpty());
+        assertNull(LENGTH       .getBaseDimensions());     // Null value as per JSR-385 specification.
+        assertNull(TIME         .getBaseDimensions());
+        assertTrue(DIMENSIONLESS.getBaseDimensions().isEmpty());
         assertEquals(Map.of(LENGTH, 3), VOLUME.getBaseDimensions());
 
         final Map<Dimension,Integer> expected = new HashMap<>(4);
@@ -173,8 +174,8 @@ public final strictfp class UnitDimensionTest {
     private static void verifyEqualsAndHashCode(final String message, final boolean expected, final Unit<?> a, final Unit<?> b) {
         final Dimension da = a.getDimension();
         final Dimension db = b.getDimension();
-        assertEquals(message, expected, da.equals(db));
-        assertEquals(message, expected, db.equals(da));
-        assertEquals(message, expected, da.hashCode() == db.hashCode());
+        assertEquals(expected, da.equals(db), message);
+        assertEquals(expected, db.equals(da), message);
+        assertEquals(expected, da.hashCode() == db.hashCode(), message);
     }
 }

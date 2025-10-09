@@ -22,7 +22,7 @@ import java.util.function.Function;
 
 
 /**
- * A map whose keys and values are derived <cite>on-the-fly</cite> from another map.
+ * A map whose keys and values are derived <i>on-the-fly</i> from another map.
  * Conversions are performed when needed by the following methods:
  *
  * <ul>
@@ -41,7 +41,6 @@ import java.util.function.Function;
  * </ul>
  *
  * @author  Martin Desruisseaux (IRD, Geomatys)
- * @version 1.0
  *
  * @param <SK>  the type of keys in the storage map.
  * @param <SV>  the type of values in the storage map.
