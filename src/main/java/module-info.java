@@ -19,4 +19,16 @@
  */
 module tech.uom.seshat.test {
     requires tech.uom.seshat;
+
+    // Following are only for running the tests.
+    requires tech.units.tck;
+    requires org.testng;
+
+    exports tech.uom.seshat.test to org.testng;
+
+    provides tech.units.tck.util.ServiceConfiguration
+        with tech.uom.seshat.test.TCK;
+
+    // For chekcing ourselves the registration.
+    uses tech.units.tck.util.ServiceConfiguration;
 }
