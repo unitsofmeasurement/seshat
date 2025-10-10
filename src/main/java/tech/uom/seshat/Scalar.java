@@ -21,7 +21,7 @@ import javax.measure.Unit;
 import javax.measure.Quantity;
 import javax.measure.UnitConverter;
 import javax.measure.UnconvertibleException;
-import tech.uom.seshat.util.StringBuilders;
+import tech.uom.seshat.util.Characters;
 import tech.uom.seshat.resources.Errors;
 
 
@@ -388,7 +388,7 @@ class Scalar<Q extends Quantity<Q>> extends Number implements Quantity<Q>, Compa
     @Override
     public final String toString() {
         final StringBuilder buffer = new StringBuilder().append(doubleValue());
-        StringBuilders.trimFractionalPart(buffer);
+        Characters.trimFractionalPart(buffer);
         final String symbol = getUnit().toString();
         if (symbol != null && !symbol.isEmpty()) {
             buffer.append(QuantityFormat.SEPARATOR).append(symbol);

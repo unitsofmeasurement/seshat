@@ -38,7 +38,6 @@ import tech.uom.seshat.math.Fraction;
 import tech.uom.seshat.math.MathFunctions;
 import tech.uom.seshat.resources.Errors;
 import tech.uom.seshat.util.Characters;
-import tech.uom.seshat.util.CharSequences;
 import tech.uom.seshat.util.DefinitionURI;
 import tech.uom.seshat.util.WeakValueHashMap;
 
@@ -179,7 +178,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
                     }
                     return toAppendTo.append("deg").append(value, 1, length);
                 }
-                final CharSequence cs = CharSequences.toASCII(value);
+                final CharSequence cs = Characters.toASCII(value);
                 final int length = cs.length();
                 for (int i=0; i<length; i++) {
                     toAppendTo.append(Characters.toNormalScript(cs.charAt(i)));
@@ -548,7 +547,7 @@ public class UnitFormat extends Format implements javax.measure.format.UnitForma
          * "metres" and "meters" because they are repeated in units such as "kilometers".
          */
         uom = uom.replace('_', ' ').toLowerCase(locale);
-        uom = removePlural(CharSequences.toASCII(uom));
+        uom = removePlural(Characters.toASCII(uom).toString());
         /*
          * Returns the unit with application of the power if it is part of the name.
          * For example, this method interprets "meter2" as "meter" raised to power 2.
@@ -580,7 +579,7 @@ appPow: if (unit == null) {
      */
     private static void copy(final Locale locale, final ResourceBundle symbolToName, final Map<String,Unit<?>> nameToUnit) {
         for (final String symbol : symbolToName.keySet()) {
-            String name = CharSequences.toASCII(symbolToName.getString(symbol).toLowerCase(locale)).toString().intern();
+            String name = Characters.toASCII(symbolToName.getString(symbol).toLowerCase(locale)).toString().intern();
             nameToUnit.put(removePlural(name), Units.get(symbol));
         }
     }
@@ -591,13 +590,13 @@ appPow: if (unit == null) {
      * The result may not be grammatically correct English, but those strings will not be visible to users.
      * This is similar to making a string in lower cases before comparison in order to be case-insensitive.
      */
-    private static String removePlural(CharSequence uom) {
-        uom = CharSequences.replace(uom,  DEGREES,  "degree");
-        uom = CharSequences.replace(uom, "radians", "radian");
-        uom = CharSequences.replace(uom, "seconds", "second");
-        uom = CharSequences.replace(uom, "meters",  "meter");
-        uom = CharSequences.replace(uom, "metres",  "metre");
-        return uom.toString();
+    private static String removePlural(String uom) {
+        uom = uom.replace( DEGREES,  "degree");
+        uom = uom.replace("radians", "radian");
+        uom = uom.replace("seconds", "second");
+        uom = uom.replace("meters",  "meter");
+        uom = uom.replace("metres",  "metre");
+        return uom;
     }
 
     /**
@@ -1076,11 +1075,11 @@ appPow: if (unit == null) {
         Unit<?> unit = parse(symbols, position);
         final int length = symbols.length();
         int unrecognized;
-        while ((unrecognized = CharSequences.skipLeadingWhitespaces(symbols, position.getIndex(), length)) < length) {
+        while ((unrecognized = Characters.skipLeadingWhitespaces(symbols, position.getIndex(), length)) < length) {
             if (position.finished || !Character.isLetter(Character.codePointAt(symbols, unrecognized))) {
                 throw new MeasurementParseException(Errors.format(Errors.Keys.UnexpectedCharactersAfter_2,
-                        CharSequences.trimWhitespaces(symbols, 0, unrecognized),
-                        CharSequences.trimWhitespaces(symbols, unrecognized, length)),
+                        Characters.trimWhitespaces(symbols, 0, unrecognized),
+                        Characters.trimWhitespaces(symbols, unrecognized, length)),
                         symbols, unrecognized);
             }
             position.setIndex(unrecognized);
@@ -1119,7 +1118,7 @@ appPow: if (unit == null) {
          * (which is the most common case), only then we will parse the unit symbols.
          */
         int end   = symbols.length();
-        int start = CharSequences.skipLeadingWhitespaces(symbols, position.getIndex(), end);
+        int start = Characters.skipLeadingWhitespaces(symbols, position.getIndex(), end);
         if (AUTHORITIES != null) {
             final String uom = symbols.toString();
             final Map.Entry<String, String> entry = DefinitionURI.codeOf(AUTHORITIES, uom);
@@ -1244,7 +1243,7 @@ scan:   for (int n; i < end; i += n) {
                     final int pos = i + Character.charCount(c);
                     final var sub = new ParsePosition(pos);
                     final Unit<?> term = parse(symbols, sub);
-                    i = CharSequences.skipLeadingWhitespaces(symbols, sub.getIndex(), end);
+                    i = Characters.skipLeadingWhitespaces(symbols, sub.getIndex(), end);
                     if (i >= end || Character.codePointAt(symbols, i) != Style.CLOSE) {
                         throw new MeasurementParseException(Errors.format(Errors.Keys.NonEquilibratedParenthesis_2,
                                     symbols.subSequence(start, i), Style.CLOSE), symbols, start);
@@ -1290,8 +1289,8 @@ scan:   for (int n; i < end; i += n) {
         Unit<?> component = null;
         if (hasSpaces) {
             end = i;
-            start = CharSequences.skipLeadingWhitespaces(symbols, start, i);
-search:     while ((i = CharSequences.skipTrailingWhitespaces(symbols, start, i)) > start) {
+            start = Characters.skipLeadingWhitespaces(symbols, start, i);
+search:     while ((i = Characters.skipTrailingWhitespaces(symbols, start, i)) > start) {
                 final String uom = symbols.subSequence(start, i).toString();
                 if ((component = labelToUnit.get(uom)) != null) break;
                 if ((component =        fromName(uom)) != null) break;
@@ -1431,7 +1430,7 @@ search:     while ((i = CharSequences.skipTrailingWhitespaces(symbols, start, i)
     private Unit<?> parseTerm(final CharSequence symbols, final int lower, final int upper, final Operation operation)
             throws MeasurementParseException
     {
-        final String uom = CharSequences.trimWhitespaces(symbols, lower, upper).toString();
+        final String uom = Characters.trimWhitespaces(symbols, lower, upper).toString();
         /*
          * Check for labels explicitly given by users. Those labels have precedence over the Seshat hard-coded
          * symbols. If no explicit label was found, check for symbols and names known to this UnitFormat instance.
@@ -1462,7 +1461,7 @@ search:     while ((i = CharSequences.skipTrailingWhitespaces(symbols, start, i)
                         try {
                             int s = uom.indexOf(' ');
                             if (s >= 0) {
-                                final int next = CharSequences.skipLeadingWhitespaces(uom, s, length);
+                                final int next = Characters.skipLeadingWhitespaces(uom, s, length);
                                 if (next < length && AbstractUnit.isSymbolChar(uom.codePointAt(next))) {
                                     operation.finished = true;  // For preventing attempt to continue parsing after "100 feet".
                                     multiplier = Double.parseDouble(uom.substring(0, s));
@@ -1519,7 +1518,7 @@ search:     while ((i = CharSequences.skipTrailingWhitespaces(symbols, start, i)
                          * At this point we have parsed the exponent. Before to parse the raw unit symbol,
                          * skip the exponent symbol (^, * or **) if any.
                          */
-                        i = CharSequences.skipTrailingWhitespaces(uom, 0, i);
+                        i = Characters.skipTrailingWhitespaces(uom, 0, i);
                         if (i != 0) {
                             // No need for code point because next conditions are true only in BMP.
                             switch (uom.charAt(i-1)) {
@@ -1528,12 +1527,12 @@ search:     while ((i = CharSequences.skipTrailingWhitespaces(symbols, start, i)
                                     // Fallthrough for skipping the next character and whitespaces.
                                 }
                                 case Style.EXPONENT: {
-                                    i = CharSequences.skipTrailingWhitespaces(uom, 0, i - 1);
+                                    i = Characters.skipTrailingWhitespaces(uom, 0, i - 1);
                                     break;
                                 }
                             }
                         }
-                        final String symbol = uom.substring(CharSequences.skipLeadingWhitespaces(uom, 0, i), i);
+                        final String symbol = uom.substring(Characters.skipLeadingWhitespaces(uom, 0, i), i);
                         unit = labelToUnit.get(symbol);
                         operation.finished = (unit != null);
                         if (unit == null) {
@@ -1558,7 +1557,7 @@ search:     while ((i = CharSequences.skipTrailingWhitespaces(symbols, start, i)
                 operation.finished = true;
                 unit = fromName(uom);
                 if (unit == null) {
-                    if (CharSequences.regionMatches(symbols, lower, UNITY)) {
+                    if (Characters.regionMatches(symbols, lower, UNITY)) {
                         return Units.UNITY;
                     }
                     throw new MeasurementParseException(Errors.format(Errors.Keys.UnknownUnit_1, uom), symbols, lower);

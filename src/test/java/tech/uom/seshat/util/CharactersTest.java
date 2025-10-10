@@ -24,15 +24,51 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 /**
- * Tests the {@link Characters} utility methods.
+ * Tests the {@link Characters} methods.
  *
  * @author  Martin Desruisseaux (Geomatys)
+ * @author  Johann Sorel (Geomatys)
  */
 public final class CharactersTest extends TestCase {
     /**
      * Creates a new test case.
      */
     public CharactersTest() {
+    }
+
+    /**
+     * Tests the {@link Characters#trimFractionalPart(StringBuilder)} method.
+     */
+    @Test
+    public void testTrimFractionalPart() {
+        final var buffer = new StringBuilder("4.10");
+        trimFractionalPart(buffer);
+        assertEquals("4.10", buffer.toString());
+        buffer.setCharAt(2, '0');                                   // Replace the '1' by '0'.
+        trimFractionalPart(buffer);
+        assertEquals("4", buffer.toString());
+    }
+
+    /**
+     * Tests the {@link Characters#toASCII(CharSequence)} method.
+     */
+    @Test
+    public void testToASCII() {
+        final String metre = "metre";
+        assertSame  (metre, toASCII(metre));
+        assertEquals(metre, toASCII("mètre").toString());
+        assertEquals("kg, mg, cm, km, km2, km3, ml, m/s, Pa, Hz, mol, ms, μs, m3, rad",
+                toASCII("㎏, ㎎, ㎝, ㎞, ㎢, ㎦, ㎖, ㎧, ㎩, ㎐, ㏖, ㎳, ㎲, ㎥, ㎭").toString());
+    }
+
+    /**
+     * Tests the {@link Characters#regionMatches(CharSequence, int, CharSequence)} and
+     * {@link Characters#regionMatches(CharSequence, int, CharSequence)} methods.
+     */
+    @Test
+    public void testRegionMatches() {
+        assertTrue (regionMatches(new StringBuilder("Un chasseur sachant chasser sans son chien"), 12, "sachant"));
+        assertTrue (regionMatches(new StringBuilder("Un chasseur sachant chasser sans son chien"), 12, "sacHant"));
     }
 
     /**

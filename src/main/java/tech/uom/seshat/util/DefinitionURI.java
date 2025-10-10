@@ -16,7 +16,7 @@
 package tech.uom.seshat.util;
 
 import java.util.Map;
-import static tech.uom.seshat.util.CharSequences.*;
+import static tech.uom.seshat.util.Characters.*;
 
 
 /**

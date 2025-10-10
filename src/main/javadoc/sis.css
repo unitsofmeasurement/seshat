@@ -102,6 +102,7 @@ table.compact {
   border-spacing: 0;
   padding:        0;
   line-height:    1em;
+  text-align:     left;
 }
 
 table.compact tr td {
@@ -140,6 +141,7 @@ div.block ul,
 div.block ol {
   margin-top:    9px;
   margin-bottom: 9px;
+  text-align:   left;
 }
 
 div.block ul > li,
@@ -155,6 +157,7 @@ div.block ul > li > ul,
 div.block ol > li > ul {
   margin-top:    3px;
   margin-bottom: 6px;
+  text-align:   left;
 }
 
 div.block ul > li > ul > li,
